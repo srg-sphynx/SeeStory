@@ -1,61 +1,92 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>SeeSTORY · The Resonance Engine</title>
-  
-  <!-- If favicon available in future -->
-  <!-- <link rel="icon" href="favicon.svg"> -->
-  
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SeeSTORY · The Resonance Engine</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <main class="wrap">
   <h1>SeeSTORY</h1>
   <p class="sub">The Resonance Engine</p>
 
-  <section class="card blue" aria-labelledby="h-aud">
-    <h2 id="h-aud" class="mt-0">1. Pick your audience</h2>
-    <div class="seg" id="audience" role="group" aria-label="Audience"></div>
-    <p class="muted mb-2" id="audHint" style="font-size: 0.9rem; margin-top: var(--s2); font-weight: 500;"></p>
+  <!-- Collapsible guide -->
+  <button id="guideToggle" class="guide-toggle" aria-expanded="false" aria-controls="guideBody">
+    <span class="arrow">&#9654;</span> How it works
+  </button>
+  <div id="guideBody" class="guide-body" role="region" aria-labelledby="guideToggle">
+    <h3>The chemistry metaphor</h3>
+    <p>Think of your audience as a binding pocket and your content as a small molecule. Each audience has a unique shape defined by four Resonance Classes: Clarity, Voice, Visual, and Community. Your message fragments are molecular fragments that fit into the pocket.</p>
+    <h3>How scoring works</h3>
+    <p>The Resonance Score blends two signals. Pocket fit measures how well your selected fragments match the audience weights (0 to 45 points). Text analysis scans your caption for drivers that boost the score and show-stoppers that hurt it (plus or minus 15 points). A base score of 40 anchors the scale.</p>
+    <h3>Drivers and show-stoppers</h3>
+    <p>Drivers are good signals: short sentences, concrete numbers, clear calls to action. Show-stoppers are red flags: hyperbole, em dashes, run-on sentences, and all-caps shouting. The Story-Activity Spotter flags both in real time.</p>
+    <h3>Sharing results</h3>
+    <p>Every change updates the URL hash. Copy the link to share your exact configuration. Drafts are also saved to local storage automatically.</p>
+  </div>
+
+  <!-- Preset gallery -->
+  <section class="card" aria-labelledby="h-presets">
+    <h2 id="h-presets">Try an example</h2>
+    <div id="presetGrid" class="preset-grid"></div>
   </section>
 
+  <!-- Step 1: Audience -->
+  <section class="card blue" aria-labelledby="h-aud">
+    <h2 id="h-aud">1. Pick your audience</h2>
+    <div class="seg" id="audience" role="group" aria-label="Audience"></div>
+    <p class="muted" id="audHint" style="font-size:.9rem;margin-top:8px"></p>
+  </section>
+
+  <!-- Step 2: Anchor -->
   <section class="card" aria-labelledby="h-anchor">
-    <h2 id="h-anchor" class="mt-0">2. Choose an anchor</h2>
+    <h2 id="h-anchor">2. Choose an anchor</h2>
     <div class="chips" id="anchors" role="radiogroup" aria-label="Anchor"></div>
   </section>
 
+  <!-- Step 3: Fragments -->
   <section class="card" aria-labelledby="h-grow">
-    <h2 id="h-grow" class="mt-0">3. Grow the draft</h2>
+    <h2 id="h-grow">3. Grow the draft</h2>
     <div id="fragments"></div>
   </section>
 
+  <!-- Step 4: Caption -->
   <section class="card" aria-labelledby="h-cap">
-    <h2 id="h-cap" class="mt-0">4. Paste your caption</h2>
+    <h2 id="h-cap">4. Paste your caption</h2>
     <textarea id="caption" placeholder="Write or paste your post caption..."></textarea>
     <ul class="spot" id="spotter"></ul>
   </section>
 
+  <!-- Breakdown -->
   <section class="card green" aria-labelledby="h-break">
-    <h2 id="h-break" class="mt-0">Resonance breakdown</h2>
+    <h2 id="h-break">Resonance breakdown</h2>
     <div id="breakdown"></div>
   </section>
 
+  <!-- Optimised pose / suggestions -->
   <section class="card" aria-labelledby="h-tips">
-    <h2 id="h-tips" class="mt-0">Optimised pose</h2>
+    <h2 id="h-tips">Optimised pose</h2>
     <ul id="tips" class="spot"></ul>
+    <button id="copyBtn" class="copy-btn">Copy result</button>
   </section>
 
-  <p class="muted" style="font-size:.8rem; text-align: center; margin-top: var(--s5);">
-    A concept piece exploring Story-Activity Relationships.<br/> Not an official BioSolveIT product.
+  <!-- Compare mode -->
+  <section class="card blue" aria-labelledby="h-compare">
+    <h2 id="h-compare">Compare audiences</h2>
+    <button id="compareToggle" class="copy-btn" style="margin-top:0;margin-bottom:12px;background:var(--blue)">Compare all audiences</button>
+    <div id="compareGrid" class="compare-grid" style="display:none"></div>
+  </section>
+
+  <p class="muted" style="font-size:.8rem">
+    A concept piece exploring Story-Activity Relationships. Not an official BioSolveIT product.
   </p>
 </main>
 
 <div class="scorebar" role="status" aria-live="polite">
   <span class="num" id="scoreNum">40</span>
   <div class="bar"><div class="fill" id="scoreFill"></div></div>
-  <span id="scoreLabel" class="muted">Binds, can improve</span>
+  <span id="scoreLabel" class="label-text">Binds, can improve</span>
 </div>
 
 <script type="module" src="main.js"></script>

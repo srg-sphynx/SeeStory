@@ -1,3 +1,5 @@
+/* ── data.js ── audiences, fragments, lexicon (ES module) ── */
+
 export const AUDIENCES = {
   genz: {
     label: "Gen Z chemist",
@@ -59,11 +61,6 @@ export const HYPE_WORDS = [
   "skyrocket","mind-blowing","ultimate"
 ];
 
-export const JARGON_WORDS = [
-  "utilize", "leverage", "paradigm", "synergistic", "holistic", "bandwidth",
-  "ideate", "onboard", "scalable", "proactive"
-];
-
 export const DRIVER_RULES = {
   shortSentenceMax: 15,
   rewardNumbers: true,
@@ -75,3 +72,35 @@ export const STOPPER_RULES = {
   emDash: true,
   shouting: true
 };
+
+/* ── Preset gallery examples ── */
+export const PRESETS = [
+  {
+    title: "The Data Post",
+    audience: "pi",
+    anchor: "a_result",
+    fragments: ["f_number", "f_oneidea", "f_nohype"],
+    caption: "We screened 2.4 million compounds in 48 hours. 37 hits confirmed in dose-response. No GPU required."
+  },
+  {
+    title: "The Visual Hook",
+    audience: "genz",
+    anchor: "a_visual",
+    fragments: ["f_short", "f_face", "f_reply"],
+    caption: "Watch the molecule dock in real time. What target would you try next?"
+  },
+  {
+    title: "The Community Play",
+    audience: "genalpha",
+    anchor: "a_invite",
+    fragments: ["f_human", "f_cta", "f_takeover", "f_share"],
+    caption: "Bring your target to our next live screen. Join the stream and see if your molecule binds."
+  },
+  {
+    title: "The Hype Trap",
+    audience: "pharma",
+    anchor: "a_story",
+    fragments: ["f_plain"],
+    caption: "Our revolutionary, game-changing platform leverages cutting-edge AI to deliver unprecedented results in drug discovery -- a true paradigm shift."
+  }
+];
