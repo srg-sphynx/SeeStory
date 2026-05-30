@@ -84,14 +84,21 @@ export function initGlossary(){
   });
 }
 
-/* ── Build audience picker ── */
+/* ── Build audience picker (Dropdown) ── */
 export function buildAudience(){
-  const el = $("audience");
-  if(!el) return;
-  el.innerHTML = "";
+  const trigger = $("audienceTrigger");
+  const labelEl = $("audienceTriggerLabel");
+  const blurbEl = $("audienceTriggerBlurb");
+  const menu = $("audience");
+  if(!trigger || !menu) return;
+
+  // Populate menu
+  menu.innerHTML = "";
   Object.entries(AUDIENCES).forEach(([key, a]) => {
     const btn = document.createElement("button");
-    btn.setAttribute("aria-pressed", key === state.audienceKey);
+    btn.className = "dropdown-item";
+    btn.setAttribute("role", "option");
+    btn.setAttribute("aria-selected", key === state.audienceKey);
     btn.dataset.key = key;
 
     const label = document.createElement("span");
@@ -104,20 +111,70 @@ export function buildAudience(){
 
     btn.appendChild(label);
     btn.appendChild(blurb);
+    
     btn.onclick = () => {
       state.audienceKey = key;
+      closeDropdown();
       refreshAudienceButtons();
       render();
     };
-    el.appendChild(btn);
+    menu.appendChild(btn);
   });
+
+  // Toggle logic
+  function toggleDropdown(e) {
+    e.stopPropagation();
+    const expanded = trigger.getAttribute("aria-expanded") === "true";
+    if (expanded) {
+      closeDropdown();
+    } else {
+      openDropdown();
+    }
+  }
+
+  function openDropdown() {
+    trigger.setAttribute("aria-expanded", "true");
+    menu.classList.add("open");
+  }
+
+  function closeDropdown() {
+    trigger.setAttribute("aria-expanded", "false");
+    menu.classList.remove("open");
+  }
+
+  trigger.onclick = toggleDropdown;
+
+  // Click outside to close
+  document.addEventListener("click", (e) => {
+    if (!trigger.contains(e.target) && !menu.contains(e.target)) {
+      closeDropdown();
+    }
+  });
+
+  // Initialize trigger label
+  refreshAudienceButtons();
 }
 
 function refreshAudienceButtons(){
-  const btns = document.querySelectorAll("#audience button");
+  const btns = document.querySelectorAll("#audience .dropdown-item");
   btns.forEach(b => {
-    b.setAttribute("aria-pressed", b.dataset.key === state.audienceKey);
+    b.setAttribute("aria-selected", b.dataset.key === state.audienceKey);
   });
+  
+  // Update trigger UI
+  const labelEl = $("audienceTriggerLabel");
+  const blurbEl = $("audienceTriggerBlurb");
+  if (labelEl && blurbEl) {
+    if (state.audienceKey && AUDIENCES[state.audienceKey]) {
+      labelEl.textContent = AUDIENCES[state.audienceKey].label;
+      blurbEl.textContent = AUDIENCES[state.audienceKey].blurb;
+      $("audienceDropdown").classList.add("has-selection");
+    } else {
+      labelEl.textContent = "Select audience...";
+      blurbEl.textContent = "";
+      $("audienceDropdown").classList.remove("has-selection");
+    }
+  }
 }
 
 /* ── Build checklist ── */
@@ -127,15 +184,19 @@ export function buildChecklist(){
   el.innerHTML = "";
   CHECKLIST.forEach(item => {
     const label = document.createElement("label");
-    label.className = "check-item";
+    label.className = "check-card"; // new class for styling
 
     const cb = document.createElement("input");
     cb.type = "checkbox";
+    cb.className = "toggle-input";
     cb.checked = !!state.checklist[item.id];
     cb.onchange = () => {
       state.checklist[item.id] = cb.checked;
       render();
     };
+
+    const toggleSwitch = document.createElement("span");
+    toggleSwitch.className = "toggle-switch";
 
     const txt = document.createElement("span");
     txt.className = "check-text";
@@ -150,7 +211,9 @@ export function buildChecklist(){
 
     txt.appendChild(main);
     txt.appendChild(help);
+    
     label.appendChild(cb);
+    label.appendChild(toggleSwitch);
     label.appendChild(txt);
     el.appendChild(label);
   });

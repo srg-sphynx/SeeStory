@@ -36,7 +36,16 @@
   <section class="card blue" aria-labelledby="h-aud">
     <h2 id="h-aud">1. Pick who it is for</h2>
     <p class="step-desc">Pick the one group you are writing for. The tool changes what it rewards based on this choice. You can switch it any time to see how the same draft scores for a different reader.</p>
-    <div class="seg" id="audience" role="group" aria-label="Audience"></div>
+    <div class="custom-dropdown" id="audienceDropdown">
+      <button class="dropdown-trigger" id="audienceTrigger" aria-haspopup="listbox" aria-expanded="false">
+        <div class="trigger-content">
+          <span class="aud-label" id="audienceTriggerLabel">Select audience...</span>
+          <span class="aud-blurb" id="audienceTriggerBlurb"></span>
+        </div>
+        <span class="dropdown-arrow">&#9662;</span>
+      </button>
+      <div class="dropdown-menu" id="audience" role="listbox" aria-label="Audience"></div>
+    </div>
   </section>
 
   <!-- Step 2: Caption -->
