@@ -84,19 +84,52 @@ export function initGlossary(){
   });
 }
 
-/* ── Build audience picker (Dropdown) ── */
+/* ── Persona Guide toggle ── */
+export function initPersonaGuide(){
+  const btn = $("personaToggle");
+  const body = $("personaBody");
+  const list = $("personaList");
+  if(!btn || !body || !list) return;
+  
+  // Populate
+  list.innerHTML = "";
+  import('./data.js').then(({ PERSONAS }) => {
+    PERSONAS.forEach(p => {
+      const el = document.createElement("div");
+      el.className = "persona-item";
+      
+      const title = document.createElement("div");
+      title.className = "persona-title";
+      title.textContent = p.name;
+      
+      const desc = document.createElement("div");
+      desc.className = "persona-desc";
+      desc.textContent = p.desc;
+      
+      el.appendChild(title);
+      el.appendChild(desc);
+      list.appendChild(el);
+    });
+  });
+
+  // Toggle
+  btn.addEventListener("click", () => {
+    const expanded = btn.getAttribute("aria-expanded") === "true";
+    btn.setAttribute("aria-expanded", !expanded);
+    body.classList.toggle("open", !expanded);
+  });
+}
+
+/* ── Build audience picker (Grid) ── */
 export function buildAudience(){
-  const trigger = $("audienceTrigger");
-  const labelEl = $("audienceTriggerLabel");
-  const blurbEl = $("audienceTriggerBlurb");
   const menu = $("audience");
-  if(!trigger || !menu) return;
+  if(!menu) return;
 
   // Populate menu
   menu.innerHTML = "";
   Object.entries(AUDIENCES).forEach(([key, a]) => {
     const btn = document.createElement("button");
-    btn.className = "dropdown-item";
+    btn.className = "aud-card";
     btn.setAttribute("role", "option");
     btn.setAttribute("aria-selected", key === state.audienceKey);
     btn.dataset.key = key;
@@ -114,41 +147,10 @@ export function buildAudience(){
     
     btn.onclick = () => {
       state.audienceKey = key;
-      closeDropdown();
       refreshAudienceButtons();
       render();
     };
     menu.appendChild(btn);
-  });
-
-  // Toggle logic
-  function toggleDropdown(e) {
-    e.stopPropagation();
-    const expanded = trigger.getAttribute("aria-expanded") === "true";
-    if (expanded) {
-      closeDropdown();
-    } else {
-      openDropdown();
-    }
-  }
-
-  function openDropdown() {
-    trigger.setAttribute("aria-expanded", "true");
-    menu.classList.add("open");
-  }
-
-  function closeDropdown() {
-    trigger.setAttribute("aria-expanded", "false");
-    menu.classList.remove("open");
-  }
-
-  trigger.onclick = toggleDropdown;
-
-  // Click outside to close
-  document.addEventListener("click", (e) => {
-    if (!trigger.contains(e.target) && !menu.contains(e.target)) {
-      closeDropdown();
-    }
   });
 
   // Initialize trigger label
@@ -156,25 +158,10 @@ export function buildAudience(){
 }
 
 function refreshAudienceButtons(){
-  const btns = document.querySelectorAll("#audience .dropdown-item");
+  const btns = document.querySelectorAll("#audience .aud-card");
   btns.forEach(b => {
     b.setAttribute("aria-selected", b.dataset.key === state.audienceKey);
   });
-  
-  // Update trigger UI
-  const labelEl = $("audienceTriggerLabel");
-  const blurbEl = $("audienceTriggerBlurb");
-  if (labelEl && blurbEl) {
-    if (state.audienceKey && AUDIENCES[state.audienceKey]) {
-      labelEl.textContent = AUDIENCES[state.audienceKey].label;
-      blurbEl.textContent = AUDIENCES[state.audienceKey].blurb;
-      $("audienceDropdown").classList.add("has-selection");
-    } else {
-      labelEl.textContent = "Select audience...";
-      blurbEl.textContent = "";
-      $("audienceDropdown").classList.remove("has-selection");
-    }
-  }
 }
 
 /* ── Build checklist ── */

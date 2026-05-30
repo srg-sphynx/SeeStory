@@ -3,31 +3,31 @@
 export const AUDIENCES = {
   genz: {
     label: "Gen Z chemist",
-    blurb: "Early-career. Scrolls short video, learns in communities.",
+    blurb: "Entering the workforce. Scrolls short video, learns in communities like Reddit. Values a human voice.",
     weights: { clarity:0.25, trust:0.20, substance:0.15, fit:0.40 },
     wants: { video:0.30, visual:0.20, humanVoice:0.20, communityHook:0.15, plainSummary:0.15 }
   },
   genalpha: {
     label: "Gen Alpha student",
-    blurb: "School or first-year. Playful and visual. Formality loses.",
+    blurb: "High school or early undergrad. Highly visual and interactive. Formal tone actively repels them.",
     weights: { clarity:0.25, trust:0.15, substance:0.10, fit:0.50 },
     wants: { video:0.35, visual:0.30, communityHook:0.20, humanVoice:0.15 }
   },
   pi: {
     label: "Research group leader",
-    blurb: "Wants precision and proof. Hype is a turn-off.",
+    blurb: "Time-poor and analytical. Wants precision, numbers, and sources. Hype is a massive turn-off.",
     weights: { clarity:0.20, trust:0.25, substance:0.35, fit:0.20 },
     wants: { number:0.35, source:0.30, plainSummary:0.20, cta:0.15 }
   },
   pharma: {
     label: "Pharma decision-maker",
-    blurb: "Wants concrete value and reliability. No vagueness.",
+    blurb: "Focused on ROI and reliability. Wants concrete value, clear numbers, and a direct next step.",
     weights: { clarity:0.20, trust:0.25, substance:0.30, fit:0.25 },
     wants: { number:0.35, source:0.25, cta:0.20, plainSummary:0.20 }
   },
   peer: {
     label: "Peer scientist",
-    blurb: "A general technical reader. Clear, useful, no fluff.",
+    blurb: "Your everyday colleague. A general technical reader looking for clear, reproducible facts without fluff.",
     weights: { clarity:0.25, trust:0.20, substance:0.30, fit:0.25 },
     wants: { number:0.30, source:0.25, visual:0.20, cta:0.15, plainSummary:0.10 }
   }
@@ -162,4 +162,12 @@ export const PRESETS = [
     caption: "We screened 2.4 million compounds in 48 hours. 37 hits confirmed in dose-response.",
     checklist: { source: true, resultData: true }
   }
+];
+
+export const PERSONAS = [
+  { name: "Gen Z Chemist", desc: "Entering the workforce or completing grad school. They consume science through short-form video and community threads (like Reddit/Discord). They value authenticity and a 'human voice' over corporate polish." },
+  { name: "Gen Alpha Student", desc: "Currently in high school or early undergrad. Highly visual and interactive. Traditional academic formality actively repels them. They want to see the science in action, playfully." },
+  { name: "Research Group Leader (PI)", desc: "Time-poor and highly analytical. They are immediately skeptical of marketing buzzwords (hype). They scan for concrete numbers, data points, and links to peer-reviewed sources." },
+  { name: "Pharma Decision-Maker", desc: "Focused on ROI, efficiency, and reliability. They have no patience for vagueness. They want to know exactly what the result is and what the next step (CTA) should be." },
+  { name: "Peer Scientist", desc: "Your everyday colleague. They want clear, reproducible facts without the fluff. They appreciate standard visuals (charts, structures) and straightforward summaries." }
 ];

@@ -36,16 +36,7 @@
   <section class="card blue" aria-labelledby="h-aud">
     <h2 id="h-aud">1. Pick who it is for</h2>
     <p class="step-desc">Pick the one group you are writing for. The tool changes what it rewards based on this choice. You can switch it any time to see how the same draft scores for a different reader.</p>
-    <div class="custom-dropdown" id="audienceDropdown">
-      <button class="dropdown-trigger" id="audienceTrigger" aria-haspopup="listbox" aria-expanded="false">
-        <div class="trigger-content">
-          <span class="aud-label" id="audienceTriggerLabel">Select audience...</span>
-          <span class="aud-blurb" id="audienceTriggerBlurb"></span>
-        </div>
-        <span class="dropdown-arrow">&#9662;</span>
-      </button>
-      <div class="dropdown-menu" id="audience" role="listbox" aria-label="Audience"></div>
-    </div>
+    <div class="aud-grid" id="audience" role="group" aria-label="Audience"></div>
   </section>
 
   <!-- Step 2: Caption -->
@@ -110,6 +101,15 @@
         <tr><td>Substance</td><td>Scoring with HYDE</td><td>Concrete contributions you can point to.</td></tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- Persona Deep Dive -->
+  <button id="personaToggle" class="guide-toggle glossary-toggle" aria-expanded="false" aria-controls="personaBody">
+    <span class="arrow">&#9654;</span> Audience Personas: The Research
+  </button>
+  <div id="personaBody" class="guide-body glossary-body" role="region" aria-labelledby="personaToggle">
+    <p>A breakdown of the research behind each target audience.</p>
+    <div id="personaList" class="persona-list"></div>
   </div>
 
   <!-- Disclaimer -->

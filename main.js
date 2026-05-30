@@ -3,7 +3,7 @@
 import {
   readHash, loadDraft,
   buildAudience, buildChecklist, buildPresets,
-  initGuide, initGlossary, initCopyButton,
+  initGuide, initGlossary, initPersonaGuide, initCopyButton,
   wireCaption, wireCompare,
   render, state
 } from './ui.js';
@@ -22,6 +22,7 @@ function init(){
   wireCaption();
   initGuide();
   initGlossary();
+  initPersonaGuide();
   initCopyButton();
   wireCompare();
 
