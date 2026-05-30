@@ -25,12 +25,7 @@ function debounce(fn, ms){
   };
 }
 
-/** XSS-safe: escapes HTML entities. */
-function esc(str){
-  const d = document.createElement("div");
-  d.textContent = str;
-  return d.innerHTML;
-}
+
 
 /** Detect prefers-reduced-motion. */
 const reducedMotion = typeof window !== "undefined"
@@ -462,9 +457,7 @@ export function render(){
       valSpan.className = "signal-val";
       valSpan.textContent = Math.round(val);
 
-      const msgSpan = document.createElement("span");
-      msgSpan.className = "signal-msg";
-      msgSpan.textContent = msg;
+
 
       row.appendChild(lbl);
       row.appendChild(barWrap);
