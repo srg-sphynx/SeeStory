@@ -230,6 +230,40 @@ textarea:focus{
 .check-help{font-size:.78rem;color:var(--muted);}
 .toggle-input:checked ~ .check-text .check-label{color:var(--green);}
 
+.check-edu-btn {
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: var(--s1) 0;
+  margin-top: var(--s1);
+  cursor: pointer;
+  text-align: left;
+  display: inline-block;
+  transition: color 0.15s ease;
+}
+.check-edu-btn:hover {
+  color: var(--green);
+}
+.check-edu-content {
+  display: none;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.45;
+  margin-top: var(--s2);
+  padding-top: var(--s2);
+  border-top: 1px dashed var(--line);
+}
+.check-edu-content.open {
+  display: block;
+}
+.check-edu-content strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
 /* ── Score ring (desktop) ── */
 .score-ring-area{
   display:flex;align-items:center;gap:var(--s5);

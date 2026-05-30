@@ -34,13 +34,55 @@ export const AUDIENCES = {
 };
 
 export const CHECKLIST = [
-  { id:"visual",        label:"Has an image or graphic",   help:"A figure, chart, or photo." },
-  { id:"video",         label:"Has short-form video",      help:"A reel or short clip." },
-  { id:"humanVoice",    label:"Shows a real person",       help:"A face or named voice, not a logo." },
-  { id:"communityHook", label:"Invites people in",         help:"Tags someone, asks for replies, or invites collaboration." },
-  { id:"plainSummary",  label:"Has a plain-language line", help:"One sentence a non-expert would understand." },
-  { id:"source",        label:"Links or names a source",   help:"A paper, a dataset, or a page to verify." },
-  { id:"resultData",    label:"Includes a result or data", help:"A specific outcome or measurement, even without a number in the text." }
+  { 
+    id: "visual", 
+    label: "Has an image or graphic", 
+    help: "A figure, chart, or photo.",
+    what: "A high-resolution figure, experimental diagram, molecular structure, dataset chart, or high-impact photograph.",
+    why: "Future audiences consume content visually. A static wall of text is immediately ignored. A clean graphic acts as the visual 'hook' that earns the initial 3-second glance in digital feeds."
+  },
+  { 
+    id: "video", 
+    label: "Has short-form video", 
+    help: "A reel or short clip.",
+    what: "A short 15-60 second video clip (e.g., screen recording of a software UI, lab experiment time-lapse, or a quick explanation of a paper).",
+    why: "Video is the dominant medium of the future. Gen Z chemists and Gen Alpha students learn primarily through video. It conveys high-density technical concepts faster than text."
+  },
+  { 
+    id: "humanVoice", 
+    label: "Shows a real person", 
+    help: "A face or named voice, not a logo.",
+    what: "A visible human face on screen, a named author speaking in the first person, or a raw voiceover from a real researcher—not a faceless brand or institutional logo.",
+    why: "Authenticity is the ultimate credibility metric for future science. People follow other people, not corporate logos. Showing a real person builds immediate trust and emotional connection."
+  },
+  { 
+    id: "communityHook", 
+    label: "Invites people in", 
+    help: "Tags someone, asks for replies, or invites collaboration.",
+    what: "Directly tagging active collaborators, asking an open-ended question to spark debate, or inviting contributions to an open-source repository.",
+    why: "Future scientific learning is collaborative. Content that treats readers as co-discoverers rather than passive audiences generates organic discussion and builds lasting professional networks."
+  },
+  { 
+    id: "plainSummary", 
+    label: "Has a plain-language line", 
+    help: "One sentence a non-expert would understand.",
+    what: "A single, jargon-free sentence summarizing the core scientific breakthrough so that an intelligent non-expert can immediately grasp its meaning.",
+    why: "Cross-disciplinary collaboration is expanding rapidly. Even expert PIs often appreciate a plain summary before committing to read deep technical jargon. It makes science accessible and highly shareable."
+  },
+  { 
+    id: "source", 
+    label: "Links or names a source", 
+    help: "A paper, a dataset, or a page to verify.",
+    what: "Including a DOI, a hyperlink to a peer-reviewed publication, a GitHub repository link, or an open-source dataset reference.",
+    why: "With the rise of AI-generated content, verification is critical. Analytical decision-makers (PIs, Pharma Executives, Peers) demand a clear pathway to verify your assertions before citing or sharing."
+  },
+  { 
+    id: "resultData", 
+    label: "Includes a result or data", 
+    help: "A specific outcome or measurement, even without a number in the text.",
+    what: "Explicitly detailing a specific, concrete outcome, measurement, or discovery in the checklist—even if the raw text draft is written as a summary.",
+    why: "Opinion pieces and vague announcements hold zero scientific value. Future readers expect data-first messaging that answers 'What actually changed?' and 'By how much?' immediately."
+  }
 ];
 
 export const HYPE_WORDS = [
@@ -71,15 +113,15 @@ export const SIGNAL_LABEL = { clarity:"Clarity", trust:"Trust", substance:"Subst
 
 export const COPY = {
   title: "SeeSTORY",
-  tagline: "Paste a draft, pick your audience, get a score and the one fix that helps most.",
+  tagline: "Evaluate scientific communication for future medium resonance and pocket fit.",
   howToToggle: "How it works",
   step1: "1. Pick who it is for",
   step2: "2. Paste your draft",
-  step3: "3. Tick what your draft includes",
-  step1desc: "Pick the one group you are writing for. The tool changes what it rewards based on this choice. You can switch it any time to see how the same draft scores for a different reader.",
-  step2desc: "Paste the real words you plan to send or post, not a description of them. The tool reads as you type. It reads words only, so visuals go in Step 3.",
-  step3desc: "Tick what is true. The tool already finds numbers and calls to action on its own. Be honest, since a box you did not include gives a score you cannot trust.",
-  resultDesc: "The score and the one highest-impact fix update on every change. Apply the fix, look again, and stop at green. The score is guidance, never a gate.",
+  step3: "3. Specify your rich-media plans",
+  step1desc: "Select the future audience you want to connect with. Future readers have highly specialized medium preferences.",
+  step2desc: "Enter the core text of your communication. The engine measures its structural clarity and analytical trust indicators.",
+  step3desc: "Specify the rich-media formats you plan to include. Future communication relies heavily on visuals, video, and personal authenticity.",
+  resultDesc: "See how well your message aligns with future scientific medium standards. Improve your resonance score to maximize impact.",
   captionPlaceholder: "Write or paste your post, email, or caption here...",
   scoreLabel: "Resonance score",
   topFixLabel: "Top fix",

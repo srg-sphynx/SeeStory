@@ -222,8 +222,43 @@ export function buildChecklist(){
     help.className = "check-help";
     help.textContent = item.help;
 
+    const eduBtn = document.createElement("button");
+    eduBtn.type = "button";
+    eduBtn.className = "check-edu-btn";
+    eduBtn.textContent = "Learn why this matters for the future ▾";
+    
+    const eduContent = document.createElement("span");
+    eduContent.className = "check-edu-content";
+    
+    const whatStrong = document.createElement("strong");
+    whatStrong.textContent = "What it means: ";
+    const whatText = document.createTextNode(item.what + " ");
+    
+    const br = document.createElement("br");
+    
+    const whyStrong = document.createElement("strong");
+    whyStrong.textContent = "Future Value: ";
+    const whyText = document.createTextNode(item.why);
+    
+    eduContent.appendChild(whatStrong);
+    eduContent.appendChild(whatText);
+    eduContent.appendChild(br);
+    eduContent.appendChild(whyStrong);
+    eduContent.appendChild(whyText);
+    
+    eduBtn.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const expanded = eduBtn.getAttribute("aria-expanded") === "true";
+      eduBtn.setAttribute("aria-expanded", !expanded ? "true" : "false");
+      eduBtn.textContent = !expanded ? "Hide educational details ▴" : "Learn why this matters for the future ▾";
+      eduContent.classList.toggle("open", !expanded);
+    };
+
     txt.appendChild(main);
     txt.appendChild(help);
+    txt.appendChild(eduBtn);
+    txt.appendChild(eduContent);
     
     label.appendChild(cb);
     label.appendChild(toggleSwitch);
