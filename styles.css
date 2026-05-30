@@ -1,14 +1,14 @@
 /* Font definitions */
-@font-face { font-family: 'BioSans'; src: url('Font/BioSans 1.ttf') format('truetype'); font-weight: 400; font-style: normal; }
-@font-face { font-family: 'BioSans'; src: url('Font/BioSans-Italic 1.ttf') format('truetype'); font-weight: 400; font-style: italic; }
-@font-face { font-family: 'BioSans'; src: url('Font/BioSans-Light 1.ttf') format('truetype'); font-weight: 300; font-style: normal; }
-@font-face { font-family: 'BioSans'; src: url('Font/BioSans-LightItalic 1.ttf') format('truetype'); font-weight: 300; font-style: italic; }
-@font-face { font-family: 'BioSans'; src: url('Font/BioSans-Semibold 1.ttf') format('truetype'); font-weight: 600; font-style: normal; }
-@font-face { font-family: 'BioSans'; src: url('Font/BioSans-SemiboldItalic 1.ttf') format('truetype'); font-weight: 600; font-style: italic; }
-@font-face { font-family: 'BioSans'; src: url('Font/BioSans-Bold 1.ttf') format('truetype'); font-weight: 700; font-style: normal; }
-@font-face { font-family: 'BioSans'; src: url('Font/BioSans-BoldItalic 1.ttf') format('truetype'); font-weight: 700; font-style: italic; }
-@font-face { font-family: 'BioSans'; src: url('Font/BioSans-Extrabold 1.ttf') format('truetype'); font-weight: 800; font-style: normal; }
-@font-face { font-family: 'BioSans'; src: url('Font/BioSans-ExtraboldItalic 1.ttf') format('truetype'); font-weight: 800; font-style: italic; }
+@font-face { font-family: 'BioSans'; src: url('Font/BioSans%201.ttf') format('truetype'); font-weight: 400; font-style: normal; }
+@font-face { font-family: 'BioSans'; src: url('Font/BioSans-Italic%201.ttf') format('truetype'); font-weight: 400; font-style: italic; }
+@font-face { font-family: 'BioSans'; src: url('Font/BioSans-Light%201.ttf') format('truetype'); font-weight: 300; font-style: normal; }
+@font-face { font-family: 'BioSans'; src: url('Font/BioSans-LightItalic%201.ttf') format('truetype'); font-weight: 300; font-style: italic; }
+@font-face { font-family: 'BioSans'; src: url('Font/BioSans-Semibold%201.ttf') format('truetype'); font-weight: 600; font-style: normal; }
+@font-face { font-family: 'BioSans'; src: url('Font/BioSans-SemiboldItalic%201.ttf') format('truetype'); font-weight: 600; font-style: italic; }
+@font-face { font-family: 'BioSans'; src: url('Font/BioSans-Bold%201.ttf') format('truetype'); font-weight: 700; font-style: normal; }
+@font-face { font-family: 'BioSans'; src: url('Font/BioSans-BoldItalic%201.ttf') format('truetype'); font-weight: 700; font-style: italic; }
+@font-face { font-family: 'BioSans'; src: url('Font/BioSans-Extrabold%201.ttf') format('truetype'); font-weight: 800; font-style: normal; }
+@font-face { font-family: 'BioSans'; src: url('Font/BioSans-ExtraboldItalic%201.ttf') format('truetype'); font-weight: 800; font-style: italic; }
 
 :root{
   /* brand */
