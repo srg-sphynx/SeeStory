@@ -199,16 +199,12 @@ textarea:focus{
   display:flex;align-items:center;gap:var(--s3);
   cursor:pointer;
   padding:var(--s3) var(--s4);
-  border:1.5px solid var(--line);
-  border-radius:var(--radius);
-  background:#fafbfc;
-  transition:all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  background:transparent;
+  border:none;
+  transition:background 0.15s ease;
 }
 .check-card:hover{
-  background:#fff;
-  border-color:var(--blue);
-  box-shadow:var(--shadow-sm);
-  transform:translateX(4px);
+  background:var(--bg);
 }
 .toggle-input{position:absolute;opacity:0;width:0;height:0;}
 .toggle-switch{
@@ -230,38 +226,69 @@ textarea:focus{
 .check-help{font-size:.78rem;color:var(--muted);}
 .toggle-input:checked ~ .check-text .check-label{color:var(--green);}
 
+/* Wrapper that groups label + edu content */
+.check-card-wrap {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.check-card-wrap:hover {
+  border-color: var(--blue);
+  box-shadow: var(--shadow-sm);
+}
+
 .check-edu-btn {
+  display: block;
+  width: 100%;
   background: none;
   border: none;
+  border-top: 1px dashed var(--line);
   color: var(--blue);
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: 700;
-  padding: var(--s1) 0;
-  margin-top: var(--s1);
+  padding: var(--s2) var(--s4);
   cursor: pointer;
   text-align: left;
-  display: inline-block;
-  transition: color 0.15s ease;
+  transition: color 0.15s ease, background 0.15s ease;
 }
 .check-edu-btn:hover {
   color: var(--green);
+  background: var(--blue-soft);
 }
 .check-edu-content {
   display: none;
-  font-size: 0.78rem;
-  color: var(--muted);
-  line-height: 1.45;
-  margin-top: var(--s2);
-  padding-top: var(--s2);
-  border-top: 1px dashed var(--line);
+  padding: 0 var(--s4) var(--s4);
 }
 .check-edu-content.open {
   display: block;
 }
-.check-edu-content strong {
-  color: var(--ink);
-  font-weight: 700;
+.edu-block {
+  margin-top: var(--s3);
+}
+.edu-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--blue);
+  background: var(--blue-soft);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: var(--s1);
+}
+.edu-label.why {
+  color: var(--green);
+  background: var(--green-soft);
+}
+.edu-body {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: var(--s1) 0 0;
 }
 
 /* ── Score ring (desktop) ── */

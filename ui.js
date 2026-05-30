@@ -196,6 +196,10 @@ export function buildChecklist(){
   if(!el) return;
   el.innerHTML = "";
   CHECKLIST.forEach(item => {
+    // Wrapper div holds label + edu content as siblings
+    const wrapper = document.createElement("div");
+    wrapper.className = "check-card-wrap";
+
     const label = document.createElement("label");
     label.className = "check-card";
 
@@ -222,48 +226,59 @@ export function buildChecklist(){
     help.className = "check-help";
     help.textContent = item.help;
 
-    const eduBtn = document.createElement("button");
-    eduBtn.type = "button";
-    eduBtn.className = "check-edu-btn";
-    eduBtn.textContent = "Learn why this matters for the future ▾";
-    
-    const eduContent = document.createElement("span");
-    eduContent.className = "check-edu-content";
-    
-    const whatStrong = document.createElement("strong");
-    whatStrong.textContent = "What it means: ";
-    const whatText = document.createTextNode(item.what + " ");
-    
-    const br = document.createElement("br");
-    
-    const whyStrong = document.createElement("strong");
-    whyStrong.textContent = "Future Value: ";
-    const whyText = document.createTextNode(item.why);
-    
-    eduContent.appendChild(whatStrong);
-    eduContent.appendChild(whatText);
-    eduContent.appendChild(br);
-    eduContent.appendChild(whyStrong);
-    eduContent.appendChild(whyText);
-    
-    eduBtn.onclick = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const expanded = eduBtn.getAttribute("aria-expanded") === "true";
-      eduBtn.setAttribute("aria-expanded", !expanded ? "true" : "false");
-      eduBtn.textContent = !expanded ? "Hide educational details ▴" : "Learn why this matters for the future ▾";
-      eduContent.classList.toggle("open", !expanded);
-    };
-
     txt.appendChild(main);
     txt.appendChild(help);
-    txt.appendChild(eduBtn);
-    txt.appendChild(eduContent);
     
     label.appendChild(cb);
     label.appendChild(toggleSwitch);
     label.appendChild(txt);
-    el.appendChild(label);
+    wrapper.appendChild(label);
+
+    // Education toggle — OUTSIDE the label to prevent checkbox interference
+    const eduBtn = document.createElement("button");
+    eduBtn.type = "button";
+    eduBtn.className = "check-edu-btn";
+    eduBtn.textContent = "Learn more about this content type ▾";
+    eduBtn.setAttribute("aria-expanded", "false");
+    
+    const eduContent = document.createElement("div");
+    eduContent.className = "check-edu-content";
+    
+    const whatBlock = document.createElement("div");
+    whatBlock.className = "edu-block";
+    const whatLabel = document.createElement("span");
+    whatLabel.className = "edu-label";
+    whatLabel.textContent = "What this means";
+    const whatBody = document.createElement("p");
+    whatBody.className = "edu-body";
+    whatBody.textContent = item.what;
+    whatBlock.appendChild(whatLabel);
+    whatBlock.appendChild(whatBody);
+    
+    const whyBlock = document.createElement("div");
+    whyBlock.className = "edu-block";
+    const whyLabel = document.createElement("span");
+    whyLabel.className = "edu-label why";
+    whyLabel.textContent = "Why it matters for future audiences";
+    const whyBody = document.createElement("p");
+    whyBody.className = "edu-body";
+    whyBody.textContent = item.why;
+    whyBlock.appendChild(whyLabel);
+    whyBlock.appendChild(whyBody);
+    
+    eduContent.appendChild(whatBlock);
+    eduContent.appendChild(whyBlock);
+    
+    eduBtn.addEventListener("click", () => {
+      const expanded = eduBtn.getAttribute("aria-expanded") === "true";
+      eduBtn.setAttribute("aria-expanded", String(!expanded));
+      eduBtn.textContent = !expanded ? "Hide details ▴" : "Learn more about this content type ▾";
+      eduContent.classList.toggle("open", !expanded);
+    });
+
+    wrapper.appendChild(eduBtn);
+    wrapper.appendChild(eduContent);
+    el.appendChild(wrapper);
   });
 }
 
