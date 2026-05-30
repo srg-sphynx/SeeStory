@@ -712,6 +712,9 @@ textarea:focus{
   .col-result{
     position:sticky;
     top:var(--s5);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    padding-right: 4px;
   }
 
   .aud-grid{grid-template-columns:1fr 1fr 1fr;}
