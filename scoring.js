@@ -15,7 +15,7 @@ export const state = {
 
 /* ── Helpers ── */
 export function splitSentences(text){
-  return text.split(/(?<=[.!?])\s+/).map(s=>s.trim()).filter(Boolean);
+  return text.replace(/([.!?]+)\s+/g, "$1|SPLIT|").split("|SPLIT|").map(s=>s.trim()).filter(Boolean);
 }
 
 function wordCount(s){ return (s.match(/\S+/g) || []).length; }
