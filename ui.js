@@ -1,10 +1,10 @@
-/* ── ui.js ── DOM rendering, state, events (v2) ── */
+/* ── ui.js ── DOM rendering, state, events (v2, responsive) ── */
 
 import {
   AUDIENCES, CHECKLIST, COPY, SIGNALS, SIGNAL_LABEL, SIGNAL_MSG,
   PRESETS, GLOSSARY, FIT_FIX, PERSONAS
 } from './data.js';
-import { scoreDraft, getBand, getSignalBand } from './scoring.js';
+import { scoreDraft, getBand, getSignalBand, splitSentences } from './scoring.js';
 
 /* ── Shared app state ── */
 export const state = {
@@ -24,8 +24,6 @@ function debounce(fn, ms){
     timer = setTimeout(() => fn(...args), ms);
   };
 }
-
-
 
 /** Detect prefers-reduced-motion. */
 const reducedMotion = typeof window !== "undefined"
@@ -86,35 +84,28 @@ export function initPersonaGuide(){
   const list = $("personaList");
   if(!btn || !body || !list) return;
   
-  // Populate
   list.innerHTML = "";
   PERSONAS.forEach(p => {
     const el = document.createElement("div");
     el.className = "persona-item";
     
-    // Header row: icon + name + age
     const header = document.createElement("div");
     header.className = "persona-header";
-    
     const icon = document.createElement("span");
     icon.className = "persona-icon";
     icon.textContent = p.icon;
-    
     const nameAge = document.createElement("span");
     nameAge.className = "persona-name";
     nameAge.textContent = p.name + (p.age ? " (" + p.age + ")" : "");
-    
     header.appendChild(icon);
     header.appendChild(nameAge);
     el.appendChild(header);
     
-    // Bio
     const bio = document.createElement("p");
     bio.className = "persona-bio";
     bio.textContent = p.bio;
     el.appendChild(bio);
     
-    // Wants
     if(p.wants && p.wants.length){
       const wantsHead = document.createElement("div");
       wantsHead.className = "persona-sub green";
@@ -130,7 +121,6 @@ export function initPersonaGuide(){
       el.appendChild(wantsList);
     }
     
-    // Repels
     if(p.repels && p.repels.length){
       const repelsHead = document.createElement("div");
       repelsHead.className = "persona-sub red";
@@ -149,7 +139,6 @@ export function initPersonaGuide(){
     list.appendChild(el);
   });
 
-  // Toggle
   btn.addEventListener("click", () => {
     const expanded = btn.getAttribute("aria-expanded") === "true";
     btn.setAttribute("aria-expanded", !expanded);
@@ -165,7 +154,7 @@ export function buildAudience(){
   grid.innerHTML = "";
   Object.entries(AUDIENCES).forEach(([key, a]) => {
     const btn = document.createElement("button");
-    btn.type = "button";  // prevent implicit form submission
+    btn.type = "button";
     btn.className = "aud-card";
     btn.setAttribute("aria-pressed", String(key === state.audienceKey));
     btn.dataset.key = key;
@@ -208,7 +197,7 @@ export function buildChecklist(){
   el.innerHTML = "";
   CHECKLIST.forEach(item => {
     const label = document.createElement("label");
-    label.className = "check-card"; // new class for styling
+    label.className = "check-card";
 
     const cb = document.createElement("input");
     cb.type = "checkbox";
@@ -250,6 +239,7 @@ export function buildPresets(){
   host.innerHTML = "";
   PRESETS.forEach(p => {
     const btn = document.createElement("button");
+    btn.type = "button";
     btn.className = "preset-btn";
 
     const title = document.createElement("div");
@@ -267,7 +257,7 @@ export function buildPresets(){
     btn.appendChild(title);
     btn.appendChild(desc);
     btn.appendChild(preview);
-    btn.onclick = () => loadPreset(p);
+    btn.addEventListener("click", () => loadPreset(p));
     host.appendChild(btn);
   });
 }
@@ -392,6 +382,102 @@ export function initCopyButton(){
   });
 }
 
+/* ── Draft metadata (word/char/sentence count) ── */
+function updateDraftMeta(){
+  const text = state.caption || "";
+  const words = (text.match(/\S+/g) || []);
+  const chars = text.length;
+  const sents = text.trim() ? splitSentences(text).length : 0;
+
+  const wordEl = $("wordCount");
+  const charEl = $("charCount");
+  const sentEl = $("sentCount");
+
+  if(wordEl) wordEl.textContent = words.length + (words.length === 1 ? " word" : " words");
+  if(charEl){
+    charEl.textContent = chars.toLocaleString() + " / 3,000 chars";
+    charEl.classList.toggle("over-limit", chars > 3000);
+  }
+  if(sentEl) sentEl.textContent = sents + (sents === 1 ? " sentence" : " sentences");
+}
+
+/* ── Detection panel ── */
+function paintDetected(r){
+  const area = $("detectedArea");
+  const list = $("detectedList");
+  if(!area || !list) return;
+
+  if(!r || r.empty){
+    area.style.display = "none";
+    return;
+  }
+  area.style.display = "block";
+  list.innerHTML = "";
+
+  const f = r.facts;
+
+  const items = [
+    { icon: "🔢", label: "Numbers in text", found: f.hasNumber, val: f.hasNumber ? "Detected" : "None found" },
+    { icon: "👆", label: "Call to action", found: f.hasCTA, val: f.hasCTA ? "Detected" : "None found" },
+    { icon: "📊", label: "Result or comparison", found: f.hasResultCue, val: f.hasResultCue ? "Detected" : "None found" },
+    { icon: "🚨", label: "Hype words", found: false, warn: f.hypeFound.length > 0, val: f.hypeFound.length > 0 ? f.hypeFound.join(", ") : "Clean" },
+    { icon: "🤔", label: "Hedge phrases", found: false, warn: f.hedgeHits > 0, val: f.hedgeHits > 0 ? (f.hedgeHits + " found") : "Clean" },
+    { icon: "❗", label: "Exclamation marks", found: false, warn: f.exclamations >= 2, val: f.exclamations + " found" },
+    { icon: "—", label: "Em dashes", found: false, warn: f.hasEmDash, val: f.hasEmDash ? "Found" : "None" },
+    { icon: "🔤", label: "ALL CAPS shouting", found: false, warn: f.shouting, val: f.shouting ? "Detected" : "None" },
+  ];
+
+  items.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "detected-row " + (item.warn ? "warn" : (item.found ? "found" : "missing"));
+
+    const iconEl = document.createElement("span");
+    iconEl.className = "detected-icon";
+    iconEl.textContent = item.icon;
+
+    const labelEl = document.createElement("span");
+    labelEl.className = "detected-label";
+    labelEl.textContent = item.label;
+
+    const valEl = document.createElement("span");
+    valEl.className = "detected-val";
+    valEl.textContent = item.val;
+
+    row.appendChild(iconEl);
+    row.appendChild(labelEl);
+    row.appendChild(valEl);
+    list.appendChild(row);
+  });
+}
+
+/* ── Score ring (desktop) ── */
+function paintScoreRing(r){
+  const ringCircle = $("scoreRing");
+  const ringNum = $("scoreRingNum");
+  if(!ringCircle || !ringNum) return;
+
+  const circumference = 2 * Math.PI * 52; // r=52
+
+  if(!r || r.empty){
+    ringCircle.style.strokeDashoffset = circumference;
+    ringCircle.style.stroke = "#eef1f4";
+    ringNum.textContent = "--";
+    ringNum.style.color = "var(--muted)";
+    return;
+  }
+
+  const offset = circumference - (r.score / 100) * circumference;
+  ringCircle.style.strokeDashoffset = offset;
+  ringCircle.style.stroke = r.band.color;
+  
+  if(_prevScore !== null && _prevScore !== r.score){
+    animateNumber(ringNum, _prevScore, r.score, r.band.color);
+  } else {
+    ringNum.textContent = r.score;
+    ringNum.style.color = r.band.color;
+  }
+}
+
 /* ── Main render ── */
 export function render(){
   const audKey = state.audienceKey || "peer";
@@ -410,11 +496,16 @@ export function render(){
   const confNote      = $("confNote");
   const defNote       = $("defNote");
 
+  // Update draft metadata
+  updateDraftMeta();
+
   // empty state
   if(r.empty){
     if(resultArea) resultArea.style.display = "none";
     if(emptyNote){ emptyNote.style.display = "block"; emptyNote.textContent = r.message; }
     paintScoreBar(null);
+    paintScoreRing(null);
+    paintDetected(null);
     return;
   }
 
@@ -457,8 +548,6 @@ export function render(){
       valSpan.className = "signal-val";
       valSpan.textContent = Math.round(val);
 
-
-
       row.appendChild(lbl);
       row.appendChild(barWrap);
       row.appendChild(valSpan);
@@ -492,8 +581,10 @@ export function render(){
     }
   }
 
-  // sticky scorebar
+  // visuals
+  paintScoreRing(r);
   paintScoreBar(r);
+  paintDetected(r);
 
   // compare mode (if visible)
   const compareGrid = $("compareGrid");
@@ -523,7 +614,6 @@ function paintScoreBar(r){
 
   const color = r.band.color;
 
-  // animate number
   if(_prevScore !== null && _prevScore !== r.score){
     animateNumber(numEl, _prevScore, r.score, color);
     if(!reducedMotion.matches){
@@ -568,7 +658,6 @@ export function readHash(){
     }
     return true;
   } catch(e){
-    /* silently ignore bad hash */
     return false;
   }
 }
