@@ -401,6 +401,72 @@ function updateDraftMeta(){
   if(sentEl) sentEl.textContent = sents + (sents === 1 ? " sentence" : " sentences");
 }
 
+/* ── Contextual explanations for detected elements ── */
+function getContextualTip(id, isFoundOrWarn, audienceKey) {
+  const isAcademic = ["pi", "pharma", "peer"].includes(audienceKey || "peer");
+  const ctx = isAcademic ? "academic" : "casual";
+  
+  const mapping = {
+    number: {
+      academic: "Analytical audiences scan for numbers first to verify your claims and check scientific credibility.",
+      casual: "Helps anchor facts, but keep it brief so they do not lose interest.",
+      positive: true
+    },
+    cta: {
+      academic: "Guides busy professionals on the exact next step (e.g., read the paper, test the code).",
+      casual: "Encourages active interaction like tagging, replying, or clicking to build community.",
+      positive: true
+    },
+    result: {
+      academic: "Verifiable outcome terms ('improved', 'reduced', 'outperformed') prove your claim has real substance.",
+      casual: "Helps get the point across quickly in plain language.",
+      positive: true
+    },
+    hype: {
+      academic: "Superlatives ('revolutionary', 'world-class') trigger deep skepticism and damage scientific trust.",
+      casual: "Corporate jargon and hard-sell hype feel fake and out of touch to media-savvy digital natives.",
+      positive: false
+    },
+    hedge: {
+      academic: "Vague terms ('we believe', 'perhaps') dilute authority and make findings sound speculative.",
+      casual: "Weakens your voice. Speak with clear, conversational confidence instead.",
+      positive: false
+    },
+    exclamation: {
+      academic: "Over-excitement is a massive turn-off. It reads as marketing hype rather than objective peer science.",
+      casual: "Too many exclamation marks feel forced or spammy. Keep it clean and natural.",
+      positive: false
+    },
+    emdash: {
+      academic: "Can disrupt the flow for speed-readers. Consider commas or splitting into shorter sentences.",
+      casual: "Fragmented structure hurts readability. Snappy, linear text works best.",
+      positive: false
+    },
+    shout: {
+      academic: "Highly unprofessional. Shouty text has no place in peer reviews or research updates.",
+      casual: "Feels aggressive and jarring. Use bold text or standard casing for emphasis.",
+      positive: false
+    }
+  };
+
+  const item = mapping[id];
+  if (!item) return "";
+
+  if (item.positive) {
+    if (isFoundOrWarn) {
+      return `🎉 **Include:** Good job including this! ${item[ctx]}`;
+    } else {
+      return `💡 **Include:** Recommended here. ${item[ctx]}`;
+    }
+  } else {
+    if (isFoundOrWarn) {
+      return `⚠️ **Avoid:** Try to remove this. ${item[ctx]}`;
+    } else {
+      return `✅ **Avoid:** Nice! Keeping this out helps. ${item[ctx]}`;
+    }
+  }
+}
+
 /* ── Detection panel ── */
 function paintDetected(r){
   const area = $("detectedArea");
@@ -415,19 +481,23 @@ function paintDetected(r){
   list.innerHTML = "";
 
   const f = r.facts;
+  const audienceKey = state.audienceKey || "peer";
 
   const items = [
-    { icon: "🔢", label: "Numbers in text", found: f.hasNumber, val: f.hasNumber ? "Detected" : "None found" },
-    { icon: "👆", label: "Call to action", found: f.hasCTA, val: f.hasCTA ? "Detected" : "None found" },
-    { icon: "📊", label: "Result or comparison", found: f.hasResultCue, val: f.hasResultCue ? "Detected" : "None found" },
-    { icon: "🚨", label: "Hype words", found: false, warn: f.hypeFound.length > 0, val: f.hypeFound.length > 0 ? f.hypeFound.join(", ") : "Clean" },
-    { icon: "🤔", label: "Hedge phrases", found: false, warn: f.hedgeHits > 0, val: f.hedgeHits > 0 ? (f.hedgeHits + " found") : "Clean" },
-    { icon: "❗", label: "Exclamation marks", found: false, warn: f.exclamations >= 2, val: f.exclamations + " found" },
-    { icon: "—", label: "Em dashes", found: false, warn: f.hasEmDash, val: f.hasEmDash ? "Found" : "None" },
-    { icon: "🔤", label: "ALL CAPS shouting", found: false, warn: f.shouting, val: f.shouting ? "Detected" : "None" },
+    { id: "number", icon: "🔢", label: "Numbers in text", found: f.hasNumber, val: f.hasNumber ? "Detected" : "None found" },
+    { id: "cta", icon: "👆", label: "Call to action", found: f.hasCTA, val: f.hasCTA ? "Detected" : "None found" },
+    { id: "result", icon: "📊", label: "Result or comparison", found: f.hasResultCue, val: f.hasResultCue ? "Detected" : "None found" },
+    { id: "hype", icon: "🚨", label: "Hype words", found: false, warn: f.hypeFound.length > 0, val: f.hypeFound.length > 0 ? f.hypeFound.join(", ") : "Clean" },
+    { id: "hedge", icon: "🤔", label: "Hedge phrases", found: false, warn: f.hedgeHits > 0, val: f.hedgeHits > 0 ? (f.hedgeHits + " found") : "Clean" },
+    { id: "exclamation", icon: "❗", label: "Exclamation marks", found: false, warn: f.exclamations >= 2, val: f.exclamations + " found" },
+    { id: "emdash", icon: "—", label: "Em dashes", found: false, warn: f.hasEmDash, val: f.hasEmDash ? "Found" : "None" },
+    { id: "shout", icon: "🔤", label: "ALL CAPS shouting", found: false, warn: f.shouting, val: f.shouting ? "Detected" : "None" },
   ];
 
   items.forEach(item => {
+    const container = document.createElement("div");
+    container.className = "detected-item-container";
+
     const row = document.createElement("div");
     row.className = "detected-row " + (item.warn ? "warn" : (item.found ? "found" : "missing"));
 
@@ -446,7 +516,28 @@ function paintDetected(r){
     row.appendChild(iconEl);
     row.appendChild(labelEl);
     row.appendChild(valEl);
-    list.appendChild(row);
+    container.appendChild(row);
+
+    const expEl = document.createElement("div");
+    expEl.className = "detected-explanation";
+    const text = getContextualTip(item.id, item.found || item.warn, audienceKey);
+    const parts = text.split("**");
+    if(parts.length >= 3){
+      const span1 = document.createElement("span");
+      span1.textContent = parts[0];
+      const strongEl = document.createElement("strong");
+      strongEl.textContent = parts[1];
+      const span2 = document.createElement("span");
+      span2.textContent = parts[2];
+      expEl.appendChild(span1);
+      expEl.appendChild(strongEl);
+      expEl.appendChild(span2);
+    } else {
+      expEl.textContent = text;
+    }
+
+    container.appendChild(expEl);
+    list.appendChild(container);
   });
 }
 
