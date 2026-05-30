@@ -1,138 +1,172 @@
-/* ── scoring.js ── pure scoring functions (ES module) ── */
+/* ── scoring.js ── pure scoring functions (v2, 4-signal model) ── */
 
 import {
-  AUDIENCES, ANCHORS, FRAGMENTS, CLASSES, CLASS_LABEL,
-  HYPE_WORDS, DRIVER_RULES, STOPPER_RULES
+  AUDIENCES, HYPE_WORDS, HEDGE_WORDS, RESULT_CUES,
+  CTA_REGEX, NUMBER_REGEX, EMDASH_REGEX, SHOUT_REGEX,
+  BAND, FIT_FIX, COPY, SIGNALS
 } from './data.js';
 
-/* ── State ── */
-export const state = {
-  audience: "genz",
-  anchor: ANCHORS[0].id,
-  selected: new Set(),
-  caption: ""
-};
-
 /* ── Helpers ── */
+
+/** Cross-browser sentence splitter (no lookbehinds, safe on Safari/iOS). */
 export function splitSentences(text){
   return text.replace(/([.!?]+)\s+/g, "$1|SPLIT|").split("|SPLIT|").map(s=>s.trim()).filter(Boolean);
 }
 
-function wordCount(s){ return (s.match(/\S+/g) || []).length; }
+function getWords(text){ return (text.match(/\S+/g) || []); }
 
-/* ── Text analysis (audience-agnostic per BUILD.md) ── */
-export function analyseText(caption){
-  const drivers = [];
-  const stoppers = [];           // each: {label, snippet}
-  const text = caption.trim();
-  if(!text){ return { drivers, stoppers, points:0 }; }
+function avg(arr){ return arr.length ? arr.reduce((a,b)=>a+b, 0) / arr.length : 0; }
 
-  const sentences = splitSentences(text);
-  const words = wordCount(text);
-  const avgLen = words / Math.max(sentences.length, 1);
+function clamp(n){ return Math.max(0, Math.min(100, n)); }
 
-  let points = 0;
+export function normaliseWeights(w){
+  const sum = w.clarity + w.trust + w.substance + w.fit;
+  if(sum <= 0) return { clarity:0.25, trust:0.25, substance:0.25, fit:0.25 };
+  return {
+    clarity:   w.clarity   / sum,
+    trust:     w.trust     / sum,
+    substance: w.substance / sum,
+    fit:       w.fit       / sum
+  };
+}
 
-  // drivers
-  if(avgLen <= DRIVER_RULES.shortSentenceMax){
-    drivers.push("Short, declarative sentences"); points += 0.30;
+export function getBand(score){
+  return BAND.find(b => score >= b.min);
+}
+
+export function getSignalBand(score){
+  if(score >= 70) return "high";
+  if(score >= 45) return "mid";
+  return "low";
+}
+
+/* ── Fix chooser (section G.4 priority ladder) ── */
+
+export function chooseFix(focus, f, aud){
+  if(focus === "trust"){
+    if(f.hasEmDash) return "Found an em dash. Swap it for a period or a comma.";
+    if(f.hypeFound.length) return `The word "${f.hypeFound[0]}" reads as hype. Replace it with a specific result.`;
+    if(f.shouting) return "All-caps reads as shouting. Make the point quietly.";
+    if(f.exclamations >= 2) return "Ease off the exclamation marks. Let the point carry itself.";
+    if((f.audienceKey==="pi"||f.audienceKey==="pharma") && f.hedgeHits >= 3)
+      return "Lots of hedging. If the data supports it, state it plainly.";
+    return "Tighten the tone. Say it plainly and drop the buzzwords.";
   }
-  if(DRIVER_RULES.rewardNumbers && /\d/.test(text)){
-    drivers.push("Includes a concrete number"); points += 0.20;
+  if(focus === "clarity"){
+    if(f.longSentences > 0) return "One sentence runs long. Split it in two.";
+    if(f.avgSent > 20) return "Sentences are long on average. Aim for short, single-idea lines.";
+    if((f.audienceKey==="genz"||f.audienceKey==="genalpha") && f.longWordShare > 0.15)
+      return "Long words for this audience. Trade a few for everyday ones.";
+    return "Trim for readability. Short sentences land harder.";
   }
-  if(DRIVER_RULES.rewardCTA && /\?|^\s*(try|join|watch|bring|see|download|read)\b/i.test(text)){
-    drivers.push("Has a clear call to action"); points += 0.15;
+  if(focus === "substance"){
+    if(!f.hasNumber && "number" in aud.wants)
+      return `No figure yet. ${aud.label} responds to a concrete number.`;
+    if(!f.present.has("source") && "source" in aud.wants)
+      return `No source. ${aud.label} wants something to verify.`;
+    if(!f.hasResultCue) return "Add a concrete result. What changed, and by how much?";
+    return "Make it more concrete. Numbers and results build trust.";
   }
+  // focus === "fit": highest-weighted missing wanted ingredient
+  const missing = Object.keys(aud.wants)
+    .filter(i => !f.present.has(i))
+    .sort((a,b)=>aud.wants[b]-aud.wants[a])[0];
+  return missing ? FIT_FIX[missing] : "Add what this audience cares about most.";
+}
 
-  // show-stoppers
+/* ── Main scoring function ── */
+
+export function scoreDraft({ audienceKey, caption, checklist }){
+  const aud = AUDIENCES[audienceKey] || AUDIENCES.peer;
+  const text = (caption || "").trim();
+  const w = getWords(text);
+  const usedDefault = !AUDIENCES[audienceKey];
+
+  // ---- empty / very short handling ----
+  if(w.length < 3){
+    return { empty:true, message: COPY.emptyState, usedDefault };
+  }
+  const confidence = w.length < 12 ? "low" : (w.length <= 40 ? "medium" : "high");
+
+  // ---- derived facts ----
+  const sents = splitSentences(text);
+  const avgSent = avg(sents.map(s => getWords(s).length));
+  const longSentences = sents.filter(s => getWords(s).length > 28).length;
   const lower = text.toLowerCase();
-  HYPE_WORDS.forEach(w=>{
-    if(lower.includes(w)){ stoppers.push({label:"Hyperbole", snippet:w}); points -= 0.20; }
-  });
-  if(STOPPER_RULES.emDash && /[—–]/.test(text)){
-    stoppers.push({label:"Em or en dash", snippet:"— or –"}); points -= 0.15;
-  }
-  sentences.forEach(s=>{
-    if(wordCount(s) >= STOPPER_RULES.longSentenceMin){
-      stoppers.push({label:"Run-on sentence", snippet:s.slice(0,40)+"…"}); points -= 0.15;
-    }
-  });
-  if(STOPPER_RULES.shouting){
-    const caps = text.match(/\b[A-Z]{2,}(\s+[A-Z]{2,}){2,}\b/g);
-    if(caps){ stoppers.push({label:"Shouting in caps", snippet:caps[0]}); points -= 0.10; }
-  }
+  const hypeFound = HYPE_WORDS.filter(x => lower.includes(x));
+  const hedgeHits = HEDGE_WORDS.filter(x => lower.includes(x)).length;
+  const exclamations = (text.match(/!/g) || []).length;
+  const hasEmDash = EMDASH_REGEX.test(text);
+  const shouting = SHOUT_REGEX.test(text);
+  const hasNumber = NUMBER_REGEX.test(text);
+  const hasCTA = CTA_REGEX.test(text);
+  const hasResultCue = RESULT_CUES.some(x => lower.includes(x));
+  const longWordShare = w.filter(x => x.replace(/[^A-Za-z]/g,"").length >= 13).length / w.length;
 
-  // clamp text points to a sane band
-  points = Math.max(-1, Math.min(1, points));
-  return { drivers, stoppers, points };
-}
+  // ---- present ingredients ----
+  const present = new Set();
+  Object.keys(checklist || {}).forEach(k => { if(checklist[k]) present.add(k); });
+  if(hasNumber) present.add("number");
+  if(hasCTA) present.add("cta");
 
-/* ── Pocket fit (0 to 1) ── */
-export function pocketFit(audienceKey, anchorId, selected){
-  const aud = AUDIENCES[audienceKey];
-  if(!aud) return { fit:0, breakdown:{ clarity:0, voice:0, visual:0, community:0 } };
+  // ---- CLARITY ----
+  let clarity = 100;
+  if(avgSent > 16) clarity -= (avgSent - 16) * 3;
+  clarity -= longSentences * 8;
+  if((audienceKey === "genz" || audienceKey === "genalpha") && longWordShare > 0.15) clarity -= 15;
+  clarity = clamp(clarity);
 
-  const sums = { clarity:0, voice:0, visual:0, community:0 };
+  // ---- TRUST ----
+  let trust = 100;
+  trust -= Math.min(hypeFound.length * 12, 48);
+  if(hasEmDash) trust -= 12;
+  if(exclamations >= 2) trust -= 8;
+  if(exclamations >= 4) trust -= 8;
+  if(shouting) trust -= 8;
+  if((audienceKey === "pi" || audienceKey === "pharma") && hedgeHits >= 3) trust -= 10;
+  trust = clamp(trust);
 
-  const anchor = ANCHORS.find(a=>a.id===anchorId);
-  if(anchor){ sums[anchor.class] += anchor.value; }
+  // ---- SUBSTANCE ----
+  let substance = 30;
+  if(hasNumber) substance += 25;
+  if(hasResultCue) substance += 15;
+  if(present.has("source")) substance += 15;
+  if(checklist && checklist.resultData) substance += 10;
+  substance = clamp(substance);
 
-  FRAGMENTS.forEach(f=>{
-    if(selected.has(f.id)){ sums[f.class] += f.value; }
-  });
+  // ---- FIT ----
+  const wants = aud.wants;
+  let got = 0, total = 0;
+  for(const ing in wants){ total += wants[ing]; if(present.has(ing)) got += wants[ing]; }
+  const fit = total > 0 ? Math.round(100 * got / total) : 50;
 
-  // cap each class at 1, then weight — simple hard cap per BUILD.md
-  let fit = 0;
-  const breakdown = {};
-  CLASSES.forEach(c=>{
-    const capped = Math.min(sums[c], 1);
-    const contrib = capped * aud.weights[c];
-    breakdown[c] = contrib;             // for the HYDE-style bars
-    fit += contrib;
-  });
-  return { fit, breakdown };            // fit is 0 to 1
-}
+  // ---- blend ----
+  const W = normaliseWeights(aud.weights);
+  const raw = W.clarity*clarity + W.trust*trust + W.substance*substance + W.fit*fit;
+  const score = clamp(Math.round(raw));
 
-/* ── Resonance score (0 to 100) ── */
-export function resonance(audienceKey, anchorId, selected, caption){
-  const { fit, breakdown } = pocketFit(audienceKey, anchorId, selected);
-  const text = analyseText(caption);
+  // ---- focus signal (largest weighted deficit) ----
+  const deficits = {
+    clarity:   W.clarity   * (100 - clarity),
+    trust:     W.trust     * (100 - trust),
+    substance: W.substance * (100 - substance),
+    fit:       W.fit       * (100 - fit)
+  };
+  const focus = Object.keys(deficits).sort((a,b) => deficits[b] - deficits[a])[0];
 
-  // blend: pocket fit is the backbone, text nudges it
-  // BUILD.md: score = 40 + fit*45 + text.points*15
-  let score = 40 + fit*45 + text.points*15;
-  score = Math.max(0, Math.min(100, Math.round(score)));
+  // ---- top fix ----
+  const facts = { hasEmDash, hypeFound, shouting, exclamations, hedgeHits,
+                  longSentences, avgSent, longWordShare, hasNumber, hasCTA,
+                  hasResultCue, present, audienceKey, audienceLabel: aud.label };
+  const topFix = score >= 80
+    ? "Strong pose. Nothing urgent to fix. Ship it."
+    : chooseFix(focus, facts, aud);
 
-  return { score, fit, breakdown, text };
-}
-
-/* ── Score banding (color and label) ── */
-export function band(score){
-  if(score >= 75) return { color:"#178A38", label:"High affinity" };
-  if(score >= 50) return { color:"#C9A227", label:"Binds, can improve" };
-  return            { color:"#C0392B", label:"Weak fit" };
-}
-
-/* ── Suggestions (optimised pose tips) ── */
-export function suggestions(result, audienceKey){
-  const tips = [];
-  result.text.stoppers.forEach(s=>{
-    if(s.label==="Hyperbole") tips.push(`Replace "${s.snippet}" with a specific result.`);
-    if(s.label==="Em or en dash") tips.push("Swap the dash for a period or a comma.");
-    if(s.label==="Run-on sentence") tips.push("Split the long sentence into two.");
-    if(s.label==="Shouting in caps") tips.push("Drop the all-caps. Let the point carry itself.");
-  });
-
-  // weakest class for this audience
-  const aud = AUDIENCES[audienceKey];
-  if(aud){
-    const weakest = CLASSES
-      .map(c=>({c, gap: aud.weights[c] - result.breakdown[c]}))
-      .sort((a,b)=>b.gap-a.gap)[0];
-    if(weakest && weakest.gap > 0.05){
-      tips.push(`Add a ${CLASS_LABEL[weakest.c]} fragment. This audience weights it heavily.`);
-    }
-  }
-  if(!tips.length) tips.push("Strong pose. Ship it.");
-  return tips;
+  return {
+    empty:false, usedDefault, confidence,
+    score, band: getBand(score),
+    signals: { clarity, trust, substance, fit },
+    focus, topFix,
+    facts
+  };
 }

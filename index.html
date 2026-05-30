@@ -3,27 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SeeSTORY · The Resonance Engine</title>
+<title>SeeSTORY</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <main class="wrap">
   <h1>SeeSTORY</h1>
-  <p class="sub">The Resonance Engine</p>
+  <p class="sub">Paste a draft, pick your audience, get a score and the one fix that helps most.</p>
 
-  <!-- Collapsible guide -->
+  <!-- How it works (collapsible) -->
   <button id="guideToggle" class="guide-toggle" aria-expanded="false" aria-controls="guideBody">
     <span class="arrow">&#9654;</span> How it works
   </button>
   <div id="guideBody" class="guide-body" role="region" aria-labelledby="guideToggle">
-    <h3>The chemistry metaphor</h3>
-    <p>Think of your audience as a binding pocket and your content as a small molecule. Each audience has a unique shape defined by four Resonance Classes: Clarity, Voice, Visual, and Community. Your message fragments are molecular fragments that fit into the pocket.</p>
-    <h3>How scoring works</h3>
-    <p>The Resonance Score blends two signals. Pocket fit measures how well your selected fragments match the audience weights (0 to 45 points). Text analysis scans your caption for drivers that boost the score and show-stoppers that hurt it (plus or minus 15 points). A base score of 40 anchors the scale.</p>
-    <h3>Drivers and show-stoppers</h3>
-    <p>Drivers are good signals: short sentences, concrete numbers, clear calls to action. Show-stoppers are red flags: hyperbole, em dashes, run-on sentences, and all-caps shouting. The Story-Activity Spotter flags both in real time.</p>
-    <h3>Sharing results</h3>
-    <p>Every change updates the URL hash. Copy the link to share your exact configuration. Drafts are also saved to local storage automatically.</p>
+    <h3>1. Pick who it is for</h3>
+    <p>Pick the one group you are writing for. The tool changes what it rewards based on this choice. You can switch it any time to see how the same draft scores for a different reader.</p>
+    <h3>2. Paste your draft</h3>
+    <p>Paste the real words you plan to send or post, not a description of them. The tool reads as you type. It reads words only, so visuals go in Step 3.</p>
+    <h3>3. Tick what your draft includes</h3>
+    <p>Tick what is true. The tool already finds numbers and calls to action on its own. Be honest, since a box you did not include gives a score you cannot trust.</p>
+    <h3>Then read the result</h3>
+    <p>The score and the one highest-impact fix update on every change. Apply the fix, look again, and stop at green. The score is guidance, never a gate.</p>
   </div>
 
   <!-- Preset gallery -->
@@ -34,59 +34,84 @@
 
   <!-- Step 1: Audience -->
   <section class="card blue" aria-labelledby="h-aud">
-    <h2 id="h-aud">1. Pick your audience</h2>
+    <h2 id="h-aud">1. Pick who it is for</h2>
+    <p class="step-desc">Pick the one group you are writing for. The tool changes what it rewards based on this choice. You can switch it any time to see how the same draft scores for a different reader.</p>
     <div class="seg" id="audience" role="group" aria-label="Audience"></div>
-    <p class="muted" id="audHint" style="font-size:.9rem;margin-top:8px"></p>
   </section>
 
-  <!-- Step 2: Anchor -->
-  <section class="card" aria-labelledby="h-anchor">
-    <h2 id="h-anchor">2. Choose an anchor</h2>
-    <div class="chips" id="anchors" role="radiogroup" aria-label="Anchor"></div>
-  </section>
-
-  <!-- Step 3: Fragments -->
-  <section class="card" aria-labelledby="h-grow">
-    <h2 id="h-grow">3. Grow the draft</h2>
-    <div id="fragments"></div>
-  </section>
-
-  <!-- Step 4: Caption -->
+  <!-- Step 2: Caption -->
   <section class="card" aria-labelledby="h-cap">
-    <h2 id="h-cap">4. Paste your caption</h2>
-    <textarea id="caption" placeholder="Write or paste your post caption..."></textarea>
-    <ul class="spot" id="spotter"></ul>
+    <h2 id="h-cap">2. Paste your draft</h2>
+    <p class="step-desc">Paste the real words you plan to send or post, not a description of them. The tool reads as you type. It reads words only, so visuals go in Step 3.</p>
+    <textarea id="caption" placeholder="Write or paste your post, email, or caption here..."></textarea>
   </section>
 
-  <!-- Breakdown -->
-  <section class="card green" aria-labelledby="h-break">
-    <h2 id="h-break">Resonance breakdown</h2>
-    <div id="breakdown"></div>
+  <!-- Step 3: Checklist -->
+  <section class="card" aria-labelledby="h-check">
+    <h2 id="h-check">3. Tick what your draft includes</h2>
+    <p class="step-desc">Tick what is true. The tool already finds numbers and calls to action on its own. Be honest, since a box you did not include gives a score you cannot trust.</p>
+    <div id="checklist" class="checklist"></div>
   </section>
 
-  <!-- Optimised pose / suggestions -->
-  <section class="card" aria-labelledby="h-tips">
-    <h2 id="h-tips">Optimised pose</h2>
-    <ul id="tips" class="spot"></ul>
-    <button id="copyBtn" class="copy-btn">Copy result</button>
+  <!-- Result -->
+  <p id="emptyNote" class="muted empty-note" style="display:none"></p>
+  <section id="resultArea" class="card green" aria-labelledby="h-result" style="display:none">
+    <h2 id="h-result">Resonance score</h2>
+    <div id="scoreHeadline" class="score-headline"></div>
+    <div id="scoreSubhead" class="score-subhead"></div>
+
+    <div class="top-fix-area">
+      <span class="top-fix-label">Top fix</span>
+      <span id="topFix" class="top-fix-text"></span>
+    </div>
+
+    <h3 class="breakdown-head">Why this score</h3>
+    <div id="breakdown" class="breakdown"></div>
+
+    <p id="confNote" class="muted conf-note" style="display:none"></p>
+    <p id="defNote" class="muted def-note" style="display:none"></p>
   </section>
 
   <!-- Compare mode -->
   <section class="card blue" aria-labelledby="h-compare">
     <h2 id="h-compare">Compare audiences</h2>
-    <button id="compareToggle" class="copy-btn" style="margin-top:0;margin-bottom:12px;background:var(--blue)">Compare all audiences</button>
+    <button id="compareToggle" class="action-btn">Compare all audiences</button>
     <div id="compareGrid" class="compare-grid" style="display:none"></div>
   </section>
 
-  <p class="muted" style="font-size:.8rem">
-    A concept piece exploring Story-Activity Relationships. Not an official BioSolveIT product.
-  </p>
+  <!-- Copy -->
+  <div class="copy-area">
+    <button id="copyBtn" class="action-btn copy-btn">Copy result</button>
+  </div>
+
+  <!-- Glossary (optional science flavor) -->
+  <button id="glossaryToggle" class="guide-toggle glossary-toggle" aria-expanded="false" aria-controls="glossaryBody">
+    <span class="arrow">&#9654;</span> Why the chemistry names?
+  </button>
+  <div id="glossaryBody" class="guide-body glossary-body" role="region" aria-labelledby="glossaryToggle">
+    <p>Nobody needs this to use the tool. It is the wink for the chemists.</p>
+    <table class="glossary-table">
+      <thead><tr><th>In the tool</th><th>Science term</th><th>The idea</th></tr></thead>
+      <tbody>
+        <tr><td>Audience</td><td>Target, or binding pocket</td><td>Who the content has to fit.</td></tr>
+        <tr><td>Resonance score</td><td>Binding affinity</td><td>How well it fits and holds.</td></tr>
+        <tr><td>The four signals</td><td>Pharmacophore features</td><td>The properties that make it stick.</td></tr>
+        <tr><td>Top fix</td><td>Lead optimisation step</td><td>The change that improves the fit most.</td></tr>
+        <tr><td>Trust signal</td><td>Activity Spotter</td><td>Features that help versus features that block.</td></tr>
+        <tr><td>Substance</td><td>Scoring with HYDE</td><td>Concrete contributions you can point to.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Disclaimer -->
+  <p class="muted disclaimer">A concept piece exploring how content lands with different readers. Not an official BioSolveIT product.</p>
 </main>
 
+<!-- Sticky score bar -->
 <div class="scorebar" role="status" aria-live="polite">
-  <span class="num" id="scoreNum">40</span>
+  <span class="num" id="scoreNum">--</span>
   <div class="bar"><div class="fill" id="scoreFill"></div></div>
-  <span id="scoreLabel" class="label-text">Binds, can improve</span>
+  <span id="scoreLabel" class="label-text"></span>
 </div>
 
 <script type="module" src="main.js"></script>

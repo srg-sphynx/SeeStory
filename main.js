@@ -1,32 +1,32 @@
-/* ── main.js ── entry point, init, event wiring (ES module) ── */
+/* ── main.js ── entry point (v2) ── */
 
-import { state } from './scoring.js';
 import {
   readHash, loadDraft,
-  buildAudience, buildAnchors, buildFragments, buildPresets,
-  initGuide, initCopyButton, wireCaption, wireCompareToggle,
-  syncAll
+  buildAudience, buildChecklist, buildPresets,
+  initGuide, initGlossary, initCopyButton,
+  wireCaption, wireCompare,
+  render, state
 } from './ui.js';
 
 function init(){
-  // 1. Restore state: hash takes priority over localStorage draft
+  // 1. Restore state: hash takes priority over localStorage
   const hasHash = readHash();
   if(!hasHash) loadDraft();
 
   // 2. Build all UI components
   buildAudience();
-  buildAnchors();
-  buildFragments();
+  buildChecklist();
   buildPresets();
 
   // 3. Wire interactive elements
   wireCaption();
   initGuide();
+  initGlossary();
   initCopyButton();
-  wireCompareToggle();
+  wireCompare();
 
   // 4. Initial render
-  syncAll();
+  render();
 }
 
 document.addEventListener("DOMContentLoaded", init);
