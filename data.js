@@ -165,9 +165,44 @@ export const PRESETS = [
 ];
 
 export const PERSONAS = [
-  { name: "Gen Z Chemist", desc: "Entering the workforce or completing grad school. They consume science through short-form video and community threads (like Reddit/Discord). They value authenticity and a 'human voice' over corporate polish." },
-  { name: "Gen Alpha Student", desc: "Currently in high school or early undergrad. Highly visual and interactive. Traditional academic formality actively repels them. They want to see the science in action, playfully." },
-  { name: "Research Group Leader (PI)", desc: "Time-poor and highly analytical. They are immediately skeptical of marketing buzzwords (hype). They scan for concrete numbers, data points, and links to peer-reviewed sources." },
-  { name: "Pharma Decision-Maker", desc: "Focused on ROI, efficiency, and reliability. They have no patience for vagueness. They want to know exactly what the result is and what the next step (CTA) should be." },
-  { name: "Peer Scientist", desc: "Your everyday colleague. They want clear, reproducible facts without the fluff. They appreciate standard visuals (charts, structures) and straightforward summaries." }
+  {
+    icon: "🧬",
+    name: "Gen Z Chemist",
+    age: "22–30",
+    bio: "Entering the workforce or completing grad school. They consume science through short-form video and community threads (Reddit, Discord, X/Twitter). They value authenticity and a human voice over corporate polish.",
+    wants: ["Short-form video (Reels, TikTok)", "Real people, not logos", "Community language — questions, tags, collabs", "Plain-English takeaways they can reshare"],
+    repels: ["Corporate tone or press-release style", "Walls of text with no visual hook", "Jargon-heavy posts with no summary"]
+  },
+  {
+    icon: "🎮",
+    name: "Gen Alpha Student",
+    age: "14–20",
+    bio: "Currently in high school or early undergrad. Highly visual and interactive. Traditional academic formality actively repels them. They want to see the science in action — playfully and accessibly.",
+    wants: ["Video-first content, ideally under 60 seconds", "Bright visuals, memes, interactive demos", "A sense of community — 'come join us'", "Casual, friendly tone"],
+    repels: ["Formal academic writing", "Text-only posts", "Authority-driven messaging ('We are pleased to announce…')"]
+  },
+  {
+    icon: "🔬",
+    name: "Research Group Leader (PI)",
+    age: "35–60",
+    bio: "Time-poor and highly analytical. They are immediately skeptical of marketing buzzwords. They scan for concrete numbers, data points, and links to peer-reviewed sources before they even consider sharing.",
+    wants: ["Hard numbers and quantified results", "Named, verifiable sources (DOI, dataset link)", "Plain one-line summaries they can forward", "A clear call to action (read the paper, try the tool)"],
+    repels: ["Hype words (revolutionary, game-changing, unprecedented)", "Vague claims without supporting evidence", "Excessive exclamation marks or ALL CAPS"]
+  },
+  {
+    icon: "💼",
+    name: "Pharma Decision-Maker",
+    age: "35–55",
+    bio: "Focused on ROI, efficiency, and reliability. They have no patience for vagueness. They want to know exactly what the result is, what it costs, and what the next step should be.",
+    wants: ["Concrete metrics — time saved, hit rate, cost reduction", "Credible sources and validation data", "A direct CTA — book a demo, read the case study", "Clean, professional presentation"],
+    repels: ["Hedging language (maybe, perhaps, we think)", "Flashy visuals with no substance", "Posts that don't get to the point"]
+  },
+  {
+    icon: "👩‍🔬",
+    name: "Peer Scientist",
+    age: "25–50",
+    bio: "Your everyday colleague — a general technical reader. They want clear, reproducible facts without the fluff. They appreciate standard visuals (charts, molecular structures) and straightforward summaries.",
+    wants: ["Numbers backed by methodology", "Source links they can verify", "Standard scientific figures and charts", "A clear next step or discussion prompt"],
+    repels: ["Marketing speak in a science context", "Unsupported superlatives", "Posts that are all opinion, no data"]
+  }
 ];

@@ -2,7 +2,7 @@
 
 import {
   AUDIENCES, CHECKLIST, COPY, SIGNALS, SIGNAL_LABEL, SIGNAL_MSG,
-  PRESETS, GLOSSARY, FIT_FIX
+  PRESETS, GLOSSARY, FIT_FIX, PERSONAS
 } from './data.js';
 import { scoreDraft, getBand, getSignalBand } from './scoring.js';
 
@@ -93,23 +93,65 @@ export function initPersonaGuide(){
   
   // Populate
   list.innerHTML = "";
-  import('./data.js').then(({ PERSONAS }) => {
-    PERSONAS.forEach(p => {
-      const el = document.createElement("div");
-      el.className = "persona-item";
-      
-      const title = document.createElement("div");
-      title.className = "persona-title";
-      title.textContent = p.name;
-      
-      const desc = document.createElement("div");
-      desc.className = "persona-desc";
-      desc.textContent = p.desc;
-      
-      el.appendChild(title);
-      el.appendChild(desc);
-      list.appendChild(el);
-    });
+  PERSONAS.forEach(p => {
+    const el = document.createElement("div");
+    el.className = "persona-item";
+    
+    // Header row: icon + name + age
+    const header = document.createElement("div");
+    header.className = "persona-header";
+    
+    const icon = document.createElement("span");
+    icon.className = "persona-icon";
+    icon.textContent = p.icon;
+    
+    const nameAge = document.createElement("span");
+    nameAge.className = "persona-name";
+    nameAge.textContent = p.name + (p.age ? " (" + p.age + ")" : "");
+    
+    header.appendChild(icon);
+    header.appendChild(nameAge);
+    el.appendChild(header);
+    
+    // Bio
+    const bio = document.createElement("p");
+    bio.className = "persona-bio";
+    bio.textContent = p.bio;
+    el.appendChild(bio);
+    
+    // Wants
+    if(p.wants && p.wants.length){
+      const wantsHead = document.createElement("div");
+      wantsHead.className = "persona-sub green";
+      wantsHead.textContent = "\u2705 What they respond to";
+      el.appendChild(wantsHead);
+      const wantsList = document.createElement("ul");
+      wantsList.className = "persona-ul";
+      p.wants.forEach(w => {
+        const li = document.createElement("li");
+        li.textContent = w;
+        wantsList.appendChild(li);
+      });
+      el.appendChild(wantsList);
+    }
+    
+    // Repels
+    if(p.repels && p.repels.length){
+      const repelsHead = document.createElement("div");
+      repelsHead.className = "persona-sub red";
+      repelsHead.textContent = "\u274C What turns them off";
+      el.appendChild(repelsHead);
+      const repelsList = document.createElement("ul");
+      repelsList.className = "persona-ul";
+      p.repels.forEach(r => {
+        const li = document.createElement("li");
+        li.textContent = r;
+        repelsList.appendChild(li);
+      });
+      el.appendChild(repelsList);
+    }
+    
+    list.appendChild(el);
   });
 
   // Toggle
@@ -122,16 +164,15 @@ export function initPersonaGuide(){
 
 /* ── Build audience picker (Grid) ── */
 export function buildAudience(){
-  const menu = $("audience");
-  if(!menu) return;
+  const grid = $("audience");
+  if(!grid) return;
 
-  // Populate menu
-  menu.innerHTML = "";
+  grid.innerHTML = "";
   Object.entries(AUDIENCES).forEach(([key, a]) => {
     const btn = document.createElement("button");
+    btn.type = "button";  // prevent implicit form submission
     btn.className = "aud-card";
-    btn.setAttribute("role", "option");
-    btn.setAttribute("aria-selected", key === state.audienceKey);
+    btn.setAttribute("aria-pressed", String(key === state.audienceKey));
     btn.dataset.key = key;
 
     const label = document.createElement("span");
@@ -145,22 +186,23 @@ export function buildAudience(){
     btn.appendChild(label);
     btn.appendChild(blurb);
     
-    btn.onclick = () => {
+    btn.addEventListener("click", () => {
       state.audienceKey = key;
       refreshAudienceButtons();
       render();
-    };
-    menu.appendChild(btn);
+    });
+    grid.appendChild(btn);
   });
 
-  // Initialize trigger label
   refreshAudienceButtons();
 }
 
 function refreshAudienceButtons(){
   const btns = document.querySelectorAll("#audience .aud-card");
   btns.forEach(b => {
-    b.setAttribute("aria-selected", b.dataset.key === state.audienceKey);
+    const selected = b.dataset.key === state.audienceKey;
+    b.setAttribute("aria-pressed", String(selected));
+    b.classList.toggle("active", selected);
   });
 }
 
