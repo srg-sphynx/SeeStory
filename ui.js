@@ -238,7 +238,7 @@ export function buildChecklist(){
     const eduBtn = document.createElement("button");
     eduBtn.type = "button";
     eduBtn.className = "check-edu-btn";
-    eduBtn.textContent = "Learn more about this content type ▾";
+    eduBtn.textContent = "What could BioSolveIT do with this? ▾";
     eduBtn.setAttribute("aria-expanded", "false");
     
     const eduContent = document.createElement("div");
@@ -248,7 +248,7 @@ export function buildChecklist(){
     whatBlock.className = "edu-block";
     const whatLabel = document.createElement("span");
     whatLabel.className = "edu-label";
-    whatLabel.textContent = "What this means";
+    whatLabel.textContent = "What this looks like for BioSolveIT";
     const whatBody = document.createElement("p");
     whatBody.className = "edu-body";
     whatBody.textContent = item.what;
@@ -259,7 +259,7 @@ export function buildChecklist(){
     whyBlock.className = "edu-block";
     const whyLabel = document.createElement("span");
     whyLabel.className = "edu-label why";
-    whyLabel.textContent = "Why it matters for future audiences";
+    whyLabel.textContent = "Why it matters for the next 25 years";
     const whyBody = document.createElement("p");
     whyBody.className = "edu-body";
     whyBody.textContent = item.why;
@@ -272,7 +272,7 @@ export function buildChecklist(){
     eduBtn.addEventListener("click", () => {
       const expanded = eduBtn.getAttribute("aria-expanded") === "true";
       eduBtn.setAttribute("aria-expanded", String(!expanded));
-      eduBtn.textContent = !expanded ? "Hide details ▴" : "Learn more about this content type ▾";
+      eduBtn.textContent = !expanded ? "Hide details ▴" : "What could BioSolveIT do with this? ▾";
       eduContent.classList.toggle("open", !expanded);
     });
 

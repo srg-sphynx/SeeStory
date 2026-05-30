@@ -38,50 +38,50 @@ export const CHECKLIST = [
     id: "visual", 
     label: "Has an image or graphic", 
     help: "A figure, chart, or photo.",
-    what: "A high-resolution figure, experimental diagram, molecular structure, dataset chart, or high-impact photograph.",
-    why: "Future audiences consume content visually. A static wall of text is immediately ignored. A clean graphic acts as the visual 'hook' that earns the initial 3-second glance in digital feeds."
+    what: "A SeeSAR binding-pose screenshot, an infiniSee chemical-space map, a HYDE scoring heatmap, or a molecule-of-the-week card. Anything that turns a concept into a single frame someone can screenshot and reshare.",
+    why: "BioSolveIT already makes beautiful 3D science. The next 25 years are about putting those visuals where the audience actually is — in social feeds, email headers, and conference slide decks — instead of behind a download button."
   },
   { 
     id: "video", 
     label: "Has short-form video", 
     help: "A reel or short clip.",
-    what: "A short 15-60 second video clip (e.g., screen recording of a software UI, lab experiment time-lapse, or a quick explanation of a paper).",
-    why: "Video is the dominant medium of the future. Gen Z chemists and Gen Alpha students learn primarily through video. It conveys high-density technical concepts faster than text."
+    what: "A 60-second SeeSAR screen recording showing a molecule docked in real time. A 30-second infiniSee search across billions of compounds. A quick 'lab tip' reel from a BioSolveIT scientist. Think TikTok for drug design.",
+    why: "Gen Z chemists and Gen Alpha students learn from video, not PDFs. A single 60-second tutorial of SeeSAR's drag-and-dock workflow can do more for adoption than a 20-page whitepaper. This is where BioSolveIT's next generation of users already lives."
   },
   { 
     id: "humanVoice", 
     label: "Shows a real person", 
     help: "A face or named voice, not a logo.",
-    what: "A visible human face on screen, a named author speaking in the first person, or a raw voiceover from a real researcher—not a faceless brand or institutional logo.",
-    why: "Authenticity is the ultimate credibility metric for future science. People follow other people, not corporate logos. Showing a real person builds immediate trust and emotional connection."
+    what: "A BioSolveIT scientist explaining a docking result on camera. A YoungSolvers student sharing their thesis project. A named researcher giving a quick opinion — not a faceless corporate logo or stock photo.",
+    why: "People follow people. The BioSolveIT team has 25 years of deep expertise — putting real faces and voices on that knowledge builds trust faster than any logo-branded infographic. Future audiences demand authenticity."
   },
   { 
     id: "communityHook", 
     label: "Invites people in", 
     help: "Tags someone, asks for replies, or invites collaboration.",
-    what: "Directly tagging active collaborators, asking an open-ended question to spark debate, or inviting contributions to an open-source repository.",
-    why: "Future scientific learning is collaborative. Content that treats readers as co-discoverers rather than passive audiences generates organic discussion and builds lasting professional networks."
+    what: "Tagging a YoungSolvers alumnus. Asking 'What would you screen first?' Inviting users to submit their own SeeSAR use case. Running a community poll on the next Scientific Challenge topic.",
+    why: "BioSolveIT's YoungSolvers program and Scientific Challenges already build community. The next step is extending that energy into everyday content — turning passive readers into active collaborators who feel ownership over the science."
   },
   { 
     id: "plainSummary", 
     label: "Has a plain-language line", 
     help: "One sentence a non-expert would understand.",
-    what: "A single, jargon-free sentence summarizing the core scientific breakthrough so that an intelligent non-expert can immediately grasp its meaning.",
-    why: "Cross-disciplinary collaboration is expanding rapidly. Even expert PIs often appreciate a plain summary before committing to read deep technical jargon. It makes science accessible and highly shareable."
+    what: "One sentence that makes the science click for anyone: 'We searched 2.4 billion molecules in under an hour and found 37 drug candidates.' No jargon, no acronyms, just the result.",
+    why: "BioSolveIT's tools solve complex problems, but the value proposition is simple. As the audience broadens — from computational chemists to medicinal chemists, biologists, and decision-makers — a plain-language hook is what earns the first click."
   },
   { 
     id: "source", 
     label: "Links or names a source", 
     help: "A paper, a dataset, or a page to verify.",
-    what: "Including a DOI, a hyperlink to a peer-reviewed publication, a GitHub repository link, or an open-source dataset reference.",
-    why: "With the rise of AI-generated content, verification is critical. Analytical decision-makers (PIs, Pharma Executives, Peers) demand a clear pathway to verify your assertions before citing or sharing."
+    what: "A DOI link to the validation study. A direct link to the SeeSAR download page. A GitHub repo for a workflow script. A citation to the HYDE scoring publication.",
+    why: "BioSolveIT has 25 years of peer-reviewed science behind it. Linking to that evidence is the fastest way to convert interest into trust — especially for PIs and pharma decision-makers who need to verify before they share or buy."
   },
   { 
     id: "resultData", 
     label: "Includes a result or data", 
     help: "A specific outcome or measurement, even without a number in the text.",
-    what: "Explicitly detailing a specific, concrete outcome, measurement, or discovery in the checklist—even if the raw text draft is written as a summary.",
-    why: "Opinion pieces and vague announcements hold zero scientific value. Future readers expect data-first messaging that answers 'What actually changed?' and 'By how much?' immediately."
+    what: "A concrete outcome: '48-hour screen, 2.4 million compounds, 37 confirmed hits.' A benchmark: 'infiniSee found the known active in the top 0.01% of 12 billion compounds.' A customer result with permission to share.",
+    why: "Data is BioSolveIT's superpower. Every post that leads with a real result — not a feature list — positions the company as scientists talking to scientists. Future audiences will filter out everything that doesn't answer 'What actually changed?'"
   }
 ];
 
@@ -113,7 +113,7 @@ export const SIGNAL_LABEL = { clarity:"Clarity", trust:"Trust", substance:"Subst
 
 export const COPY = {
   title: "SeeSTORY",
-  tagline: "Evaluate scientific communication for future medium resonance and pocket fit.",
+  tagline: "A companion to the BioWeek poster — exploring how BioSolveIT content could land with the next generation.",
   howToToggle: "How it works",
   step1: "1. Pick who it is for",
   step2: "2. Paste your draft",
@@ -129,7 +129,7 @@ export const COPY = {
   emptyState: "Add a draft. The score needs words to read.",
   defaultAudienceNote: "No audience picked, so this is scored for a Peer scientist.",
   confidenceLowNote: "Short draft. Treat this as a rough read.",
-  disclaimer: "A concept piece exploring how content lands with different readers. Not an official BioSolveIT product."
+  disclaimer: "Built for the BioWeek 2026 poster on 25 years of BioSolveIT. This interactive demo was created entirely with AI-assisted vibe coding — itself a demonstration of how the next 25 years will be built."
 };
 
 export const SIGNAL_MSG = {
@@ -211,40 +211,40 @@ export const PERSONAS = [
     icon: "🧬",
     name: "Gen Z Chemist",
     age: "22–30",
-    bio: "Entering the workforce or completing grad school. They consume science through short-form video and community threads (Reddit, Discord, X/Twitter). They value authenticity and a human voice over corporate polish.",
-    wants: ["Short-form video (Reels, TikTok)", "Real people, not logos", "Community language — questions, tags, collabs", "Plain-English takeaways they can reshare"],
-    repels: ["Corporate tone or press-release style", "Walls of text with no visual hook", "Jargon-heavy posts with no summary"]
+    bio: "Entering the workforce or completing grad school. They discovered drug design through YouTube tutorials and Reddit threads, not textbooks. They already know SeeSAR exists — they want to see it in action, in 60 seconds, from a real person.",
+    wants: ["60-second SeeSAR screen recordings on LinkedIn/TikTok", "Real scientists showing real workflows on camera", "Community threads — 'What would you screen first?'", "Plain-English takeaways they can reshare in group chats"],
+    repels: ["Corporate press-release tone", "20-page PDFs when a 30-second video would do", "Logo-branded content with no human voice"]
   },
   {
     icon: "🎮",
     name: "Gen Alpha Student",
     age: "14–20",
-    bio: "Currently in high school or early undergrad. Highly visual and interactive. Traditional academic formality actively repels them. They want to see the science in action — playfully and accessibly.",
-    wants: ["Video-first content, ideally under 60 seconds", "Bright visuals, memes, interactive demos", "A sense of community — 'come join us'", "Casual, friendly tone"],
-    repels: ["Formal academic writing", "Text-only posts", "Authority-driven messaging ('We are pleased to announce…')"]
+    bio: "Currently in high school or early undergrad. They will be BioSolveIT's users in 10 years. They learn through interactive demos, YouTube explainers, and gamified challenges — not journal papers. The YoungSolvers program is their on-ramp.",
+    wants: ["Video-first content, ideally under 60 seconds", "Interactive demos — 'try docking this molecule yourself'", "YoungSolvers stories and success spotlights", "Casual, friendly tone — 'come join us, not we are pleased to announce'"],
+    repels: ["Formal academic announcements", "Text-only posts with no visuals", "Content that assumes 10 years of domain expertise"]
   },
   {
     icon: "🔬",
     name: "Research Group Leader (PI)",
     age: "35–60",
-    bio: "Time-poor and highly analytical. They are immediately skeptical of marketing buzzwords. They scan for concrete numbers, data points, and links to peer-reviewed sources before they even consider sharing.",
-    wants: ["Hard numbers and quantified results", "Named, verifiable sources (DOI, dataset link)", "Plain one-line summaries they can forward", "A clear call to action (read the paper, try the tool)"],
-    repels: ["Hype words (revolutionary, game-changing, unprecedented)", "Vague claims without supporting evidence", "Excessive exclamation marks or ALL CAPS"]
+    bio: "Time-poor and highly analytical. They evaluate tools by reading the benchmarks, not the marketing page. They want to know: does infiniSee actually find actives? Show me the hit rate. Link me the paper.",
+    wants: ["Hard numbers: '2.4M compounds screened in 48 hours, 37 confirmed hits'", "DOI links and verifiable benchmark data", "One-line summaries they can forward to their group", "A direct path to try the software: download link, demo, or trial"],
+    repels: ["Hype words (revolutionary, game-changing, unprecedented)", "Vague claims without supporting data", "Excessive exclamation marks or ALL CAPS"]
   },
   {
     icon: "💼",
     name: "Pharma Decision-Maker",
     age: "35–55",
-    bio: "Focused on ROI, efficiency, and reliability. They have no patience for vagueness. They want to know exactly what the result is, what it costs, and what the next step should be.",
-    wants: ["Concrete metrics — time saved, hit rate, cost reduction", "Credible sources and validation data", "A direct CTA — book a demo, read the case study", "Clean, professional presentation"],
-    repels: ["Hedging language (maybe, perhaps, we think)", "Flashy visuals with no substance", "Posts that don't get to the point"]
+    bio: "Focused on ROI, pipeline velocity, and risk reduction. They compare BioSolveIT's Chemical Space Docking to competitors on throughput, cost, and validation. They want a business case, not a feature list.",
+    wants: ["Concrete metrics — time saved, hit rate, cost per screen", "Customer case studies with permission to reference", "A direct CTA — book a demo, read the case study, get a quote", "Clean, professional presentation that respects their time"],
+    repels: ["Hedging language (maybe, perhaps, we think)", "Flashy visuals that don't connect to outcomes", "Posts that bury the result under three paragraphs of context"]
   },
   {
     icon: "👩‍🔬",
     name: "Peer Scientist",
     age: "25–50",
-    bio: "Your everyday colleague — a general technical reader. They want clear, reproducible facts without the fluff. They appreciate standard visuals (charts, molecular structures) and straightforward summaries.",
-    wants: ["Numbers backed by methodology", "Source links they can verify", "Standard scientific figures and charts", "A clear next step or discussion prompt"],
-    repels: ["Marketing speak in a science context", "Unsupported superlatives", "Posts that are all opinion, no data"]
+    bio: "Your everyday colleague in computational chemistry. They already understand docking, scoring, and chemical spaces. They want to know what's new, what's reproducible, and whether it's worth switching their workflow.",
+    wants: ["Reproducible benchmarks with methodology details", "Source links to papers and datasets they can verify", "SeeSAR/infiniSee comparison screenshots and workflow tips", "A clear next step or discussion prompt"],
+    repels: ["Marketing speak in a science context", "Unsupported superlatives", "Posts that are all announcement, no substance"]
   }
 ];

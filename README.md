@@ -1,14 +1,16 @@
-# SeeSTORY
+# SeeSTORY: BioWeek 2026 Interactive Demo
 
-> **Paste a draft, pick your audience, get a score and the one fix that helps most.**
+> **A companion to the BioWeek poster — exploring how BioSolveIT content could land with the next generation.**
 
 [![Deploy to GitHub Pages](https://github.com/srg-sphynx/SeeStory/actions/workflows/deploy.yml/badge.svg)](https://github.com/srg-sphynx/SeeStory/actions/workflows/deploy.yml)
 
 ## 🔬 What is this?
 
-SeeSTORY is a lightweight, browser-based tool that helps scientists craft social-media posts, emails, and captions that actually land with their target audience. It borrows the language of computational chemistry — *binding*, *resonance*, *pharmacophore features* — as a metaphor for how content connects with readers.
+SeeSTORY is an interactive demonstration built to support the **BioWeek 2026** poster celebrating 25 years of BioSolveIT. It explores how scientific communication must evolve over the next 25 years to reach new audiences (Gen Z, Gen Alpha) alongside established decision-makers.
 
-The "model" is a **transparent, rule-based heuristics engine** — not a black box. Every point in your score is traceable to a visible rule. A chemist who has never written a LinkedIn post should understand the screen in ten seconds.
+It is also a showcase of the future of software development itself: this entire application was built using **AI-assisted vibe coding** in a matter of hours.
+
+While it borrows the language of computational chemistry — *binding*, *resonance*, *pharmacophore features* — the engine underneath is a transparent, rule-based heuristic that dynamically suggests future content strategies like SeeSAR tutorials, infiniSee screencasts, and YoungSolvers community integration.
 
 ## 🚀 Live Demo
 
