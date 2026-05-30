@@ -55,25 +55,60 @@ body{
   font-family:var(--font);
   color:var(--ink);
   background-color: #f4f6f8;
-  background-image: 
-    url('Proteins/image-2.png'),
-    url('Proteins/image-3.png'),
-    url('Proteins/image-4.png'),
-    linear-gradient(135deg, #f4f6f8 0%, #eef1f4 100%);
-  background-position: 
-    top -5vw left -10vw,
-    bottom -10vw right -10vw,
-    top 30vh right -10vw,
-    0 0;
-  background-size: 
-    max(400px, 40vw),
-    max(500px, 45vw),
-    max(350px, 35vw),
-    100% 100%;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
-  background-attachment: scroll, scroll, scroll, fixed;
+  background-image: linear-gradient(135deg, #f4f6f8 0%, #eef1f4 100%);
+  background-attachment: fixed;
   line-height:1.45;
   -webkit-text-size-adjust:100%;
+  position: relative;
+}
+
+/* ── Background Proteins ── */
+.bg-proteins {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+.protein {
+  position: absolute;
+  opacity: 0.8;
+  mix-blend-mode: multiply;
+  filter: grayscale(20%) opacity(0.5);
+}
+/* Top Left */
+.protein.p1 {
+  top: -50px;
+  left: -100px;
+  width: max(300px, 35vw);
+}
+/* Top Right */
+.protein.p2 {
+  top: 150px;
+  right: -80px;
+  width: max(250px, 28vw);
+  transform: rotate(45deg);
+}
+/* Middle Left */
+.protein.p3 {
+  top: 800px;
+  left: -150px;
+  width: max(400px, 40vw);
+  transform: rotate(-30deg);
+}
+/* Bottom Right */
+.protein.p4 {
+  top: 1400px;
+  right: -120px;
+  width: max(350px, 35vw);
+  transform: rotate(180deg);
+}
+/* Bottom Left */
+.protein.p5 {
+  top: 2000px;
+  left: -50px;
+  width: max(280px, 30vw);
+  transform: rotate(90deg);
 }
 
 /* ── Site header ── */
@@ -102,13 +137,19 @@ body{
   margin:0;
   letter-spacing:-0.02em;
 }
-.biosolveit-logo {
+.brand-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 40px;
   height: 40px;
-  min-width: 40px;
-  min-height: 40px;
+  background: var(--card);
+  color: var(--green);
+  font-weight: 900;
+  font-size: 1.4rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   flex-shrink: 0;
-  display: block;
 }
 .context-desc {
   color: rgba(255, 255, 255, 0.9);
