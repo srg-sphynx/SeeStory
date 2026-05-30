@@ -21,14 +21,18 @@ The "model" is a **transparent, rule-based heuristics engine** — not a black b
 | **5 Audiences** | Gen Z chemist, Gen Alpha student, Research PI, Pharma decision-maker, Peer scientist — each with unique scoring weights and "wants" |
 | **4-Signal Scoring** | Clarity, Trust, Substance, Fit — weighted per audience into a single 0–100 Resonance Score |
 | **Single Top Fix** | A priority ladder selects the one highest-impact suggestion, not a list of ten |
+| **Responsive Layout** | Mobile-first with a full two-column desktop layout (input left, results right) that scales automatically |
+| **Score Ring** | SVG circular progress ring on desktop showing your score at a glance (replaces the mobile-only sticky bar) |
+| **Detection Panel** | "What we detected" — shows exactly what the engine found: numbers, CTAs, hype words, hedges, em dashes, ALL CAPS |
+| **Word/Char Counter** | Live word count, character count (with LinkedIn 3,000-char limit indicator), and sentence count |
 | **Persona Deep-Dive** | Collapsible research profiles with ✅ what each audience responds to and ❌ what turns them off |
 | **Preset Gallery** | Three click-to-load examples (The Hype Trap, The Clean Post, The Data Post) |
-| **Compare Mode** | Score the same draft across all 5 audiences side-by-side |
+| **Compare Mode** | Score the same draft across all 5 audiences side-by-side (5-column grid on desktop) |
 | **Live Scoring** | Score updates in real-time as you type (debounced 150ms) |
 | **Toggle Checklist** | 7-item checklist with interactive toggle switches for visual/video/source/etc. |
-| **Score Animation** | Smooth number count-up and progress bar with band-coloured fills |
+| **Score Animation** | Smooth number count-up with ease-out quad easing, band-coloured progress fills |
 | **Copy to Clipboard** | One-click copy of your score summary |
-| **Sticky Score Bar** | Frosted-glass bottom bar shows your score at all times |
+| **Sticky Score Bar** | Frosted-glass bottom bar on mobile; hidden on desktop where the score ring takes over |
 | **State Persistence** | Draft auto-saved to localStorage; shareable via URL hash |
 | **Cross-browser** | No regex lookbehinds — works on Safari/iOS. `prefers-reduced-motion` respected |
 | **Glossary** | Optional chemistry-metaphor glossary (for the chemists) |
@@ -75,10 +79,20 @@ The engine is validated against two canonical examples from the spec:
 | Layer | Choice | Why |
 |-------|--------|-----|
 | Markup | Semantic HTML5 | Accessible, lightweight, no framework |
-| Style | Vanilla CSS + custom properties | Zero dependencies, glassmorphism, toggle switches |
+| Layout | CSS Grid + Flexbox | True responsive: mobile → tablet → desktop via breakpoints |
+| Style | Vanilla CSS + custom properties | Zero dependencies, glassmorphism, toggle switches, SVG ring |
 | Logic | Vanilla ES Modules | Pure functions, <30 KB total JS, XSS-safe DOM |
 | Typography | BioSans (custom) + Inter (fallback) | Clean, professional hierarchy |
 | Hosting | GitHub Pages via Actions | Free, automatic deploys on push |
+
+### Responsive Breakpoints
+
+| Breakpoint | Layout | Score display |
+|------------|--------|---------------|
+| **< 600px** | Single column, 1-col audience grid | Sticky bottom bar |
+| **601–899px** | Single column, 2-col audience grid | Floating bottom bar |
+| **900px+** | Two-column (input left, results right) | SVG score ring (sticky right column) |
+| **1100px+** | Wider input column (1.15:0.85 ratio) | SVG score ring |
 
 ## 📁 Project Structure
 
