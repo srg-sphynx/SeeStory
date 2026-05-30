@@ -234,7 +234,7 @@ export function buildChecklist(){
     label.appendChild(txt);
     wrapper.appendChild(label);
 
-    // Education toggle — OUTSIDE the label to prevent checkbox interference
+    // Education toggle - OUTSIDE the label to prevent checkbox interference
     const eduBtn = document.createElement("button");
     eduBtn.type = "button";
     eduBtn.className = "check-edu-btn";
@@ -540,7 +540,7 @@ function paintDetected(r){
     { id: "hype", icon: "🚨", label: "Hype words", found: false, warn: f.hypeFound.length > 0, val: f.hypeFound.length > 0 ? f.hypeFound.join(", ") : "Clean" },
     { id: "hedge", icon: "🤔", label: "Hedge phrases", found: false, warn: f.hedgeHits > 0, val: f.hedgeHits > 0 ? (f.hedgeHits + " found") : "Clean" },
     { id: "exclamation", icon: "❗", label: "Exclamation marks", found: false, warn: f.exclamations >= 2, val: f.exclamations + " found" },
-    { id: "emdash", icon: "—", label: "Em dashes", found: false, warn: f.hasEmDash, val: f.hasEmDash ? "Found" : "None" },
+    { id: "emdash", icon: "-", label: "Em dashes", found: false, warn: f.hasEmDash, val: f.hasEmDash ? "Found" : "None" },
     { id: "shout", icon: "🔤", label: "ALL CAPS shouting", found: false, warn: f.shouting, val: f.shouting ? "Detected" : "None" },
   ];
 

@@ -1,6 +1,6 @@
 # SeeSTORY: BioWeek 2026 Interactive Demo
 
-> **A companion to the BioWeek poster — exploring how BioSolveIT content could land with the next generation.**
+> **A companion to the BioWeek poster - exploring how BioSolveIT content could land with the next generation.**
 
 [![Deploy to GitHub Pages](https://github.com/srg-sphynx/SeeStory/actions/workflows/deploy.yml/badge.svg)](https://github.com/srg-sphynx/SeeStory/actions/workflows/deploy.yml)
 
@@ -10,7 +10,7 @@ SeeSTORY is an interactive demonstration built to support the **BioWeek 2026** p
 
 It is also a showcase of the future of software development itself: this entire application was built using **AI-assisted vibe coding** in a matter of hours.
 
-While it borrows the language of computational chemistry — *binding*, *resonance*, *pharmacophore features* — the engine underneath is a transparent, rule-based heuristic that dynamically suggests future content strategies like SeeSAR tutorials, infiniSee screencasts, and YoungSolvers community integration.
+While it borrows the language of computational chemistry - *binding*, *resonance*, *pharmacophore features* - the engine underneath is a transparent, rule-based heuristic that dynamically suggests future content strategies like SeeSAR tutorials, infiniSee screencasts, and YoungSolvers community integration.
 
 ## 🚀 Live Demo
 
@@ -20,12 +20,12 @@ While it borrows the language of computational chemistry — *binding*, *resonan
 
 | Feature | Description |
 |---------|-------------|
-| **5 Audiences** | Gen Z chemist, Gen Alpha student, Research PI, Pharma decision-maker, Peer scientist — each with unique scoring weights and "wants" |
-| **4-Signal Scoring** | Clarity, Trust, Substance, Fit — weighted per audience into a single 0–100 Resonance Score |
+| **5 Audiences** | Gen Z chemist, Gen Alpha student, Research PI, Pharma decision-maker, Peer scientist - each with unique scoring weights and "wants" |
+| **4-Signal Scoring** | Clarity, Trust, Substance, Fit - weighted per audience into a single 0–100 Resonance Score |
 | **Single Top Fix** | A priority ladder selects the one highest-impact suggestion, not a list of ten |
 | **Responsive Layout** | Mobile-first with a full two-column desktop layout (input left, results right) that scales automatically |
 | **Score Ring** | SVG circular progress ring on desktop showing your score at a glance (replaces the mobile-only sticky bar) |
-| **Detection Panel** | "What we detected" — shows exactly what the engine found, with audience-adaptive contextual explanations for each item |
+| **Detection Panel** | "What we detected" - shows exactly what the engine found, with audience-adaptive contextual explanations for each item |
 | **Educational Toggles** | Each checklist item has a "Learn more" panel explaining what the content type means and why it matters for future audiences |
 | **Word/Char Counter** | Live word count, character count (with LinkedIn 3,000-char limit indicator), and sentence count |
 | **Persona Deep-Dive** | Collapsible research profiles with ✅ what each audience responds to and ❌ what turns them off |
@@ -37,7 +37,7 @@ While it borrows the language of computational chemistry — *binding*, *resonan
 | **Copy to Clipboard** | One-click copy of your score summary |
 | **Sticky Score Bar** | Frosted-glass bottom bar on mobile; hidden on desktop where the score ring takes over |
 | **State Persistence** | Draft auto-saved to localStorage; shareable via URL hash |
-| **Cross-browser** | No regex lookbehinds — works on Safari/iOS. `prefers-reduced-motion` respected |
+| **Cross-browser** | No regex lookbehinds - works on Safari/iOS. `prefers-reduced-motion` respected |
 | **Glossary** | Optional chemistry-metaphor glossary (for the chemists) |
 
 ## 🧪 How Scoring Works
@@ -64,7 +64,7 @@ For example, a **Gen Z chemist** weights Fit at 40% (they care most about format
 ### The Top Fix Priority Ladder
 
 The engine doesn't overwhelm you with tips. It:
-1. Calculates the **Focus Signal** — the signal with the largest weighted deficit (`weight × (100 - score)`)
+1. Calculates the **Focus Signal** - the signal with the largest weighted deficit (`weight × (100 - score)`)
 2. Runs through a priority ladder for that signal to find the single most impactful fix
 3. If your score is ≥ 80: "Strong pose. Nothing urgent to fix. Ship it."
 
@@ -103,7 +103,7 @@ The engine is validated against two canonical examples from the spec:
 SeeStory/
 ├── index.html       # Single-page app shell
 ├── styles.css       # Design system (cards, toggles, glassmorphism, persona cards)
-├── main.js          # Entry point — wires DOM to engine
+├── main.js          # Entry point - wires DOM to engine
 ├── scoring.js       # Pure 4-signal scoring engine + priority ladder
 ├── ui.js            # DOM rendering, state management, animations
 ├── data.js          # Audiences, lexicons, copy deck, personas

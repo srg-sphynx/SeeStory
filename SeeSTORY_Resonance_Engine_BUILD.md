@@ -351,8 +351,8 @@ function analyseText(caption){
   HYPE_WORDS.forEach(w=>{
     if(lower.includes(w)){ stoppers.push({label:"Hyperbole", snippet:w}); points -= 0.20; }
   });
-  if(STOPPER_RULES.emDash && /[—–]/.test(text)){
-    stoppers.push({label:"Em or en dash", snippet:"— or –"}); points -= 0.15;
+  if(STOPPER_RULES.emDash && /[-–]/.test(text)){
+    stoppers.push({label:"Em or en dash", snippet:"- or –"}); points -= 0.15;
   }
   sentences.forEach(s=>{
     if(wordCount(s) >= STOPPER_RULES.longSentenceMin){

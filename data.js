@@ -39,7 +39,7 @@ export const CHECKLIST = [
     label: "Has an image or graphic", 
     help: "A figure, chart, or photo.",
     what: "A SeeSAR binding-pose screenshot, an infiniSee chemical-space map, a HYDE scoring heatmap, or a molecule-of-the-week card. Anything that turns a concept into a single frame someone can screenshot and reshare.",
-    why: "BioSolveIT already makes beautiful 3D science. The next 25 years are about putting those visuals where the audience actually is — in social feeds, email headers, and conference slide decks — instead of behind a download button."
+    why: "BioSolveIT already makes beautiful 3D science. The next 25 years are about putting those visuals where the audience actually is - in social feeds, email headers, and conference slide decks - instead of behind a download button."
   },
   { 
     id: "video", 
@@ -52,36 +52,36 @@ export const CHECKLIST = [
     id: "humanVoice", 
     label: "Shows a real person", 
     help: "A face or named voice, not a logo.",
-    what: "A BioSolveIT scientist explaining a docking result on camera. A YoungSolvers student sharing their thesis project. A named researcher giving a quick opinion — not a faceless corporate logo or stock photo.",
-    why: "People follow people. The BioSolveIT team has 25 years of deep expertise — putting real faces and voices on that knowledge builds trust faster than any logo-branded infographic. Future audiences demand authenticity."
+    what: "A BioSolveIT scientist explaining a docking result on camera. A YoungSolvers student sharing their thesis project. A named researcher giving a quick opinion - not a faceless corporate logo or stock photo.",
+    why: "People follow people. The BioSolveIT team has 25 years of deep expertise - putting real faces and voices on that knowledge builds trust faster than any logo-branded infographic. Future audiences demand authenticity."
   },
   { 
     id: "communityHook", 
     label: "Invites people in", 
     help: "Tags someone, asks for replies, or invites collaboration.",
     what: "Tagging a YoungSolvers alumnus. Asking 'What would you screen first?' Inviting users to submit their own SeeSAR use case. Running a community poll on the next Scientific Challenge topic.",
-    why: "BioSolveIT's YoungSolvers program and Scientific Challenges already build community. The next step is extending that energy into everyday content — turning passive readers into active collaborators who feel ownership over the science."
+    why: "BioSolveIT's YoungSolvers program and Scientific Challenges already build community. The next step is extending that energy into everyday content - turning passive readers into active collaborators who feel ownership over the science."
   },
   { 
     id: "plainSummary", 
     label: "Has a plain-language line", 
     help: "One sentence a non-expert would understand.",
     what: "One sentence that makes the science click for anyone: 'We searched 2.4 billion molecules in under an hour and found 37 drug candidates.' No jargon, no acronyms, just the result.",
-    why: "BioSolveIT's tools solve complex problems, but the value proposition is simple. As the audience broadens — from computational chemists to medicinal chemists, biologists, and decision-makers — a plain-language hook is what earns the first click."
+    why: "BioSolveIT's tools solve complex problems, but the value proposition is simple. As the audience broadens - from computational chemists to medicinal chemists, biologists, and decision-makers - a plain-language hook is what earns the first click."
   },
   { 
     id: "source", 
     label: "Links or names a source", 
     help: "A paper, a dataset, or a page to verify.",
     what: "A DOI link to the validation study. A direct link to the SeeSAR download page. A GitHub repo for a workflow script. A citation to the HYDE scoring publication.",
-    why: "BioSolveIT has 25 years of peer-reviewed science behind it. Linking to that evidence is the fastest way to convert interest into trust — especially for PIs and pharma decision-makers who need to verify before they share or buy."
+    why: "BioSolveIT has 25 years of peer-reviewed science behind it. Linking to that evidence is the fastest way to convert interest into trust - especially for PIs and pharma decision-makers who need to verify before they share or buy."
   },
   { 
     id: "resultData", 
     label: "Includes a result or data", 
     help: "A specific outcome or measurement, even without a number in the text.",
     what: "A concrete outcome: '48-hour screen, 2.4 million compounds, 37 confirmed hits.' A benchmark: 'infiniSee found the known active in the top 0.01% of 12 billion compounds.' A customer result with permission to share.",
-    why: "Data is BioSolveIT's superpower. Every post that leads with a real result — not a feature list — positions the company as scientists talking to scientists. Future audiences will filter out everything that doesn't answer 'What actually changed?'"
+    why: "Data is BioSolveIT's superpower. Every post that leads with a real result - not a feature list - positions the company as scientists talking to scientists. Future audiences will filter out everything that doesn't answer 'What actually changed?'"
   }
 ];
 
@@ -113,7 +113,7 @@ export const SIGNAL_LABEL = { clarity:"Clarity", trust:"Trust", substance:"Subst
 
 export const COPY = {
   title: "SeeSTORY",
-  tagline: "A companion to the BioWeek poster — exploring how BioSolveIT content could land with the next generation.",
+  tagline: "A companion to the BioWeek poster - exploring how BioSolveIT content could land with the next generation.",
   howToToggle: "How it works",
   step1: "1. Pick who it is for",
   step2: "2. Paste your draft",
@@ -129,7 +129,7 @@ export const COPY = {
   emptyState: "Add a draft. The score needs words to read.",
   defaultAudienceNote: "No audience picked, so this is scored for a Peer scientist.",
   confidenceLowNote: "Short draft. Treat this as a rough read.",
-  disclaimer: "Built for the BioWeek 2026 poster on 25 years of BioSolveIT. This interactive demo was created entirely with AI-assisted vibe coding — itself a demonstration of how the next 25 years will be built."
+  disclaimer: "Built for the BioWeek 2026 poster on 25 years of BioSolveIT. This interactive demo was created entirely with AI-assisted vibe coding - itself a demonstration of how the next 25 years will be built."
 };
 
 export const SIGNAL_MSG = {
@@ -211,16 +211,16 @@ export const PERSONAS = [
     icon: "🧬",
     name: "Gen Z Chemist",
     age: "22–30",
-    bio: "Entering the workforce or completing grad school. They discovered drug design through YouTube tutorials and Reddit threads, not textbooks. They already know SeeSAR exists — they want to see it in action, in 60 seconds, from a real person.",
-    wants: ["60-second SeeSAR screen recordings on LinkedIn/TikTok", "Real scientists showing real workflows on camera", "Community threads — 'What would you screen first?'", "Plain-English takeaways they can reshare in group chats"],
+    bio: "Entering the workforce or completing grad school. They discovered drug design through YouTube tutorials and Reddit threads, not textbooks. They already know SeeSAR exists - they want to see it in action, in 60 seconds, from a real person.",
+    wants: ["60-second SeeSAR screen recordings on LinkedIn/TikTok", "Real scientists showing real workflows on camera", "Community threads - 'What would you screen first?'", "Plain-English takeaways they can reshare in group chats"],
     repels: ["Corporate press-release tone", "20-page PDFs when a 30-second video would do", "Logo-branded content with no human voice"]
   },
   {
     icon: "🎮",
     name: "Gen Alpha Student",
     age: "14–20",
-    bio: "Currently in high school or early undergrad. They will be BioSolveIT's users in 10 years. They learn through interactive demos, YouTube explainers, and gamified challenges — not journal papers. The YoungSolvers program is their on-ramp.",
-    wants: ["Video-first content, ideally under 60 seconds", "Interactive demos — 'try docking this molecule yourself'", "YoungSolvers stories and success spotlights", "Casual, friendly tone — 'come join us, not we are pleased to announce'"],
+    bio: "Currently in high school or early undergrad. They will be BioSolveIT's users in 10 years. They learn through interactive demos, YouTube explainers, and gamified challenges - not journal papers. The YoungSolvers program is their on-ramp.",
+    wants: ["Video-first content, ideally under 60 seconds", "Interactive demos - 'try docking this molecule yourself'", "YoungSolvers stories and success spotlights", "Casual, friendly tone - 'come join us, not we are pleased to announce'"],
     repels: ["Formal academic announcements", "Text-only posts with no visuals", "Content that assumes 10 years of domain expertise"]
   },
   {
@@ -236,7 +236,7 @@ export const PERSONAS = [
     name: "Pharma Decision-Maker",
     age: "35–55",
     bio: "Focused on ROI, pipeline velocity, and risk reduction. They compare BioSolveIT's Chemical Space Docking to competitors on throughput, cost, and validation. They want a business case, not a feature list.",
-    wants: ["Concrete metrics — time saved, hit rate, cost per screen", "Customer case studies with permission to reference", "A direct CTA — book a demo, read the case study, get a quote", "Clean, professional presentation that respects their time"],
+    wants: ["Concrete metrics - time saved, hit rate, cost per screen", "Customer case studies with permission to reference", "A direct CTA - book a demo, read the case study, get a quote", "Clean, professional presentation that respects their time"],
     repels: ["Hedging language (maybe, perhaps, we think)", "Flashy visuals that don't connect to outcomes", "Posts that bury the result under three paragraphs of context"]
   },
   {
