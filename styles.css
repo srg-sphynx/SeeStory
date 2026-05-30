@@ -59,56 +59,6 @@ body{
   background-attachment: fixed;
   line-height:1.45;
   -webkit-text-size-adjust:100%;
-  position: relative;
-}
-
-/* ── Background Proteins ── */
-.bg-proteins {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  overflow: hidden;
-  z-index: -1;
-  pointer-events: none;
-}
-.protein {
-  position: absolute;
-  opacity: 0.8;
-  mix-blend-mode: multiply;
-  filter: grayscale(20%) opacity(0.5);
-}
-/* Top Left */
-.protein.p1 {
-  top: -50px;
-  left: -100px;
-  width: max(300px, 35vw);
-}
-/* Top Right */
-.protein.p2 {
-  top: 150px;
-  right: -80px;
-  width: max(250px, 28vw);
-  transform: rotate(45deg);
-}
-/* Middle Left */
-.protein.p3 {
-  top: 800px;
-  left: -150px;
-  width: max(400px, 40vw);
-  transform: rotate(-30deg);
-}
-/* Bottom Right */
-.protein.p4 {
-  top: 1400px;
-  right: -120px;
-  width: max(350px, 35vw);
-  transform: rotate(180deg);
-}
-/* Bottom Left */
-.protein.p5 {
-  top: 2000px;
-  left: -50px;
-  width: max(280px, 30vw);
-  transform: rotate(90deg);
 }
 
 /* ── Site header ── */
@@ -122,34 +72,6 @@ body{
 .header-inner{
   max-width:1200px;
   margin:0 auto;
-}
-.header-title-row {
-  display: flex;
-  align-items: center;
-  gap: var(--s3);
-  margin: 0 0 var(--s2);
-}
-.header-title-row h1 {
-  font-size:1.8rem;
-  font-weight:800;
-  line-height:1.15;
-  color:#fff;
-  margin:0;
-  letter-spacing:-0.02em;
-}
-.brand-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: var(--card);
-  color: var(--green);
-  font-weight: 900;
-  font-size: 1.4rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  flex-shrink: 0;
 }
 .context-desc {
   color: rgba(255, 255, 255, 0.9);
