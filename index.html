@@ -37,6 +37,15 @@
     <h2 id="h-aud">1. Pick who it is for</h2>
     <p class="step-desc">Pick the one group you are writing for. The tool changes what it rewards based on this choice. You can switch it any time to see how the same draft scores for a different reader.</p>
     <div class="aud-grid" id="audience" role="group" aria-label="Audience"></div>
+
+    <!-- Persona Deep Dive (inline with audience) -->
+    <button id="personaToggle" class="persona-toggle" aria-expanded="false" aria-controls="personaBody">
+      <span class="arrow">&#9654;</span> Who are these people? Read the research behind each audience.
+    </button>
+    <div id="personaBody" class="guide-body persona-body" role="region" aria-labelledby="personaToggle">
+      <p>Not sure which audience to pick? Here is the research behind each one — what they read, what they skip, and what makes them share.</p>
+      <div id="personaList" class="persona-list"></div>
+    </div>
   </section>
 
   <!-- Step 2: Caption -->
@@ -103,14 +112,7 @@
     </table>
   </div>
 
-  <!-- Persona Deep Dive -->
-  <button id="personaToggle" class="guide-toggle glossary-toggle" aria-expanded="false" aria-controls="personaBody">
-    <span class="arrow">&#9654;</span> Audience Personas: The Research
-  </button>
-  <div id="personaBody" class="guide-body glossary-body" role="region" aria-labelledby="personaToggle">
-    <p>A breakdown of the research behind each target audience.</p>
-    <div id="personaList" class="persona-list"></div>
-  </div>
+
 
   <!-- Disclaimer -->
   <p class="muted disclaimer">A concept piece exploring how content lands with different readers. Not an official BioSolveIT product.</p>

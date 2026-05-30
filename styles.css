@@ -324,6 +324,34 @@ textarea:focus{outline:none;border-color:var(--blue)}
   padding:var(--s2);border-bottom:1px solid var(--line);
 }
 
+/* persona toggle (inside audience card) */
+.persona-toggle{
+  display:flex;align-items:center;gap:var(--s2);
+  background:rgba(16,65,115,0.06);
+  border:1px dashed rgba(16,65,115,0.2);
+  border-radius:10px;
+  cursor:pointer;
+  color:var(--blue);font:inherit;font-weight:600;font-size:.88rem;
+  padding:var(--s3) var(--s4);
+  margin:var(--s4) 0 0;
+  width:100%;
+  transition:background 0.15s, border-color 0.15s;
+}
+.persona-toggle:hover{
+  background:rgba(16,65,115,0.10);
+  border-color:var(--blue);
+}
+.persona-toggle .arrow{
+  display:inline-block;transition:transform .15s;font-size:.75rem;
+}
+.persona-toggle[aria-expanded="true"] .arrow{
+  transform:rotate(90deg);
+}
+.persona-body{
+  margin:var(--s3) 0 0;
+  background:rgba(16,65,115,0.04);
+}
+
 /* persona list */
 .persona-list{
   display:flex;flex-direction:column;gap:var(--s4);
