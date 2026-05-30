@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SeeSTORY · The Resonance Engine</title>
+  
+  <!-- If favicon available in future -->
+  <!-- <link rel="icon" href="favicon.svg"> -->
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap">
+  <h1>SeeSTORY</h1>
+  <p class="sub">The Resonance Engine</p>
+
+  <section class="card blue" aria-labelledby="h-aud">
+    <h2 id="h-aud" class="mt-0">1. Pick your audience</h2>
+    <div class="seg" id="audience" role="group" aria-label="Audience"></div>
+    <p class="muted mb-2" id="audHint" style="font-size: 0.9rem; margin-top: var(--s2); font-weight: 500;"></p>
+  </section>
+
+  <section class="card" aria-labelledby="h-anchor">
+    <h2 id="h-anchor" class="mt-0">2. Choose an anchor</h2>
+    <div class="chips" id="anchors" role="radiogroup" aria-label="Anchor"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-grow">
+    <h2 id="h-grow" class="mt-0">3. Grow the draft</h2>
+    <div id="fragments"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-cap">
+    <h2 id="h-cap" class="mt-0">4. Paste your caption</h2>
+    <textarea id="caption" placeholder="Write or paste your post caption..."></textarea>
+    <ul class="spot" id="spotter"></ul>
+  </section>
+
+  <section class="card green" aria-labelledby="h-break">
+    <h2 id="h-break" class="mt-0">Resonance breakdown</h2>
+    <div id="breakdown"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-tips">
+    <h2 id="h-tips" class="mt-0">Optimised pose</h2>
+    <ul id="tips" class="spot"></ul>
+  </section>
+
+  <p class="muted" style="font-size:.8rem; text-align: center; margin-top: var(--s5);">
+    A concept piece exploring Story-Activity Relationships.<br/> Not an official BioSolveIT product.
+  </p>
+</main>
+
+<div class="scorebar" role="status" aria-live="polite">
+  <span class="num" id="scoreNum">40</span>
+  <div class="bar"><div class="fill" id="scoreFill"></div></div>
+  <span id="scoreLabel" class="muted">Binds, can improve</span>
+</div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
