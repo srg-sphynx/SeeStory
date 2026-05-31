@@ -85,25 +85,57 @@ export const CHECKLIST = [
   }
 ];
 
+// Hype / marketing buzzwords. Drawn from real B2B SaaS landing-page copy and
+// drug-discovery software marketing. Whole-word matched (see scoring.js), so
+// hyphenated and multi-word entries are both supported.
 export const HYPE_WORDS = [
-  "revolutionary","game-changing","game changer","world-class","cutting-edge",
-  "cutting edge","unprecedented","best-in-class","best in class","synergy",
-  "leverage","disruptive","next-generation","next generation","groundbreaking",
-  "state-of-the-art","seamless","robust","paradigm","supercharge","unlock",
-  "skyrocket","mind-blowing","ultimate","revolutionize","transformative"
+  // classic marketing superlatives
+  "revolutionary","game-changing","game changer","game-changer","world-class",
+  "cutting-edge","cutting edge","unprecedented","best-in-class","best in class",
+  "best-of-breed","best of breed","best-in-breed","synergy","leverage","disruptive",
+  "next-generation","next generation","next-gen","groundbreaking","state-of-the-art",
+  "seamless","robust","paradigm","supercharge","supercharged","supercharging",
+  "turbocharge","turbocharged","unlock","skyrocket","mind-blowing","ultimate",
+  "revolutionize","revolutionizing","transformative","transformational","reimagine",
+  "reimagined","unparalleled","unrivaled","unrivalled","groundbreaker",
+  // B2B SaaS / SEO landing-page staples
+  "industry-leading","industry leading","market-leading","market leading",
+  "world-leading","industry-first","industry first","world's first","turnkey",
+  "end-to-end","end to end","frictionless","effortless","effortlessly",
+  "ai-powered","ai powered","ai-driven","ai driven","powerful","innovative",
+  "blazing-fast","blazing fast","lightning-fast","lightning fast","one-stop",
+  "one stop shop","must-have","must have","plug-and-play","plug and play",
+  "hassle-free","scalable solution","bleeding-edge","bleeding edge","elite",
+  "premier","breakthrough","dominate","crush it","killer","insanely",
+  "jaw-dropping","next-level","next level",
+  // drug-discovery flavoured hype
+  "silver bullet","magic bullet","holy grail","wonder drug","miracle","magical"
 ];
 
 export const HEDGE_WORDS = [
   "maybe","perhaps","might","possibly","sort of","kind of","we think",
-  "arguably","somewhat","we believe","it seems","fairly"
+  "arguably","somewhat","we believe","it seems","fairly","potentially",
+  "presumably","apparently","seemingly","supposedly","hopefully","we feel",
+  "we suspect","we assume","in our view","in our opinion","tends to","tend to",
+  "more or less","relatively","to some extent","in theory","could be",
+  "ought to","conceivably","ostensibly","we'd argue","a bit"
 ];
 
 export const RESULT_CUES = [
-  "faster","slower","reduced","increased","improved","cut","saved",
-  "fold","outperformed","up to","down to","higher","lower"
+  // directional change
+  "faster","slower","reduced","reduction","increased","increase","improved",
+  "improvement","cut","saved","fold","outperformed","outperform","outperforms",
+  "up to","down to","higher","lower","boosted","boost","accelerated","accelerate",
+  "decreased","doubled","tripled","quadrupled","halved","gained","dropped",
+  "grew","growth","shortened","speedup","speed-up","uplift",
+  // comparison framing
+  "compared to","compared with","versus","more than","less than","fewer",
+  "benchmark","benchmarked","outperformed",
+  // domain result metrics (B2B SaaS + drug discovery)
+  "conversion","enrichment","hit rate","return on investment"
 ];
 
-export const CTA_REGEX = /\?|\b(try|join|watch|bring|see|download|read|register|sign up|book|explore|comment|share|reply|tag)\b/i;
+export const CTA_REGEX = /\?|\b(try|join|watch|bring|see|download|read|register|sign up|book|book a call|explore|comment|share|reply|tag|subscribe|demo|learn more|learn|discover|request|contact|schedule|claim|follow|click|visit|check out|find out|apply|enroll|reach out|talk to|grab|get started|get a quote)\b/i;
 export const NUMBER_REGEX = /\d|%/;
 export const EMDASH_REGEX = /[\u2014\u2013]/;
 
@@ -114,9 +146,18 @@ export const CAPS_WORD_REGEX = /\b[A-Z]{2,}\b/g;
 // Real abbreviations that read as normal scientific writing, not shouting.
 // A single one of these (or any single short token) never counts as shouting.
 export const ACRONYM_ALLOW = new Set([
+  // general
+  "OK","ID","EU","US","USA","UK","CEO","CTO","CFO","COO","HR","FAQ","IT","QA",
+  "GPU","CPU","API","URL","PDF","AI","ML","2D","3D","EMEA","APAC","NA",
+  // B2B SaaS / SEO / GTM
+  "SEO","SERP","CTR","CRM","ERP","SDK","UI","UX","KPI","SLA","MRR","ARR",
+  "CAC","LTV","NPS","GDPR","HIPAA","SOC","ISO","MVP","POC","RFP","SMB","ICP",
+  "TAM","SAM","SOM","CTA","CRO","GTM","PLG","ROAS","ROI","SaaS",
+  // life science / drug discovery
   "DNA","RNA","PCR","NMR","HYDE","SAR","QSAR","DOI","PDB","SMILES","ADMET",
-  "ML","AI","API","URL","PDF","ROI","FDA","EMA","EU","US","USA","UK","CEO",
-  "CTO","R&D","HR","FAQ","OK","ID","2D","3D","KD","IC","EC","GPU","CPU"
+  "ADME","DMPK","PK","PD","FEP","MD","QM","MM","CADD","SBDD","LBDD","HTS",
+  "FBDD","MOA","IND","NDA","GLP","GMP","GCP","NCE","HERG","CYP","EGFR","GPCR",
+  "ATP","ELISA","HPLC","LCMS","MS","NGS","CRISPR","FDA","EMA","KD","IC","EC"
 ]);
 
 export const SIGNALS = ["clarity","trust","substance","fit"];
@@ -210,10 +251,45 @@ export const PRESETS = [
   },
   {
     title: "The Data Post",
-    desc: "Score: ~78, Focus: Fit",
+    desc: "Score: ~83, Focus: Fit",
     audience: "peer",
     caption: "We screened 2.4 million compounds in 48 hours. 37 hits confirmed in dose-response.",
     checklist: { source: true, resultData: true }
+  },
+  {
+    title: "The SaaS Buzzword Bomb",
+    desc: "Score: ~47, Focus: Substance",
+    audience: "pharma",
+    caption: "Our AI-powered, industry-leading platform is the ultimate end-to-end solution to supercharge your discovery workflow. Request a demo today!",
+    checklist: {}
+  },
+  {
+    title: "The Benchmark Drop",
+    desc: "Score: ~91, Focus: Fit",
+    audience: "pi",
+    caption: "In a prospective benchmark, our docking workflow recovered 92% of known actives in the top 1 percent, a 3-fold enrichment over the baseline. Methods and dataset are linked below.",
+    checklist: { source: true, resultData: true }
+  },
+  {
+    title: "The Gen Alpha Reel",
+    desc: "Score: ~90, Focus: Fit",
+    audience: "genalpha",
+    caption: "We turned molecular docking into a 30-second game. Can you dock the molecule faster than our scientist? Drop your best time below.",
+    checklist: { video: true, visual: true, communityHook: true }
+  },
+  {
+    title: "The Shouty Launch",
+    desc: "Score: ~52, Focus: Substance",
+    audience: "pi",
+    caption: "HUGE NEWS! Our NEW platform is FINALLY HERE and it is absolutely INCREDIBLE for your research!",
+    checklist: {}
+  },
+  {
+    title: "The Hedgy Maybe",
+    desc: "Score: ~49, Focus: Fit",
+    audience: "pharma",
+    caption: "We think this might possibly improve screening times, and it could potentially reduce costs somewhat, though results may vary across projects.",
+    checklist: {}
   }
 ];
 

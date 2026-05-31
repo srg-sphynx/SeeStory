@@ -25,11 +25,12 @@ While it borrows the language of computational chemistry - *binding*, *resonance
 | **Single Top Fix** | A priority ladder selects the one highest-impact suggestion, not a list of ten |
 | **Responsive Layout** | Mobile-first with a full two-column desktop layout (input left, results right) that scales automatically |
 | **Score Ring** | SVG circular progress ring on desktop showing your score at a glance (replaces the mobile-only sticky bar) |
-| **Detection Panel** | "What we detected" - shows exactly what the engine found, with audience-adaptive contextual explanations for each item |
+| **Detection Panel** | "What we detected" - shows exactly what the engine found across 8 categories (numbers, CTA, results, hype, hedging, exclamations, dashes, ALL-CAPS shouting), with audience-adaptive contextual explanations for each item |
+| **Real-world detection dataset** | Hundreds of hype/hedge/result/CTA terms drawn from real B2B SaaS landing-page copy and drug-discovery software marketing, plus an acronym allow-list (DNA, QSAR, HPLC, CRM, ARR, ...) so legitimate jargon is never flagged as shouting |
 | **Educational Toggles** | Each checklist item has a "Learn more" panel explaining what the content type means and why it matters for future audiences |
 | **Word/Char Counter** | Live word count, character count (with LinkedIn 3,000-char limit indicator), and sentence count |
 | **Persona Deep-Dive** | Collapsible research profiles with ✅ what each audience responds to and ❌ what turns them off |
-| **Preset Gallery** | Three click-to-load examples (The Hype Trap, The Clean Post, The Data Post) |
+| **Preset Gallery** | Eight click-to-load examples spanning the score range - The Hype Trap, The Clean Post, The Data Post, The SaaS Buzzword Bomb, The Benchmark Drop, The Gen Alpha Reel, The Shouty Launch, and The Hedgy Maybe |
 | **Compare Mode** | Score the same draft across all 5 audiences side-by-side (5-column grid on desktop) |
 | **Live Scoring** | Score updates in real-time as you type (debounced 150ms) |
 | **Toggle Checklist** | 7-item checklist with interactive toggle switches and inline educational content for each media type |
@@ -61,6 +62,23 @@ Final Score = round(W.clarity × Clarity + W.trust × Trust + W.substance × Sub
 
 For example, a **Gen Z chemist** weights Fit at 40% (they care most about format), while a **Research PI** weights Substance at 35% (they care most about proof).
 
+### The Detection Engine
+
+Before scoring, the engine reads the draft and auto-detects eight signals shown in the **"What we detected"** panel:
+
+| Category | How it's detected |
+|----------|-------------------|
+| **Numbers** | Any digit or `%` |
+| **Call to action** | A question mark or an action verb (try, watch, subscribe, request a demo, book a call, ...) |
+| **Result / comparison** | Outcome and benchmark cues (reduced, 3-fold, enrichment, compared to, hit rate, ...) |
+| **Hype words** | Marketing buzzwords from real B2B SaaS and drug-discovery copy (revolutionary, AI-powered, turnkey, end-to-end, silver bullet, ...) |
+| **Hedge phrases** | Tentative language (maybe, we think, could potentially, tends to, ...) |
+| **Exclamation marks** | Counted; flagged at 2+ |
+| **Em / en dashes** | `—` or `–` |
+| **ALL-CAPS shouting** | Two or more all-caps words, or one long (5+ letter) caps word - with an acronym allow-list (DNA, QSAR, HPLC, CRM, ARR, SEO, ...) so legitimate jargon is **not** flagged |
+
+All lexicon matching is **whole-word** (case-insensitive), so `scaffold` is not mistaken for the result cue `fold`, and `mighty` is not mistaken for the hedge `might`. The hype/hedge/result/CTA datasets are tuned for **B2B SaaS companies generally and drug-discovery software specifically**, making this usable as a real content-resonance checker beyond the demo.
+
 ### The Top Fix Priority Ladder
 
 The engine doesn't overwhelm you with tips. It:
@@ -70,12 +88,28 @@ The engine doesn't overwhelm you with tips. It:
 
 ### Acceptance Tests
 
-The engine is validated against two canonical examples from the spec:
+The engine is validated against canonical examples (`node test_scoring.mjs`, 20 assertions):
 
 | Example | Audience | Score | Focus | C | T | S | F |
 |---------|----------|-------|-------|---|---|---|---|
 | The Hype Trap | PI | **44** | Substance | 100 | 52 | 30 | 0 |
 | The Clean Post | Gen Z | **65** | Fit | 100 | 100 | 55 | 30 |
+| The Data Post | Peer | **83** | Fit | 100 | 100 | 80 | 55 |
+
+### Preset Gallery (verified scores)
+
+Every click-to-load example is verified against the live engine:
+
+| Example | Audience | Score | Demonstrates |
+|---------|----------|-------|--------------|
+| The Hype Trap | PI | 44 | Buzzwords tank Trust; no numbers |
+| The Clean Post | Gen Z | 65 | Video + CTA, but missing a visual |
+| The Data Post | Peer | 83 | Numbers + source + result data |
+| The SaaS Buzzword Bomb | Pharma | 47 | B2B SaaS hype with no substance |
+| The Benchmark Drop | PI | 91 | A concrete benchmark done right |
+| The Gen Alpha Reel | Gen Alpha | 90 | Video-first, visual, community hook |
+| The Shouty Launch | PI | 52 | ALL-CAPS shouting + exclamations |
+| The Hedgy Maybe | Pharma | 49 | Hedging language drains authority |
 
 ## 🏗️ Tech Stack
 
