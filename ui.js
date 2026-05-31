@@ -852,8 +852,7 @@ export function render(){
     if(compareArea.dataset.collapsed === "false") paintCompare();
   }
 
-  // save state
-  writeHash();
+  // save state (localStorage only, no URL hash)
   saveDraft();
 }
 
@@ -896,16 +895,9 @@ function paintScoreBar(r){
 }
 
 /* ── URL hash state ── */
-export function writeHash(){
-  try {
-    const s = {
-      a: state.audienceKey,
-      c: state.caption,
-      k: state.checklist
-    };
-    location.replace("#" + btoa(unescape(encodeURIComponent(JSON.stringify(s)))));
-  } catch(e){ /* silently fail */ }
-}
+// writeHash is intentionally a no-op: drafts are persisted via localStorage.
+// Keeping the export so any external callers don't break.
+export function writeHash(){ /* no-op */ }
 
 export function readHash(){
   if(!location.hash) return false;
@@ -919,6 +911,8 @@ export function readHash(){
         if(s.k[key] === true) state.checklist[key] = true;
       });
     }
+    // Clean the hash from the URL bar so old shared links don't leave a long trail
+    try { history.replaceState(null, "", location.pathname + location.search); } catch(e2){}
     return true;
   } catch(e){
     return false;

@@ -49,9 +49,10 @@ A header **page switch** lets visitors choose how to engage:
 | **Score Animation** | Smooth number count-up with ease-out quad easing, band-coloured progress fills, scroll-reveal cards, and grid-based collapse transitions |
 | **Copy to Clipboard** | One-click copy of your score summary |
 | **Sticky Score Bar** | Frosted-glass bottom bar on mobile that slides in once a score exists, with a jump-to-results control; hidden on desktop where the score ring takes over |
-| **State Persistence** | Draft auto-saved to localStorage; shareable via URL hash |
+| **State Persistence** | Draft auto-saved to localStorage (consent-gated); old hash-based shared links still load but the URL is cleaned immediately |
 | **Cross-browser** | No regex lookbehinds - works on Safari/iOS. `prefers-reduced-motion` respected |
 | **Glossary** | Optional chemistry-metaphor glossary (for the chemists) |
+| **Cookie / Storage Consent** | A polished glassmorphism banner asks for consent before persisting anything to localStorage. Accept enables theme + draft saving; Decline silently blocks future writes (app still works, just doesn't remember). Respects `prefers-reduced-motion`, safe-area insets, and 48px touch targets on mobile |
 
 ## 🧪 How Scoring Works
 

@@ -287,5 +287,55 @@
 </div>
 
 <script type="module" src="main.js"></script>
+
+<!-- Cookie consent banner -->
+<div class="cookie-banner" id="cookieBanner" hidden>
+  <div class="cookie-card">
+    <span class="cookie-icon" aria-hidden="true">🍪</span>
+    <p class="cookie-text">
+      <strong>This site uses local storage</strong> to remember your theme preference and save your draft between visits. No data leaves your browser.
+    </p>
+    <div class="cookie-actions">
+      <button class="cookie-btn cookie-btn-accept" id="cookieAccept">Accept</button>
+      <button class="cookie-btn cookie-btn-decline" id="cookieDecline">Decline</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var CONSENT_KEY = "seestory_consent";
+  var consent;
+  try { consent = localStorage.getItem(CONSENT_KEY); } catch(e){}
+  if(consent) return; // already answered
+
+  var banner = document.getElementById("cookieBanner");
+  if(!banner) return;
+  banner.hidden = false;
+
+  document.getElementById("cookieAccept").addEventListener("click", function(){
+    try { localStorage.setItem(CONSENT_KEY, "yes"); } catch(e){}
+    banner.style.animation = "none";
+    banner.style.transition = "opacity .3s ease, transform .3s ease";
+    banner.style.opacity = "0";
+    banner.style.transform = "translateY(30px)";
+    setTimeout(function(){ banner.hidden = true; }, 350);
+  });
+
+  document.getElementById("cookieDecline").addEventListener("click", function(){
+    try { localStorage.setItem(CONSENT_KEY, "no"); } catch(e){}
+    // Override localStorage.setItem to block future writes (theme/draft saves use try/catch)
+    var _orig = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = function(key){
+      if(key === CONSENT_KEY) return _orig.apply(localStorage, arguments);
+      // silently block non-consent writes
+    };
+    banner.style.animation = "none";
+    banner.style.transition = "opacity .3s ease, transform .3s ease";
+    banner.style.opacity = "0";
+    banner.style.transform = "translateY(30px)";
+    setTimeout(function(){ banner.hidden = true; }, 350);
+  });
+})();
+</script>
 </body>
 </html>
