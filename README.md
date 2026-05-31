@@ -12,6 +12,13 @@ It is also a showcase of the future of software development itself: this entire 
 
 While it borrows the language of computational chemistry - *binding*, *resonance*, *pharmacophore features* - the engine underneath is a transparent, rule-based heuristic that dynamically suggests future content strategies like SeeSAR tutorials, infiniSee screencasts, and YoungSolvers community integration.
 
+### Two ways to use it
+
+A header **page switch** lets visitors choose how to engage:
+
+- **Try the tool** (`index.html`) - the interactive resonance scorer.
+- **Explore the science** (`learn.html`) - a read-only, one-page brief for people who would rather *learn* than *use*. It covers why the next generation reads differently, what the four signals measure, how the five audiences differ (rendered live from the real engine weights), and how the computational-chemistry field communicates - profiling **Schrödinger, Molsoft, OpenEye/Cadence, Chemical Computing Group, Cresset, and BioSolveIT** with sourced facts, animated stat counters, an interactive company explorer, and a market-size breakdown. All figures are cited; market sizes are flagged as third-party estimates and "communication signal" notes as interpretive.
+
 ## 🚀 Live Demo
 
 **➜ [https://srg-sphynx.github.io/SeeStory/](https://srg-sphynx.github.io/SeeStory/)**
@@ -23,20 +30,25 @@ While it borrows the language of computational chemistry - *binding*, *resonance
 | **5 Audiences** | Gen Z chemist, Gen Alpha student, Research PI, Pharma decision-maker, Peer scientist - each with unique scoring weights and "wants" |
 | **4-Signal Scoring** | Clarity, Trust, Substance, Fit - weighted per audience into a single 0–100 Resonance Score |
 | **Single Top Fix** | A priority ladder selects the one highest-impact suggestion, not a list of ten |
-| **Responsive Layout** | Mobile-first with a full two-column desktop layout (input left, results right) that scales automatically |
+| **Light / Dark / Auto theme** | A header toggle (sun / monitor / moon) switches the whole UI between light, dark, and system-matched themes. Preference is persisted; an inline bootstrap prevents any flash; contrast is preserved via themeable surface/text tokens layered over the fixed BioSolveIT brand hues |
+| **Explore page** | A second `learn.html` view (see above) for non-users - sourced industry facts, animated counters, an interactive competitor explorer, and a revenue-mix chart |
+| **Page switch** | A header segmented control to move between the tool and the Explore page |
+| **Responsive Layout** | Mobile-first with a full two-column desktop layout (input left, results right) that scales automatically; on mobile the header **condenses on scroll** to reclaim vertical space |
 | **Score Ring** | SVG circular progress ring on desktop showing your score at a glance (replaces the mobile-only sticky bar) |
+| **How it works modal** | Help trigger pinned in the sticky header (always reachable) opens a centered dialog on desktop / bottom sheet on mobile, with Escape, backdrop-click, and focus-return |
+| **Collapsible results** | "What we detected" and "Compare audiences" are an accordion - opening one collapses the other - and each shows a **summary teaser when collapsed** (detected: signals present + issue count; compare: best-fit audience and score) |
 | **Detection Panel** | "What we detected" - shows exactly what the engine found across 8 categories (numbers, CTA, results, hype, hedging, exclamations, dashes, ALL-CAPS shouting), with audience-adaptive contextual explanations for each item |
 | **Real-world detection dataset** | Hundreds of hype/hedge/result/CTA terms drawn from real B2B SaaS landing-page copy and drug-discovery software marketing, plus an acronym allow-list (DNA, QSAR, HPLC, CRM, ARR, ...) so legitimate jargon is never flagged as shouting |
 | **Educational Toggles** | Each checklist item has a "Learn more" panel explaining what the content type means and why it matters for future audiences |
 | **Word/Char Counter** | Live word count, character count (with LinkedIn 3,000-char limit indicator), and sentence count |
 | **Persona Deep-Dive** | Collapsible research profiles with ✅ what each audience responds to and ❌ what turns them off |
 | **Preset Gallery** | Eight click-to-load examples spanning the score range - The Hype Trap, The Clean Post, The Data Post, The SaaS Buzzword Bomb, The Benchmark Drop, The Gen Alpha Reel, The Shouty Launch, and The Hedgy Maybe |
-| **Compare Mode** | Score the same draft across all 5 audiences side-by-side (5-column grid on desktop) |
+| **Compare Mode** | Score the same draft across all 5 audiences side-by-side in a collapsible panel; the grid auto-fits its columns so cells never clip on the narrower results column |
 | **Live Scoring** | Score updates in real-time as you type (debounced 150ms) |
 | **Toggle Checklist** | 7-item checklist with interactive toggle switches and inline educational content for each media type |
-| **Score Animation** | Smooth number count-up with ease-out quad easing, band-coloured progress fills |
+| **Score Animation** | Smooth number count-up with ease-out quad easing, band-coloured progress fills, scroll-reveal cards, and grid-based collapse transitions |
 | **Copy to Clipboard** | One-click copy of your score summary |
-| **Sticky Score Bar** | Frosted-glass bottom bar on mobile; hidden on desktop where the score ring takes over |
+| **Sticky Score Bar** | Frosted-glass bottom bar on mobile that slides in once a score exists, with a jump-to-results control; hidden on desktop where the score ring takes over |
 | **State Persistence** | Draft auto-saved to localStorage; shareable via URL hash |
 | **Cross-browser** | No regex lookbehinds - works on Safari/iOS. `prefers-reduced-motion` respected |
 | **Glossary** | Optional chemistry-metaphor glossary (for the chemists) |
@@ -126,21 +138,24 @@ Every click-to-load example is verified against the live engine:
 
 | Breakpoint | Layout | Score display |
 |------------|--------|---------------|
-| **< 600px** | Single column, 1-col audience grid | Sticky bottom bar |
+| **< 600px** | Single column, 1-col audience grid, condensing sticky header | Slide-in sticky bottom bar |
 | **601–899px** | Single column, 2-col audience grid | Floating bottom bar |
-| **900px+** | Two-column (input left, results right) | SVG score ring (sticky right column) |
+| **900px+** | Two-column (input left, results right), static header | SVG score ring (sticky right column) |
 | **1100px+** | Wider input column (1.15:0.85 ratio) | SVG score ring |
 
 ## 📁 Project Structure
 
 ```
 SeeStory/
-├── index.html       # Single-page app shell
-├── styles.css       # Design system (cards, toggles, glassmorphism, persona cards)
-├── main.js          # Entry point - wires DOM to engine
+├── index.html       # The tool - single-page app shell
+├── learn.html       # The Explore page - read-only science + industry brief
+├── styles.css       # Shared design system + theme tokens (light/dark/auto)
+├── learn.css        # Explore-page-only styles (rides on the shared tokens)
+├── main.js          # Tool entry point - wires DOM to engine
 ├── scoring.js       # Pure 4-signal scoring engine + priority ladder
-├── ui.js            # DOM rendering, state management, animations
-├── data.js          # Audiences, lexicons, copy deck, personas
+├── ui.js            # Tool DOM rendering, theming, state, animations
+├── learn.js         # Explore-page interactivity (counters, accordion, tabs)
+├── data.js          # Audiences, lexicons, copy deck, personas (shared)
 ├── Font/            # BioSans .ttf font files
 └── .github/workflows/
     └── deploy.yml   # Auto-deploy to GitHub Pages on push
