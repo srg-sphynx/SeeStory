@@ -2,7 +2,7 @@
 
 import {
   AUDIENCES, HYPE_WORDS, HEDGE_WORDS, RESULT_CUES,
-  CTA_REGEX, NUMBER_REGEX, EMDASH_REGEX, SHOUT_REGEX,
+  CTA_REGEX, NUMBER_REGEX, EMDASH_REGEX, CAPS_WORD_REGEX, ACRONYM_ALLOW,
   BAND, FIT_FIX, COPY, SIGNALS
 } from './data.js';
 
@@ -14,6 +14,23 @@ export function splitSentences(text){
 }
 
 function getWords(text){ return (text.match(/\S+/g) || []); }
+
+/** Whole-word / whole-phrase, case-insensitive match.
+ *  Avoids substring false positives like "fold" inside "scaffold" or
+ *  "might" inside "mighty". Handles multi-word and hyphenated entries. */
+function matchesWord(text, phrase){
+  const esc = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp("\\b" + esc + "\\b", "i").test(text);
+}
+
+/** Spot shouting without flagging legitimate acronyms.
+ *  Shouts when there are 2+ all-caps words, or one long all-caps word
+ *  (>= 5 letters). A single short all-caps token is treated as an acronym. */
+export function detectShout(text){
+  const caps = (text.match(CAPS_WORD_REGEX) || []).filter(w => !ACRONYM_ALLOW.has(w));
+  if(caps.length >= 2) return true;
+  return caps.some(w => w.length >= 5);
+}
 
 function avg(arr){ return arr.length ? arr.reduce((a,b)=>a+b, 0) / arr.length : 0; }
 
@@ -92,15 +109,14 @@ export function scoreDraft({ audienceKey, caption, checklist }){
   const sents = splitSentences(text);
   const avgSent = avg(sents.map(s => getWords(s).length));
   const longSentences = sents.filter(s => getWords(s).length > 28).length;
-  const lower = text.toLowerCase();
-  const hypeFound = HYPE_WORDS.filter(x => lower.includes(x));
-  const hedgeHits = HEDGE_WORDS.filter(x => lower.includes(x)).length;
+  const hypeFound = HYPE_WORDS.filter(x => matchesWord(text, x));
+  const hedgeHits = HEDGE_WORDS.filter(x => matchesWord(text, x)).length;
   const exclamations = (text.match(/!/g) || []).length;
   const hasEmDash = EMDASH_REGEX.test(text);
-  const shouting = SHOUT_REGEX.test(text);
+  const shouting = detectShout(text);
   const hasNumber = NUMBER_REGEX.test(text);
   const hasCTA = CTA_REGEX.test(text);
-  const hasResultCue = RESULT_CUES.some(x => lower.includes(x));
+  const hasResultCue = RESULT_CUES.some(x => matchesWord(text, x));
   const longWordShare = w.filter(x => x.replace(/[^A-Za-z]/g,"").length >= 13).length / w.length;
 
   // ---- present ingredients ----

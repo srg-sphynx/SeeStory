@@ -106,7 +106,18 @@ export const RESULT_CUES = [
 export const CTA_REGEX = /\?|\b(try|join|watch|bring|see|download|read|register|sign up|book|explore|comment|share|reply|tag)\b/i;
 export const NUMBER_REGEX = /\d|%/;
 export const EMDASH_REGEX = /[\u2014\u2013]/;
-export const SHOUT_REGEX = /\b[A-Z]{2,}(\s+[A-Z]{2,}){2,}\b/;
+
+// All-caps words of 2+ letters. Used by detectShout() to spot shouting while
+// tolerating legitimate acronyms (see ACRONYM_ALLOW).
+export const CAPS_WORD_REGEX = /\b[A-Z]{2,}\b/g;
+
+// Real abbreviations that read as normal scientific writing, not shouting.
+// A single one of these (or any single short token) never counts as shouting.
+export const ACRONYM_ALLOW = new Set([
+  "DNA","RNA","PCR","NMR","HYDE","SAR","QSAR","DOI","PDB","SMILES","ADMET",
+  "ML","AI","API","URL","PDF","ROI","FDA","EMA","EU","US","USA","UK","CEO",
+  "CTO","R&D","HR","FAQ","OK","ID","2D","3D","KD","IC","EC","GPU","CPU"
+]);
 
 export const SIGNALS = ["clarity","trust","substance","fit"];
 export const SIGNAL_LABEL = { clarity:"Clarity", trust:"Trust", substance:"Substance", fit:"Fit" };

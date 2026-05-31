@@ -539,8 +539,8 @@ function paintDetected(r){
     { id: "result", icon: "📊", label: "Result or comparison", found: f.hasResultCue, val: f.hasResultCue ? "Detected" : "None found" },
     { id: "hype", icon: "🚨", label: "Hype words", found: false, warn: f.hypeFound.length > 0, val: f.hypeFound.length > 0 ? f.hypeFound.join(", ") : "Clean" },
     { id: "hedge", icon: "🤔", label: "Hedge phrases", found: false, warn: f.hedgeHits > 0, val: f.hedgeHits > 0 ? (f.hedgeHits + " found") : "Clean" },
-    { id: "exclamation", icon: "❗", label: "Exclamation marks", found: false, warn: f.exclamations >= 2, val: f.exclamations + " found" },
-    { id: "emdash", icon: "-", label: "Em dashes", found: false, warn: f.hasEmDash, val: f.hasEmDash ? "Found" : "None" },
+    { id: "exclamation", icon: "❗", label: "Exclamation marks", found: false, warn: f.exclamations >= 2, val: f.exclamations >= 2 ? (f.exclamations + " found") : "Clean" },
+    { id: "emdash", icon: "-", label: "Em / en dashes", found: false, warn: f.hasEmDash, val: f.hasEmDash ? "Found" : "None" },
     { id: "shout", icon: "🔤", label: "ALL CAPS shouting", found: false, warn: f.shouting, val: f.shouting ? "Detected" : "None" },
   ];
 
