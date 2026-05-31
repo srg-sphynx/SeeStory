@@ -53,15 +53,43 @@ function animateNumber(el, from, to, color){
   requestAnimationFrame(step);
 }
 
-/* ── Guide toggle ── */
+/* ── How-it-works modal ── */
 export function initGuide(){
   const btn = $("guideToggle");
-  const body = $("guideBody");
-  if(!btn || !body) return;
-  btn.addEventListener("click", () => {
-    const expanded = btn.getAttribute("aria-expanded") === "true";
-    btn.setAttribute("aria-expanded", !expanded);
-    body.classList.toggle("open", !expanded);
+  const modal = $("guideModal");
+  const closeBtn = $("guideModalClose");
+  if(!btn || !modal) return;
+
+  let lastFocus = null;
+
+  const open = () => {
+    lastFocus = document.activeElement;
+    modal.hidden = false;
+    requestAnimationFrame(() => modal.classList.add("open"));
+    document.body.style.overflow = "hidden";
+    btn.setAttribute("aria-expanded", "true");
+    if(closeBtn) closeBtn.focus();
+  };
+
+  const close = () => {
+    modal.classList.remove("open");
+    document.body.style.overflow = "";
+    btn.setAttribute("aria-expanded", "false");
+    const finish = (e) => {
+      if(e && e.target !== modal) return;
+      modal.hidden = true;
+      modal.removeEventListener("transitionend", finish);
+    };
+    if(reducedMotion.matches) modal.hidden = true;
+    else modal.addEventListener("transitionend", finish);
+    if(lastFocus && lastFocus.focus) lastFocus.focus();
+  };
+
+  btn.addEventListener("click", open);
+  if(closeBtn) closeBtn.addEventListener("click", close);
+  modal.addEventListener("click", (e) => { if(e.target === modal) close(); });
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape" && !modal.hidden) close();
   });
 }
 
