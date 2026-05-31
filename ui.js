@@ -345,17 +345,72 @@ export function wireCaption(){
   capEl.value = state.caption;
 }
 
+/* ── Collapsible result panels (accordion) ── */
+
+/** Set a .collapsible section open/closed and sync ARIA. */
+function setCollapsed(sectionEl, collapsed){
+  if(!sectionEl) return;
+  sectionEl.dataset.collapsed = String(collapsed);
+  const head = sectionEl.querySelector(".collap-head");
+  if(head) head.setAttribute("aria-expanded", String(!collapsed));
+}
+
+function isCollapsed(sectionEl){
+  return !sectionEl || sectionEl.dataset.collapsed === "true";
+}
+
+export function initResultPanels(){
+  const detected = $("detectedArea");
+  const compare  = $("compareArea");
+  const detHead  = $("detectedHead");
+  const cmpHead  = $("compareHead");
+
+  if(detHead && detected){
+    detHead.addEventListener("click", () => {
+      const open = !isCollapsed(detected);
+      setCollapsed(detected, open);          // toggle
+      if(!open) setCollapsed(compare, true); // opening detected collapses compare
+    });
+  }
+
+  if(cmpHead && compare){
+    cmpHead.addEventListener("click", () => {
+      const open = !isCollapsed(compare);
+      setCollapsed(compare, open);            // toggle
+      if(!open){
+        setCollapsed(detected, true);         // opening compare collapses detected
+        paintCompare();
+      }
+    });
+  }
+}
+
 /* ── Compare mode ── */
-export function wireCompare(){
-  const btn = $("compareToggle");
-  const grid = $("compareGrid");
-  if(!btn || !grid) return;
-  btn.addEventListener("click", () => {
-    const visible = grid.style.display !== "none";
-    grid.style.display = visible ? "none" : "grid";
-    btn.textContent = visible ? "Compare all audiences" : "Hide comparison";
-    if(!visible) paintCompare();
+
+function computeCompare(){
+  const results = {};
+  let bestKey = null, bestScore = -1;
+  Object.keys(AUDIENCES).forEach(key => {
+    const r = scoreDraft({ audienceKey: key, caption: state.caption, checklist: state.checklist });
+    results[key] = r;
+    if(!r.empty && r.score > bestScore){ bestScore = r.score; bestKey = key; }
   });
+  return { results, bestKey, bestScore };
+}
+
+function updateCompareSummary(){
+  const sumEl = $("compareSummary");
+  if(!sumEl) return;
+  const { bestKey, bestScore } = computeCompare();
+  if(bestKey == null){
+    sumEl.textContent = "See how every audience scores your draft";
+    return;
+  }
+  sumEl.innerHTML = "";
+  const chip = document.createElement("span");
+  chip.className = "sum-chip lead";
+  chip.textContent = `🏆 Best fit: ${AUDIENCES[bestKey].label} (${bestScore})`;
+  sumEl.appendChild(chip);
 }
 
 function paintCompare(){
@@ -363,14 +418,7 @@ function paintCompare(){
   if(!grid) return;
   grid.innerHTML = "";
 
-  const results = {};
-  let bestKey = null, bestScore = -1;
-
-  Object.keys(AUDIENCES).forEach(key => {
-    const r = scoreDraft({ audienceKey: key, caption: state.caption, checklist: state.checklist });
-    results[key] = r;
-    if(!r.empty && r.score > bestScore){ bestScore = r.score; bestKey = key; }
-  });
+  const { results, bestKey } = computeCompare();
 
   Object.entries(AUDIENCES).forEach(([key, aud]) => {
     const r = results[key];
@@ -406,6 +454,7 @@ function paintCompare(){
 export function initCopyButton(){
   const btn = $("copyBtn");
   if(!btn) return;
+  const textEl = btn.querySelector(".copy-btn-text") || btn;
   btn.addEventListener("click", () => {
     const audKey = state.audienceKey || "peer";
     const r = scoreDraft({ audienceKey: audKey, caption: state.caption, checklist: state.checklist });
@@ -420,14 +469,14 @@ export function initCopyButton(){
 
     navigator.clipboard.writeText(text).then(() => {
       btn.classList.add("copied");
-      btn.textContent = "Copied!";
+      textEl.textContent = "Copied!";
       setTimeout(() => {
         btn.classList.remove("copied");
-        btn.textContent = "Copy result";
+        textEl.textContent = "Copy result";
       }, 1500);
     }).catch(() => {
-      btn.textContent = "Copy failed";
-      setTimeout(() => { btn.textContent = "Copy result"; }, 1500);
+      textEl.textContent = "Copy failed";
+      setTimeout(() => { textEl.textContent = "Copy result"; }, 1500);
     });
   });
 }
@@ -517,6 +566,43 @@ function getContextualTip(id, isFoundOrWarn, audienceKey) {
   }
 }
 
+/* ── Detection summary (collapsed-state teaser) ── */
+function updateDetectedSummary(r){
+  const sumEl = $("detectedSummary");
+  if(!sumEl) return;
+  sumEl.innerHTML = "";
+  if(!r || r.empty) return;
+
+  const f = r.facts;
+  const positives = [];
+  if(f.hasNumber)     positives.push("🔢");
+  if(f.hasCTA)        positives.push("👆");
+  if(f.hasResultCue)  positives.push("📊");
+
+  let issues = 0;
+  if(f.hypeFound.length) issues++;
+  if(f.hedgeHits > 0) issues++;
+  if(f.exclamations >= 2) issues++;
+  if(f.hasEmDash) issues++;
+  if(f.shouting) issues++;
+
+  if(positives.length){
+    const chip = document.createElement("span");
+    chip.className = "sum-chip ok";
+    chip.textContent = positives.join(" ") + " present";
+    sumEl.appendChild(chip);
+  }
+  const issueChip = document.createElement("span");
+  if(issues > 0){
+    issueChip.className = "sum-chip warn";
+    issueChip.textContent = `⚠️ ${issues} issue${issues === 1 ? "" : "s"} to fix`;
+  } else {
+    issueChip.className = "sum-chip ok";
+    issueChip.textContent = "✓ Clean tone";
+  }
+  sumEl.appendChild(issueChip);
+}
+
 /* ── Detection panel ── */
 function paintDetected(r){
   const area = $("detectedArea");
@@ -528,6 +614,7 @@ function paintDetected(r){
     return;
   }
   area.style.display = "block";
+  updateDetectedSummary(r);
   list.innerHTML = "";
 
   const f = r.facts;
@@ -601,7 +688,7 @@ function paintScoreRing(r){
 
   if(!r || r.empty){
     ringCircle.style.strokeDashoffset = circumference;
-    ringCircle.style.stroke = "#eef1f4";
+    ringCircle.style.stroke = "var(--ring-track)";
     ringNum.textContent = "--";
     ringNum.style.color = "var(--muted)";
     return;
@@ -643,6 +730,8 @@ export function render(){
   // empty state
   if(r.empty){
     if(resultArea) resultArea.style.display = "none";
+    const compareArea = $("compareArea");
+    if(compareArea) compareArea.style.display = "none";
     if(emptyNote){ emptyNote.style.display = "block"; emptyNote.textContent = r.message; }
     paintScoreBar(null);
     paintScoreRing(null);
@@ -727,10 +816,12 @@ export function render(){
   paintScoreBar(r);
   paintDetected(r);
 
-  // compare mode (if visible)
-  const compareGrid = $("compareGrid");
-  if(compareGrid && compareGrid.style.display !== "none"){
-    paintCompare();
+  // compare mode panel
+  const compareArea = $("compareArea");
+  if(compareArea){
+    compareArea.style.display = "block";
+    updateCompareSummary();
+    if(compareArea.dataset.collapsed === "false") paintCompare();
   }
 
   // save state
@@ -742,6 +833,7 @@ function paintScoreBar(r){
   const numEl = $("scoreNum");
   const fill  = $("scoreFill");
   const label = $("scoreLabel");
+  const bar   = $("scorebar");
   if(!numEl || !fill || !label) return;
 
   if(!r || r.empty){
@@ -749,9 +841,11 @@ function paintScoreBar(r){
     numEl.style.color = "var(--muted)";
     fill.style.width = "0%";
     label.textContent = "";
+    if(bar) bar.classList.remove("show");
     _prevScore = null;
     return;
   }
+  if(bar) bar.classList.add("show");
 
   const color = r.band.color;
 
@@ -801,6 +895,105 @@ export function readHash(){
   } catch(e){
     return false;
   }
+}
+
+/* ── Theme (light / dark / auto) ── */
+const THEME_KEY = "seestory_theme";
+
+function resolveTheme(pref){
+  if(pref === "dark") return "dark";
+  if(pref === "light") return "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyTheme(pref){
+  const resolved = resolveTheme(pref);
+  const root = document.documentElement;
+  root.dataset.theme = resolved;
+  root.dataset.themePref = pref;
+  const meta = $("themeColorMeta");
+  if(meta) meta.setAttribute("content", resolved === "dark" ? "#0c3259" : "#104173");
+}
+
+export function initTheme(){
+  const opts = document.querySelectorAll(".theme-opt");
+  if(!opts.length) return;
+
+  let pref = "auto";
+  try { pref = localStorage.getItem(THEME_KEY) || "auto"; } catch(e){}
+
+  const sync = () => {
+    opts.forEach(o => {
+      o.setAttribute("aria-pressed", String(o.dataset.themeSet === pref));
+    });
+  };
+
+  applyTheme(pref);
+  sync();
+
+  opts.forEach(o => {
+    o.addEventListener("click", () => {
+      pref = o.dataset.themeSet;
+      try { localStorage.setItem(THEME_KEY, pref); } catch(e){}
+      applyTheme(pref);
+      sync();
+    });
+  });
+
+  // Follow the system when in "auto"
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const onSystemChange = () => { if(pref === "auto") applyTheme("auto"); };
+  if(mq.addEventListener) mq.addEventListener("change", onSystemChange);
+  else if(mq.addListener) mq.addListener(onSystemChange);
+}
+
+/* ── Header condense on scroll (mobile / tablet) ── */
+export function initHeaderScroll(){
+  const header = $("siteHeader");
+  if(!header) return;
+  const isCompact = () => window.matchMedia("(max-width: 899px)").matches;
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    if(isCompact() && window.scrollY > 40) header.classList.add("scrolled");
+    else header.classList.remove("scrolled");
+  };
+  window.addEventListener("scroll", () => {
+    if(!ticking){ requestAnimationFrame(update); ticking = true; }
+  }, { passive: true });
+  window.addEventListener("resize", update, { passive: true });
+  update();
+}
+
+/* ── Reveal cards on scroll ── */
+export function initReveal(){
+  const els = document.querySelectorAll(".reveal");
+  if(!els.length) return;
+  if(reducedMotion.matches || !("IntersectionObserver" in window)){
+    els.forEach(el => el.classList.add("in"));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add("in");
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
+  els.forEach(el => io.observe(el));
+}
+
+/* ── Mobile score bar: jump to results ── */
+export function initScorebarJump(){
+  const btn = $("scorebarJump");
+  if(!btn) return;
+  btn.addEventListener("click", () => {
+    const target = $("resultArea");
+    if(target && target.style.display !== "none"){
+      target.scrollIntoView({ behavior: reducedMotion.matches ? "auto" : "smooth", block: "start" });
+    }
+  });
 }
 
 /* ── localStorage draft ── */

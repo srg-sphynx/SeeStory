@@ -1,33 +1,42 @@
-/* ── main.js ── entry point (v2) ── */
+/* ── main.js ── entry point (v3) ── */
 
 import {
   readHash, loadDraft,
   buildAudience, buildChecklist, buildPresets,
   initGuide, initGlossary, initPersonaGuide, initCopyButton,
-  wireCaption, wireCompare,
+  wireCaption, initResultPanels,
+  initTheme, initHeaderScroll, initReveal, initScorebarJump,
   render, state
 } from './ui.js';
 
 function init(){
-  // 1. Restore state: hash takes priority over localStorage
+  // 1. Theme first (avoids any flash beyond the inline bootstrap)
+  initTheme();
+
+  // 2. Restore state: hash takes priority over localStorage
   const hasHash = readHash();
   if(!hasHash) loadDraft();
 
-  // 2. Build all UI components
+  // 3. Build all UI components
   buildAudience();
   buildChecklist();
   buildPresets();
 
-  // 3. Wire interactive elements
+  // 4. Wire interactive elements
   wireCaption();
   initGuide();
   initGlossary();
   initPersonaGuide();
   initCopyButton();
-  wireCompare();
+  initResultPanels();
+  initHeaderScroll();
+  initScorebarJump();
 
-  // 4. Initial render
+  // 5. Initial render
   render();
+
+  // 6. Scroll reveal animations (after layout settles)
+  initReveal();
 }
 
 document.addEventListener("DOMContentLoaded", init);
