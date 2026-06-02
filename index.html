@@ -23,11 +23,10 @@
 <link rel="icon" href="data:,">
 </head>
 <body>
-<header class="site-header" id="siteHeader">
-  <div class="header-inner">
-
-    <div class="header-top">
-      <div class="brand">
+<!-- Sticky glass command bar -->
+<div class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="SeeSTORY home">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path class="bm-ring" d="M20 3.5 33.3 11v18L20 36.5 6.7 29V11z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" opacity="0.55"/>
@@ -37,11 +36,19 @@
             <path class="bm-bond" d="M20 11 28.5 24M20 11 11.5 24M11.5 24 28.5 24" stroke="currentColor" stroke-width="1.6"/>
           </svg>
         </span>
-        <div class="brand-text">
-          <h1>SeeSTORY</h1>
-          <p class="sub">Will your science land with the next generation?</p>
-        </div>
-      </div>
+        <span class="brand-word">SeeSTORY</span>
+      </a>
+
+      <nav class="page-switch" aria-label="View">
+        <a class="page-opt" href="index.html" data-page="tool" aria-current="page">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
+          <span class="po-full">Try the tool</span><span class="po-short">Tool</span>
+        </a>
+        <a class="page-opt" href="learn.html" data-page="learn">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 7l10-4 10 4-10 4z"/><path d="M6 10v5c0 1 3 2.5 6 2.5s6-1.5 6-2.5v-5"/></svg>
+          <span class="po-full">Explore the science</span><span class="po-short">Explore</span>
+        </a>
+      </nav>
 
       <div class="header-controls">
         <button id="guideToggle" class="help-btn" aria-haspopup="dialog" aria-controls="guideModal">
@@ -62,19 +69,16 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <nav class="page-switch" aria-label="View">
-      <a class="page-opt" href="index.html" data-page="tool" aria-current="page">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
-        <span>Try the tool</span>
-      </a>
-      <a class="page-opt" href="learn.html" data-page="learn">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 7l10-4 10 4-10 4z"/><path d="M6 10v5c0 1 3 2.5 6 2.5s6-1.5 6-2.5v-5"/></svg>
-        <span>Explore the science</span>
-      </a>
-    </nav>
-
-    <p class="context-desc">SeeSTORY analyzes your scientific communications to ensure they resonate with future scientists, decision-makers, and peers. By evaluating Clarity, Trust, Substance, and Fit, we help you bridge the gap between complex computational chemistry and modern audience expectations.</p>
+<header class="site-header" id="siteHeader">
+  <!-- Hero band -->
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="hero-eyebrow">Resonance engine · BioWeek 2026</span>
+      <h1 class="hero-title">Will your science land with the <em>next generation</em>?</h1>
+      <p class="context-desc">SeeSTORY scores your scientific communications on <strong>Clarity, Trust, Substance &amp; Fit</strong> — so complex computational chemistry actually resonates with future scientists, decision-makers, and peers.</p>
+    </div>
   </div>
 </header>
 
@@ -228,9 +232,31 @@
     </table>
   </div>
 
-  <!-- Disclaimer -->
-  <p class="muted disclaimer">Built for the BioWeek 2026 poster on 25 years of BioSolveIT. This interactive demo was created entirely with AI-assisted vibe coding, itself a demonstration of how the next 25 years will be built.</p>
 </main>
+
+<!-- Compact footer -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <a class="footer-brand" href="index.html" aria-label="SeeSTORY home">
+      <span class="brand-mark footer-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="bm-ring" d="M20 3.5 33.3 11v18L20 36.5 6.7 29V11z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" opacity="0.55"/>
+          <circle class="bm-node bm-n1" cx="20" cy="11" r="3"/>
+          <circle class="bm-node bm-n2" cx="28.5" cy="24" r="3"/>
+          <circle class="bm-node bm-n3" cx="11.5" cy="24" r="3"/>
+          <path class="bm-bond" d="M20 11 28.5 24M20 11 11.5 24M11.5 24 28.5 24" stroke="currentColor" stroke-width="1.6"/>
+        </svg>
+      </span>
+      <span class="footer-word">SeeSTORY</span>
+    </a>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="index.html">Try the tool</a>
+      <a href="learn.html">Explore the science</a>
+    </nav>
+    <span class="footer-credit">BioWeek 2026 · 25 years of BioSolveIT</span>
+  </div>
+  <p class="footer-note">An interactive demo built entirely with AI-assisted vibe coding — itself a glimpse of how the next 25 years get built.</p>
+</footer>
 
 <!-- Sticky score bar (mobile only) -->
 <div class="scorebar" id="scorebar" role="status" aria-live="polite">

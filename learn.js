@@ -38,19 +38,16 @@ function initTheme(){
   else if(mq.addListener) mq.addListener(onChange);
 }
 
-/* ── Header condense on scroll (mobile/tablet) ── */
+/* ── Lift the sticky command bar once the hero scrolls past ── */
 function initHeaderScroll(){
-  const header = $("siteHeader");
-  if(!header) return;
-  const isCompact = () => window.matchMedia("(max-width: 899px)").matches;
+  const bar = $("topbar");
+  if(!bar) return;
   let ticking = false;
   const update = () => {
     ticking = false;
-    if(isCompact() && window.scrollY > 40) header.classList.add("scrolled");
-    else header.classList.remove("scrolled");
+    bar.classList.toggle("scrolled", window.scrollY > 24);
   };
   window.addEventListener("scroll", () => { if(!ticking){ requestAnimationFrame(update); ticking = true; } }, { passive: true });
-  window.addEventListener("resize", update, { passive: true });
   update();
 }
 
