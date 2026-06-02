@@ -6,7 +6,8 @@ import {
   initGuide, initGlossary, initPersonaGuide, initCopyButton,
   wireCaption, initResultPanels,
   initTheme, initHeaderScroll, initReveal, initScorebarJump,
-  render, state
+  render, state,
+  initMobileWizard, initSplash
 } from './ui.js';
 import { initMotion } from './motion.js';
 
@@ -14,16 +15,19 @@ function init(){
   // 1. Theme first (avoids any flash beyond the inline bootstrap)
   initTheme();
 
-  // 2. Restore state: hash takes priority over localStorage
+  // 2. Splash screen (blocks interaction until dismissed, sessionStorage-gated)
+  initSplash();
+
+  // 3. Restore state: hash takes priority over localStorage
   const hasHash = readHash();
   if(!hasHash) loadDraft();
 
-  // 3. Build all UI components
+  // 4. Build all UI components
   buildAudience();
   buildChecklist();
   buildPresets();
 
-  // 4. Wire interactive elements
+  // 5. Wire interactive elements
   wireCaption();
   initGuide();
   initGlossary();
@@ -33,13 +37,16 @@ function init(){
   initHeaderScroll();
   initScorebarJump();
 
-  // 5. Initial render
+  // 6. Initial render
   render();
 
-  // 6. Motion: GSAP hero/logo entrance (optional). Result cards toggle
+  // 7. Motion: GSAP hero/logo entrance (optional). Result cards toggle
   //    display:none, so keep the IntersectionObserver reveal for scroll.
   initMotion({ revealScroll: false });
   initReveal();
+
+  // 8. Mobile wizard (step-by-step mode for ≤600px)
+  initMobileWizard();
 }
 
 document.addEventListener("DOMContentLoaded", init);

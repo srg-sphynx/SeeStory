@@ -352,6 +352,9 @@ function loadPreset(p){
   refreshAudienceButtons();
   refreshChecklistBoxes();
   render();
+
+  // On mobile wizard, auto-advance to Audience step
+  wizardAdvanceFromPreset();
 }
 
 function refreshChecklistBoxes(){
@@ -1059,4 +1062,218 @@ export function loadDraft(){
   } catch(e){
     return false;
   }
+}
+
+/* ── Mobile wizard (step-by-step mode) ── */
+
+const WIZARD_STEP_NAMES = [
+  "Examples",
+  "Audience",
+  "Your draft",
+  "Rich media",
+  "Results"
+];
+
+// We only use steps 0–4 for the wizard; step 5 (glossary) is accessible
+// from the results step but not a full wizard step.
+const WIZARD_TOTAL_STEPS = 5;
+
+let wizardStep = 0;
+let wizardActive = false;
+let wizardVisited = new Set([0]);
+
+function isMobile(){ return window.innerWidth <= 600; }
+
+/** Activate / deactivate the mobile wizard based on viewport. */
+function setWizardMode(active){
+  if(active === wizardActive) return;
+  wizardActive = active;
+  document.body.classList.toggle("wizard-active", active);
+  const nav = $("wizardNav");
+  if(nav) nav.hidden = !active;
+  if(active){
+    buildWizardDots();
+    goToStep(wizardStep, "none");
+  } else {
+    // Restore all sections to visible
+    document.querySelectorAll(".wizard-section").forEach(el => {
+      el.classList.remove("wizard-active-step", "wizard-slide-back");
+      el.style.display = "";
+    });
+    // Clean up glossary/footer wizard classes
+    const glossary = document.querySelector(".wizard-glossary-wrap");
+    const footer = document.querySelector(".site-footer");
+    if(glossary) glossary.classList.remove("wizard-show");
+    if(footer) footer.classList.remove("wizard-show");
+  }
+}
+
+function buildWizardDots(){
+  const host = $("wizardDots");
+  if(!host) return;
+  host.innerHTML = "";
+  for(let i = 0; i < WIZARD_TOTAL_STEPS; i++){
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "wizard-dot";
+    dot.setAttribute("aria-label", WIZARD_STEP_NAMES[i]);
+    dot.addEventListener("click", () => {
+      if(i <= Math.max(...wizardVisited) + 1) goToStep(i);
+    });
+    host.appendChild(dot);
+  }
+}
+
+function syncWizardUI(){
+  // Dots
+  const dots = document.querySelectorAll(".wizard-dot");
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("active", i === wizardStep);
+    dot.classList.toggle("visited", wizardVisited.has(i) && i !== wizardStep);
+  });
+
+  // Step label
+  const label = $("wizardStepLabel");
+  if(label) label.textContent = `${WIZARD_STEP_NAMES[wizardStep]} · ${wizardStep + 1}/${WIZARD_TOTAL_STEPS}`;
+
+  // Prev / Next buttons
+  const prev = $("wizardPrev");
+  const next = $("wizardNext");
+  if(prev) prev.disabled = (wizardStep === 0);
+  if(next){
+    const isLast = (wizardStep === WIZARD_TOTAL_STEPS - 1);
+    next.classList.toggle("wizard-finish", isLast);
+    // Update button text
+    const textNode = next.childNodes[0];
+    if(textNode && textNode.nodeType === 3){
+      textNode.textContent = isLast ? "Done " : "Next ";
+    }
+  }
+}
+
+function goToStep(step, direction){
+  if(step < 0 || step >= WIZARD_TOTAL_STEPS) return;
+  const prevStep = wizardStep;
+  wizardStep = step;
+  wizardVisited.add(step);
+
+  // Auto-direction based on prev→next
+  if(direction === undefined){
+    direction = step > prevStep ? "forward" : "back";
+  }
+
+  // Hide all sections, show the target
+  const sections = document.querySelectorAll(".wizard-section");
+  sections.forEach(el => {
+    el.classList.remove("wizard-active-step", "wizard-slide-back");
+  });
+
+  // Find the section(s) for this step
+  const targets = document.querySelectorAll(`[data-wizard-step="${step}"]`);
+  targets.forEach(el => {
+    if(direction === "back"){
+      el.classList.add("wizard-active-step", "wizard-slide-back");
+    } else if(direction === "none"){
+      el.classList.add("wizard-active-step");
+      el.style.animation = "none"; // skip animation on initial load
+    } else {
+      el.classList.add("wizard-active-step");
+    }
+  });
+
+  // Show glossary + footer on results step (step 4)
+  const glossary = document.querySelector(".wizard-glossary-wrap");
+  const footer = document.querySelector(".site-footer");
+  if(glossary) glossary.classList.toggle("wizard-show", step === WIZARD_TOTAL_STEPS - 1);
+  if(footer) footer.classList.toggle("wizard-show", step === WIZARD_TOTAL_STEPS - 1);
+
+  syncWizardUI();
+  window.scrollTo({ top: 0, behavior: reducedMotion.matches ? "auto" : "smooth" });
+}
+
+/** Advance wizard when a preset is clicked (mobile only). */
+export function wizardAdvanceFromPreset(){
+  if(wizardActive) goToStep(1, "forward");
+}
+
+export function initMobileWizard(){
+  if(!$("wizardNav")) return;
+
+  // Wire prev/next
+  const prev = $("wizardPrev");
+  const next = $("wizardNext");
+  if(prev) prev.addEventListener("click", () => goToStep(wizardStep - 1, "back"));
+  if(next) next.addEventListener("click", () => {
+    if(wizardStep === WIZARD_TOTAL_STEPS - 1){
+      // "Done" — deactivate wizard, scroll to top
+      setWizardMode(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    goToStep(wizardStep + 1, "forward");
+  });
+
+  // Activate / deactivate based on viewport
+  const checkViewport = () => setWizardMode(isMobile());
+  checkViewport();
+
+  // Re-check on resize (debounced)
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(checkViewport, 200);
+  });
+}
+
+/* ── Splash screen ── */
+const SPLASH_KEY = "seestory_splash_seen";
+
+export function initSplash(){
+  const overlay = $("splashOverlay");
+  const cta = $("splashCta");
+  if(!overlay || !cta) return;
+
+  // Check if already dismissed this session
+  let seen = false;
+  try { seen = sessionStorage.getItem(SPLASH_KEY) === "yes"; } catch(e){}
+
+  if(seen){
+    overlay.hidden = true;
+    return;
+  }
+
+  // Block body scroll while splash is visible
+  document.body.style.overflow = "hidden";
+
+  const dismiss = () => {
+    overlay.classList.add("dismiss");
+    document.body.style.overflow = "";
+    try { sessionStorage.setItem(SPLASH_KEY, "yes"); } catch(e){}
+
+    const onEnd = () => {
+      overlay.hidden = true;
+      overlay.removeEventListener("animationend", onEnd);
+    };
+    if(reducedMotion.matches){
+      overlay.hidden = true;
+    } else {
+      overlay.addEventListener("animationend", onEnd);
+    }
+  };
+
+  cta.addEventListener("click", dismiss);
+
+  // Also dismiss on clicking the overlay backdrop
+  overlay.addEventListener("click", (e) => {
+    if(e.target === overlay) dismiss();
+  });
+
+  // Dismiss on Escape
+  const onKey = (e) => {
+    if(e.key === "Escape" && !overlay.hidden){
+      dismiss();
+      document.removeEventListener("keydown", onKey);
+    }
+  };
+  document.addEventListener("keydown", onKey);
 }

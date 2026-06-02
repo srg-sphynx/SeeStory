@@ -956,3 +956,319 @@ html[data-theme="dark"] .cookie-btn-accept{
 @media (prefers-reduced-motion:reduce){
   .cookie-banner{ animation:none; }
 }
+
+/* ═══════════════════════════════════════════
+   SPLASH SCREEN
+   ═══════════════════════════════════════════ */
+.splash-overlay{
+  position:fixed; inset:0; z-index:600;
+  display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(160deg, rgba(16,65,115,0.88) 0%, rgba(12,50,89,0.92) 50%, rgba(7,28,56,0.95) 100%);
+  -webkit-backdrop-filter: blur(28px) saturate(1.6);
+          backdrop-filter: blur(28px) saturate(1.6);
+  padding: var(--s4);
+  animation: splashFadeIn .6s var(--ease) both;
+}
+.splash-overlay[hidden]{ display:none; }
+.splash-overlay.dismiss{
+  animation: splashFadeOut .45s var(--ease) forwards;
+  pointer-events: none;
+}
+@keyframes splashFadeIn{
+  from{ opacity:0; }
+  to  { opacity:1; }
+}
+@keyframes splashFadeOut{
+  from{ opacity:1; transform:scale(1); }
+  to  { opacity:0; transform:scale(0.94); }
+}
+
+.splash-card{
+  display:flex; flex-direction:column; align-items:center;
+  text-align:center; max-width:420px; width:100%;
+  animation: splashCardUp .7s var(--ease) .15s both;
+}
+@keyframes splashCardUp{
+  from{ opacity:0; transform:translateY(30px); }
+  to  { opacity:1; transform:translateY(0); }
+}
+
+.splash-mark{
+  width:88px; height:88px; margin-bottom:var(--s4);
+  animation: splashSpin 2.2s var(--ease) .3s both;
+}
+.splash-mark svg{ width:100%; height:100%; }
+.splash-mark .bm-blade-a{ fill:#ffffff; }
+.splash-mark .bm-blade-b{ fill:#3aaa35; }
+.splash-mark .bm-core{
+  fill:#ffffff; transform-box:fill-box; transform-origin:center;
+  animation: corePulse 3s var(--ease) infinite;
+}
+@keyframes splashSpin{
+  from{ opacity:0; transform:rotate(-30deg) scale(0.6); }
+  to  { opacity:1; transform:rotate(0deg) scale(1); }
+}
+
+.splash-title{
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight:800; letter-spacing:-0.03em; line-height:1;
+  color:#fff; margin:0 0 var(--s3);
+}
+.splash-title span{
+  background: linear-gradient(120deg, #3aaa35 0%, #4fe08a 100%);
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.splash-tagline{
+  font-size: clamp(1rem, 3vw, 1.35rem);
+  color:rgba(255,255,255,0.92); font-weight:600;
+  line-height:1.3; margin:0 0 var(--s2); max-width:32ch;
+}
+.splash-tagline em{
+  font-style:normal;
+  background: linear-gradient(120deg, #3aaa35 0%, #4fe08a 100%);
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.splash-sub{
+  font-size:.88rem; color:rgba(255,255,255,0.68);
+  line-height:1.5; margin:0 0 var(--s5); max-width:36ch;
+}
+.splash-sub strong{ color:rgba(255,255,255,0.9); }
+
+.splash-pills{
+  display:flex; flex-wrap:wrap; gap:var(--s2); justify-content:center;
+  margin-bottom:var(--s5);
+}
+.splash-pill{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:.76rem; font-weight:700; color:rgba(255,255,255,0.82);
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14);
+  padding:5px 13px; border-radius:999px;
+  -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+}
+
+.splash-cta{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:14px 42px; border:none; border-radius:999px;
+  font:inherit; font-size:1.05rem; font-weight:800;
+  color:#0b1622;
+  background: linear-gradient(135deg, #3aaa35 0%, #4fe08a 100%);
+  box-shadow: 0 4px 20px rgba(58,170,53,0.45), 0 0 0 0 rgba(58,170,53,0);
+  cursor:pointer; letter-spacing:-0.01em;
+  transition: transform .2s var(--ease), box-shadow .3s ease, filter .2s ease;
+  animation: splashCtaPulse 2.5s ease-in-out 1s infinite;
+}
+.splash-cta:hover{
+  transform:translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 28px rgba(58,170,53,0.55);
+  filter:brightness(1.08);
+}
+.splash-cta:active{
+  transform:scale(0.97);
+}
+@keyframes splashCtaPulse{
+  0%,100%{ box-shadow: 0 4px 20px rgba(58,170,53,0.45), 0 0 0 0 rgba(58,170,53,0.3); }
+  50%{ box-shadow: 0 4px 20px rgba(58,170,53,0.45), 0 0 0 12px rgba(58,170,53,0); }
+}
+
+.splash-badge{
+  display:inline-block; margin-top:var(--s5);
+  font-size:.68rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:.1em; color:rgba(255,255,255,0.4);
+}
+
+/* Dark theme splash — slightly different background blend */
+html[data-theme="dark"] .splash-overlay{
+  background: linear-gradient(160deg, rgba(12,50,89,0.92) 0%, rgba(7,28,56,0.95) 50%, rgba(4,14,28,0.97) 100%);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion:reduce){
+  .splash-overlay,
+  .splash-card,
+  .splash-mark,
+  .splash-cta{ animation:none; }
+  .splash-overlay.dismiss{ opacity:0; transition:opacity .2s; }
+}
+
+/* ═══════════════════════════════════════════
+   MOBILE WIZARD (step-by-step mode)
+   ═══════════════════════════════════════════ */
+
+/* Wizard hint shown only in mobile wizard context */
+.wizard-hint{ display:none; }
+
+/* Wizard navigation bar — hidden on desktop */
+.wizard-nav{ display:none; }
+
+/* ── Mobile wizard activation ── */
+@media (max-width:600px){
+
+  /* When wizard is active, body gets a class */
+  body.wizard-active .wizard-hint{ display:block; }
+
+  /* Hide all wizard sections except the active one */
+  body.wizard-active .wizard-section{
+    display:none;
+    animation: none;
+  }
+  body.wizard-active .wizard-section.wizard-active-step{
+    display:block;
+    animation: wizardSlideIn .35s var(--ease) both;
+  }
+
+  /* Also hide the glossary and footer in wizard mode (JS toggles them on results step) */
+  body.wizard-active .wizard-glossary-wrap{
+    display:none;
+  }
+  body.wizard-active .wizard-glossary-wrap.wizard-show{
+    display:block;
+  }
+  body.wizard-active .site-footer{
+    display:none;
+  }
+  body.wizard-active .site-footer.wizard-show{
+    display:block;
+  }
+
+  /* Slide animations */
+  @keyframes wizardSlideIn{
+    from{ opacity:0; transform:translateX(40px); }
+    to  { opacity:1; transform:translateX(0); }
+  }
+  @keyframes wizardSlideInReverse{
+    from{ opacity:0; transform:translateX(-40px); }
+    to  { opacity:1; transform:translateX(0); }
+  }
+  body.wizard-active .wizard-section.wizard-slide-back{
+    animation: wizardSlideInReverse .35s var(--ease) both;
+  }
+
+  /* Inside wizard, force the desktop columns to stack and show all children */
+  body.wizard-active .desktop-columns{
+    display:contents;
+  }
+  body.wizard-active .col-input{
+    display:contents;
+  }
+  body.wizard-active .col-result.wizard-active-step{
+    display:block;
+  }
+  body.wizard-active .col-result.wizard-active-step .card.reveal{
+    opacity:1; transform:none;
+  }
+
+  /* Make cards in wizard fill nicely */
+  body.wizard-active .wizard-section .card{
+    margin-bottom:0;
+  }
+
+  /* Ensure the wrap doesn't add too much bottom padding in wizard mode */
+  body.wizard-active .wrap{
+    padding-bottom: 140px; /* room for wizard nav */
+  }
+
+  /* ── Wizard navigation bar ── */
+  .wizard-nav{
+    position:fixed; left:0; right:0; bottom:0; z-index:90;
+    display:flex; flex-direction:column; gap:var(--s2);
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+            backdrop-filter: blur(16px) saturate(1.4);
+    border-top:1px solid var(--line);
+    padding: var(--s3) var(--s4) calc(var(--s3) + env(safe-area-inset-bottom));
+    box-shadow: 0 -6px 24px rgba(0,0,0,0.08);
+    transition: background-color .4s ease;
+  }
+  .wizard-nav[hidden]{ display:none; }
+  body.wizard-active .wizard-nav{ display:flex; }
+
+  /* Hide the old sticky scorebar in wizard mode */
+  body.wizard-active .scorebar{ display:none; }
+
+  /* Wizard dots */
+  .wizard-dots{
+    display:flex; justify-content:center; gap:6px;
+  }
+  .wizard-dot{
+    width:10px; height:10px; border-radius:50%;
+    background:var(--line); border:none; cursor:pointer;
+    transition:all .25s var(--ease);
+    padding:0;
+  }
+  .wizard-dot:hover{ background:var(--muted); transform:scale(1.2); }
+  .wizard-dot.active{
+    background:var(--blue); width:28px; border-radius:999px;
+    box-shadow: 0 0 0 3px var(--blue-soft);
+  }
+  .wizard-dot.visited{ background:var(--green); }
+  .wizard-dot.visited.active{ background:var(--blue); }
+
+  /* Wizard buttons row */
+  .wizard-buttons{
+    display:flex; align-items:center; justify-content:space-between; gap:var(--s2);
+  }
+
+  .wizard-step-label{
+    font-size:.78rem; font-weight:700; color:var(--muted);
+    text-align:center; flex:1;
+  }
+
+  .wizard-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:10px 18px; border-radius:999px; border:1.5px solid var(--line);
+    background:var(--card); color:var(--ink);
+    font:inherit; font-size:.85rem; font-weight:700;
+    cursor:pointer; transition:all .2s var(--ease);
+    min-height:var(--tap);
+  }
+  .wizard-btn:hover{
+    border-color:var(--blue); color:var(--blue);
+    box-shadow:var(--shadow-sm); transform:translateY(-1px);
+  }
+  .wizard-btn:active{ transform:scale(0.97); }
+  .wizard-btn:disabled{
+    opacity:0.35; pointer-events:none;
+  }
+  .wizard-btn svg{ flex-shrink:0; }
+
+  .wizard-next{
+    background: var(--blue); color:var(--btn-fg); border-color:var(--blue);
+    box-shadow:var(--shadow-sm);
+  }
+  .wizard-next:hover{
+    filter:brightness(1.1); color:var(--btn-fg);
+    box-shadow:var(--shadow-md);
+  }
+
+  /* On last step, make "next" look like a finish button */
+  .wizard-next.wizard-finish{
+    background: linear-gradient(135deg, var(--green) 0%, #4fe08a 100%);
+    border-color: var(--green);
+  }
+
+  /* Preset cards: horizontal scroll strip in wizard mode */
+  body.wizard-active .preset-grid{
+    grid-template-columns: repeat(8, 75vw);
+    overflow-x:auto; overflow-y:hidden;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:var(--s2);
+    gap:var(--s3);
+  }
+  body.wizard-active .preset-btn{
+    scroll-snap-align:start;
+    min-width:0;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion:reduce){
+    body.wizard-active .wizard-section.wizard-active-step,
+    body.wizard-active .wizard-section.wizard-slide-back{
+      animation:none;
+    }
+  }
+}

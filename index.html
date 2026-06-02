@@ -23,6 +23,30 @@
 <link rel="icon" href="data:,">
 </head>
 <body>
+
+<!-- ═══ Splash Screen ═══ -->
+<div class="splash-overlay" id="splashOverlay">
+  <div class="splash-card">
+    <div class="splash-mark" aria-hidden="true">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="bm-blade-a" d="M6.4 31.6Q10.2 11.8 31.2 8.4Q27.4 28.2 6.4 31.6Z"/>
+        <path class="bm-blade-b" d="M8.6 8.2Q28.4 12 31.8 33Q12 29.2 8.6 8.2Z"/>
+        <circle class="bm-core" cx="19.8" cy="20" r="3.4"/>
+      </svg>
+    </div>
+    <h1 class="splash-title">See<span>STORY</span></h1>
+    <p class="splash-tagline">Will your science land with the <em>next generation</em>?</p>
+    <p class="splash-sub">Score your scientific communications on <strong>Clarity, Trust, Substance &amp; Fit</strong></p>
+    <div class="splash-pills">
+      <span class="splash-pill">✦ Instant scoring</span>
+      <span class="splash-pill">🎯 5 audience profiles</span>
+      <span class="splash-pill">📊 Actionable breakdown</span>
+    </div>
+    <button class="splash-cta" id="splashCta">Get Started</button>
+    <span class="splash-badge">Resonance Engine · BioWeek 2026</span>
+  </div>
+</div>
+
 <!-- Sticky glass command bar -->
 <div class="topbar" id="topbar">
     <div class="topbar-inner">
@@ -83,8 +107,9 @@
 <main class="wrap">
 
   <!-- Preset gallery -->
-  <section class="card reveal" aria-labelledby="h-presets">
+  <section class="card reveal wizard-section" data-wizard-step="0" aria-labelledby="h-presets">
     <h2 id="h-presets">Try an example</h2>
+    <p class="step-desc wizard-hint">Pick a pre-built example to see how the scoring engine works — or skip ahead to write your own.</p>
     <div id="presetGrid" class="preset-grid"></div>
   </section>
 
@@ -95,7 +120,7 @@
     <div class="col-input">
 
       <!-- Step 1: Audience -->
-      <section class="card blue reveal" aria-labelledby="h-aud">
+      <section class="card blue reveal wizard-section" data-wizard-step="1" aria-labelledby="h-aud">
         <h2 id="h-aud">1. Pick who it is for</h2>
         <p class="step-desc">Select the future audience you want to connect with. Future readers have highly specialized medium preferences.</p>
         <div class="aud-grid" id="audience" role="group" aria-label="Audience"></div>
@@ -111,7 +136,7 @@
       </section>
 
       <!-- Step 2: Caption -->
-      <section class="card reveal" aria-labelledby="h-cap">
+      <section class="card reveal wizard-section" data-wizard-step="2" aria-labelledby="h-cap">
         <h2 id="h-cap">2. Paste your draft</h2>
         <p class="step-desc">Enter the core text of your communication. The engine measures its structural clarity and analytical trust indicators.</p>
         <textarea id="caption" placeholder="Write or paste your post, email, or caption here..."></textarea>
@@ -123,7 +148,7 @@
       </section>
 
       <!-- Step 3: Checklist -->
-      <section class="card reveal" aria-labelledby="h-check">
+      <section class="card reveal wizard-section" data-wizard-step="3" aria-labelledby="h-check">
         <h2 id="h-check">3. Specify your rich-media plans</h2>
         <p class="step-desc">Specify the rich-media formats you plan to include. Future communication relies heavily on visuals, video, and personal authenticity.</p>
         <div id="checklist" class="checklist"></div>
@@ -132,7 +157,7 @@
     </div><!-- /col-input -->
 
     <!-- RIGHT column: Results -->
-    <div class="col-result">
+    <div class="col-result wizard-section" data-wizard-step="4">
 
       <!-- Result -->
       <p id="emptyNote" class="muted empty-note">Add a draft. The score needs words to read.</p>
@@ -211,26 +236,44 @@
 
   </div><!-- /desktop-columns -->
 
-  <!-- Glossary (optional science flavor) -->
-  <button id="glossaryToggle" class="guide-toggle glossary-toggle" aria-expanded="false" aria-controls="glossaryBody">
-    <span class="arrow">&#9654;</span> Why the chemistry names?
-  </button>
-  <div id="glossaryBody" class="guide-body glossary-body" role="region" aria-labelledby="glossaryToggle">
-    <p>Nobody needs this to use the tool. It is the wink for the chemists.</p>
-    <table class="glossary-table">
-      <thead><tr><th>In the tool</th><th>Science term</th><th>The idea</th></tr></thead>
-      <tbody>
-        <tr><td>Audience</td><td>Target, or binding pocket</td><td>Who the content has to fit.</td></tr>
-        <tr><td>Resonance score</td><td>Binding affinity</td><td>How well it fits and holds.</td></tr>
-        <tr><td>The four signals</td><td>Pharmacophore features</td><td>The properties that make it stick.</td></tr>
-        <tr><td>Top fix</td><td>Lead optimisation step</td><td>The change that improves the fit most.</td></tr>
-        <tr><td>Trust signal</td><td>Activity Spotter</td><td>Features that help versus features that block.</td></tr>
-        <tr><td>Substance</td><td>Scoring with HYDE</td><td>Concrete contributions you can point to.</td></tr>
-      </tbody>
-    </table>
+  <!-- Glossary (optional science flavor, visible on results step) -->
+  <div class="wizard-glossary-wrap">
+    <button id="glossaryToggle" class="guide-toggle glossary-toggle" aria-expanded="false" aria-controls="glossaryBody">
+      <span class="arrow">&#9654;</span> Why the chemistry names?
+    </button>
+    <div id="glossaryBody" class="guide-body glossary-body" role="region" aria-labelledby="glossaryToggle">
+      <p>Nobody needs this to use the tool. It is the wink for the chemists.</p>
+      <table class="glossary-table">
+        <thead><tr><th>In the tool</th><th>Science term</th><th>The idea</th></tr></thead>
+        <tbody>
+          <tr><td>Audience</td><td>Target, or binding pocket</td><td>Who the content has to fit.</td></tr>
+          <tr><td>Resonance score</td><td>Binding affinity</td><td>How well it fits and holds.</td></tr>
+          <tr><td>The four signals</td><td>Pharmacophore features</td><td>The properties that make it stick.</td></tr>
+          <tr><td>Top fix</td><td>Lead optimisation step</td><td>The change that improves the fit most.</td></tr>
+          <tr><td>Trust signal</td><td>Activity Spotter</td><td>Features that help versus features that block.</td></tr>
+          <tr><td>Substance</td><td>Scoring with HYDE</td><td>Concrete contributions you can point to.</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </main>
+
+<!-- Mobile wizard navigation -->
+<div class="wizard-nav" id="wizardNav" hidden>
+  <div class="wizard-dots" id="wizardDots"></div>
+  <div class="wizard-buttons">
+    <button class="wizard-btn wizard-prev" id="wizardPrev">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back
+    </button>
+    <span class="wizard-step-label" id="wizardStepLabel">Step 1 of 5</span>
+    <button class="wizard-btn wizard-next" id="wizardNext">
+      Next
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</div>
 
 <!-- Compact footer -->
 <footer class="site-footer">
