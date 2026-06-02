@@ -1,6 +1,7 @@
 /* ── learn.js ── Explore page: theme, counters, accordion, tabs, reveal ── */
 
 import { AUDIENCES } from './data.js';
+import { initMotion } from './motion.js';
 
 const $ = (id) => document.getElementById(id);
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -324,6 +325,9 @@ function init(){
   buildCompanies();
   buildChart();
   initCounters();
-  initReveal();
+  // GSAP owns the staggered scroll reveals here (no display:none reveal targets);
+  // falls back to the IntersectionObserver version if GSAP/motion is unavailable.
+  const { handledReveal } = initMotion({ revealScroll: true });
+  if(!handledReveal) initReveal();
 }
 document.addEventListener("DOMContentLoaded", init);

@@ -8,6 +8,7 @@ import {
   initTheme, initHeaderScroll, initReveal, initScorebarJump,
   render, state
 } from './ui.js';
+import { initMotion } from './motion.js';
 
 function init(){
   // 1. Theme first (avoids any flash beyond the inline bootstrap)
@@ -35,7 +36,9 @@ function init(){
   // 5. Initial render
   render();
 
-  // 6. Scroll reveal animations (after layout settles)
+  // 6. Motion: GSAP hero/logo entrance (optional). Result cards toggle
+  //    display:none, so keep the IntersectionObserver reveal for scroll.
+  initMotion({ revealScroll: false });
   initReveal();
 }
 

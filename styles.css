@@ -162,12 +162,16 @@ html[data-theme="dark"] .topbar{
   display:grid; place-items:center;
 }
 .brand-mark svg{ width:100%; height:100%; }
-.brand-mark .bm-node{ fill:var(--green); }
-.brand-mark .bm-bond{ stroke:rgba(255,255,255,0.6); }
-.brand-mark .bm-n1{ animation: nodePulse 3.2s var(--ease) infinite; }
-.brand-mark .bm-n2{ animation: nodePulse 3.2s var(--ease) infinite .5s; }
-.brand-mark .bm-n3{ animation: nodePulse 3.2s var(--ease) infinite 1s; }
-@keyframes nodePulse{ 0%,100%{ opacity:.7 } 50%{ opacity:1 } }
+/* Interlocking-blade mark, BioSolveIT family. On the navy bar: white + bright green. */
+.brand-mark{ transition: transform .4s var(--ease); }
+.brand-mark .bm-blade-a{ fill:#ffffff; }
+.brand-mark .bm-blade-b{ fill:#3aaa35; }
+.brand-mark .bm-core{
+  fill:#ffffff; transform-box:fill-box; transform-origin:center;
+  animation: corePulse 3s var(--ease) infinite;
+}
+@keyframes corePulse{ 0%,100%{ opacity:.78; transform:scale(.82) } 50%{ opacity:1; transform:scale(1.15) } }
+.brand:hover .brand-mark{ transform: rotate(-8deg) scale(1.06); }
 .brand-word{ font-weight:800; font-size:1.12rem; letter-spacing:-0.02em; color:#fff; }
 
 /* ── Page switch (segmented pill, centered in the bar) ── */
@@ -723,8 +727,9 @@ textarea:focus{ outline:none; border-color:var(--blue); box-shadow: 0 0 0 4px va
 }
 .footer-brand:hover{ opacity:.8; }
 .footer-mark{ width:26px; height:26px; }
-.footer-mark .bm-bond{ stroke:var(--line); }
-.footer-mark .bm-ring{ stroke:var(--blue); }
+.footer-mark .bm-blade-a{ fill:var(--blue); }
+.footer-mark .bm-blade-b{ fill:var(--green); }
+.footer-mark .bm-core{ fill:#3aaa35; }
 .footer-word{ font-weight:800; font-size:1rem; letter-spacing:-0.02em; color:var(--ink); }
 .footer-nav{ display:flex; gap:var(--s4); flex-wrap:wrap; }
 .footer-nav a{
