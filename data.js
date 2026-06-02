@@ -295,7 +295,7 @@ export const PRESETS = [
 
 export const PERSONAS = [
   {
-    icon: "🧬",
+    icon: "atom",
     name: "Gen Z Chemist",
     age: "22–30",
     bio: "Entering the workforce or completing grad school. They discovered drug design through YouTube tutorials and Reddit threads, not textbooks. They already know SeeSAR exists - they want to see it in action, in 60 seconds, from a real person.",
@@ -303,7 +303,7 @@ export const PERSONAS = [
     repels: ["Corporate press-release tone", "20-page PDFs when a 30-second video would do", "Logo-branded content with no human voice"]
   },
   {
-    icon: "🎮",
+    icon: "gamepad",
     name: "Gen Alpha Student",
     age: "14–20",
     bio: "Currently in high school or early undergrad. They will be BioSolveIT's users in 10 years. They learn through interactive demos, YouTube explainers, and gamified challenges - not journal papers. The YoungSolvers program is their on-ramp.",
@@ -311,7 +311,7 @@ export const PERSONAS = [
     repels: ["Formal academic announcements", "Text-only posts with no visuals", "Content that assumes 10 years of domain expertise"]
   },
   {
-    icon: "🔬",
+    icon: "microscope",
     name: "Research Group Leader (PI)",
     age: "35–60",
     bio: "Time-poor and highly analytical. They evaluate tools by reading the benchmarks, not the marketing page. They want to know: does infiniSee actually find actives? Show me the hit rate. Link me the paper.",
@@ -319,7 +319,7 @@ export const PERSONAS = [
     repels: ["Hype words (revolutionary, game-changing, unprecedented)", "Vague claims without supporting data", "Excessive exclamation marks or ALL CAPS"]
   },
   {
-    icon: "💼",
+    icon: "briefcase",
     name: "Pharma Decision-Maker",
     age: "35–55",
     bio: "Focused on ROI, pipeline velocity, and risk reduction. They compare BioSolveIT's Chemical Space Docking to competitors on throughput, cost, and validation. They want a business case, not a feature list.",
@@ -327,7 +327,7 @@ export const PERSONAS = [
     repels: ["Hedging language (maybe, perhaps, we think)", "Flashy visuals that don't connect to outcomes", "Posts that bury the result under three paragraphs of context"]
   },
   {
-    icon: "👩‍🔬",
+    icon: "flask",
     name: "Peer Scientist",
     age: "25–50",
     bio: "Your everyday colleague in computational chemistry. They already understand docking, scoring, and chemical spaces. They want to know what's new, what's reproducible, and whether it's worth switching their workflow.",

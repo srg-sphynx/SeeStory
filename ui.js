@@ -5,6 +5,7 @@ import {
   PRESETS, GLOSSARY, FIT_FIX, PERSONAS
 } from './data.js';
 import { scoreDraft, getBand, getSignalBand, splitSentences } from './scoring.js';
+import { iconSVG } from './icons.js';
 
 /* ── Shared app state ── */
 export const state = {
@@ -121,7 +122,7 @@ export function initPersonaGuide(){
     header.className = "persona-header";
     const icon = document.createElement("span");
     icon.className = "persona-icon";
-    icon.textContent = p.icon;
+    icon.innerHTML = iconSVG(p.icon, { size: 22 });
     const nameAge = document.createElement("span");
     nameAge.className = "persona-name";
     nameAge.textContent = p.name + (p.age ? " (" + p.age + ")" : "");
@@ -137,7 +138,7 @@ export function initPersonaGuide(){
     if(p.wants && p.wants.length){
       const wantsHead = document.createElement("div");
       wantsHead.className = "persona-sub green";
-      wantsHead.textContent = "\u2705 What they respond to";
+      wantsHead.innerHTML = iconSVG("checkCircle", { size: 15 }) + " What they respond to";
       el.appendChild(wantsHead);
       const wantsList = document.createElement("ul");
       wantsList.className = "persona-ul";
@@ -152,7 +153,7 @@ export function initPersonaGuide(){
     if(p.repels && p.repels.length){
       const repelsHead = document.createElement("div");
       repelsHead.className = "persona-sub red";
-      repelsHead.textContent = "\u274C What turns them off";
+      repelsHead.innerHTML = iconSVG("alert", { size: 15 }) + " What turns them off";
       el.appendChild(repelsHead);
       const repelsList = document.createElement("ul");
       repelsList.className = "persona-ul";
@@ -437,7 +438,7 @@ function updateCompareSummary(){
   sumEl.innerHTML = "";
   const chip = document.createElement("span");
   chip.className = "sum-chip lead";
-  chip.textContent = `🏆 Best fit: ${AUDIENCES[bestKey].label} (${bestScore})`;
+  chip.innerHTML = iconSVG("award", { size: 13 }) + ` Best fit: ${AUDIENCES[bestKey].label} (${bestScore})`;
   sumEl.appendChild(chip);
 }
 
@@ -577,22 +578,29 @@ function getContextualTip(id, isFoundOrWarn, audienceKey) {
   };
 
   const item = mapping[id];
-  if (!item) return "";
+  if (!item) return { status: null, text: "" };
 
   if (item.positive) {
     if (isFoundOrWarn) {
-      return `🎉 **Include:** Good job including this! ${item[ctx]}`;
+      return { status: "good", text: `**Include:** Good job including this! ${item[ctx]}` };
     } else {
-      return `💡 **Include:** Recommended here. ${item[ctx]}`;
+      return { status: "suggest", text: `**Include:** Recommended here. ${item[ctx]}` };
     }
   } else {
     if (isFoundOrWarn) {
-      return `⚠️ **Avoid:** Try to remove this. ${item[ctx]}`;
+      return { status: "warn", text: `**Avoid:** Try to remove this. ${item[ctx]}` };
     } else {
-      return `✅ **Avoid:** Nice! Keeping this out helps. ${item[ctx]}`;
+      return { status: "good", text: `**Avoid:** Nice! Keeping this out helps. ${item[ctx]}` };
     }
   }
 }
+
+// status → { icon name, css modifier }
+const TIP_STATUS = {
+  good:    { icon: "checkCircle",    cls: "tip-good" },
+  suggest: { icon: "lightbulb",      cls: "tip-suggest" },
+  warn:    { icon: "alertTriangle",  cls: "tip-warn" }
+};
 
 /* ── Detection summary (collapsed-state teaser) ── */
 function updateDetectedSummary(r){
@@ -603,9 +611,9 @@ function updateDetectedSummary(r){
 
   const f = r.facts;
   const positives = [];
-  if(f.hasNumber)     positives.push("🔢");
-  if(f.hasCTA)        positives.push("👆");
-  if(f.hasResultCue)  positives.push("📊");
+  if(f.hasNumber)     positives.push("hash");
+  if(f.hasCTA)        positives.push("click");
+  if(f.hasResultCue)  positives.push("barchart");
 
   let issues = 0;
   if(f.hypeFound.length) issues++;
@@ -617,16 +625,16 @@ function updateDetectedSummary(r){
   if(positives.length){
     const chip = document.createElement("span");
     chip.className = "sum-chip ok";
-    chip.textContent = positives.join(" ") + " present";
+    chip.innerHTML = positives.map(n => iconSVG(n, { size: 13 })).join("") + " present";
     sumEl.appendChild(chip);
   }
   const issueChip = document.createElement("span");
   if(issues > 0){
     issueChip.className = "sum-chip warn";
-    issueChip.textContent = `⚠️ ${issues} issue${issues === 1 ? "" : "s"} to fix`;
+    issueChip.innerHTML = iconSVG("alertTriangle", { size: 13 }) + ` ${issues} issue${issues === 1 ? "" : "s"} to fix`;
   } else {
     issueChip.className = "sum-chip ok";
-    issueChip.textContent = "✓ Clean tone";
+    issueChip.innerHTML = iconSVG("check", { size: 13 }) + " Clean tone";
   }
   sumEl.appendChild(issueChip);
 }
@@ -649,14 +657,14 @@ function paintDetected(r){
   const audienceKey = state.audienceKey || "peer";
 
   const items = [
-    { id: "number", icon: "🔢", label: "Numbers in text", found: f.hasNumber, val: f.hasNumber ? "Detected" : "None found" },
-    { id: "cta", icon: "👆", label: "Call to action", found: f.hasCTA, val: f.hasCTA ? "Detected" : "None found" },
-    { id: "result", icon: "📊", label: "Result or comparison", found: f.hasResultCue, val: f.hasResultCue ? "Detected" : "None found" },
-    { id: "hype", icon: "🚨", label: "Hype words", found: false, warn: f.hypeFound.length > 0, val: f.hypeFound.length > 0 ? f.hypeFound.join(", ") : "Clean" },
-    { id: "hedge", icon: "🤔", label: "Hedge phrases", found: false, warn: f.hedgeHits > 0, val: f.hedgeHits > 0 ? (f.hedgeHits + " found") : "Clean" },
-    { id: "exclamation", icon: "❗", label: "Exclamation marks", found: false, warn: f.exclamations >= 2, val: f.exclamations >= 2 ? (f.exclamations + " found") : "Clean" },
-    { id: "emdash", icon: "-", label: "Em / en dashes", found: false, warn: f.hasEmDash, val: f.hasEmDash ? "Found" : "None" },
-    { id: "shout", icon: "🔤", label: "ALL CAPS shouting", found: false, warn: f.shouting, val: f.shouting ? "Detected" : "None" },
+    { id: "number", icon: "hash", label: "Numbers in text", found: f.hasNumber, val: f.hasNumber ? "Detected" : "None found" },
+    { id: "cta", icon: "click", label: "Call to action", found: f.hasCTA, val: f.hasCTA ? "Detected" : "None found" },
+    { id: "result", icon: "barchart", label: "Result or comparison", found: f.hasResultCue, val: f.hasResultCue ? "Detected" : "None found" },
+    { id: "hype", icon: "megaphone", label: "Hype words", found: false, warn: f.hypeFound.length > 0, val: f.hypeFound.length > 0 ? f.hypeFound.join(", ") : "Clean" },
+    { id: "hedge", icon: "help", label: "Hedge phrases", found: false, warn: f.hedgeHits > 0, val: f.hedgeHits > 0 ? (f.hedgeHits + " found") : "Clean" },
+    { id: "exclamation", icon: "alert", label: "Exclamation marks", found: false, warn: f.exclamations >= 2, val: f.exclamations >= 2 ? (f.exclamations + " found") : "Clean" },
+    { id: "emdash", icon: "minus", label: "Em / en dashes", found: false, warn: f.hasEmDash, val: f.hasEmDash ? "Found" : "None" },
+    { id: "shout", icon: "type", label: "ALL CAPS shouting", found: false, warn: f.shouting, val: f.shouting ? "Detected" : "None" },
   ];
 
   items.forEach(item => {
@@ -668,7 +676,7 @@ function paintDetected(r){
 
     const iconEl = document.createElement("span");
     iconEl.className = "detected-icon";
-    iconEl.textContent = item.icon;
+    iconEl.innerHTML = iconSVG(item.icon, { size: 18 });
 
     const labelEl = document.createElement("span");
     labelEl.className = "detected-label";
@@ -685,20 +693,26 @@ function paintDetected(r){
 
     const expEl = document.createElement("div");
     expEl.className = "detected-explanation";
-    const text = getContextualTip(item.id, item.found || item.warn, audienceKey);
-    const parts = text.split("**");
+    const tip = getContextualTip(item.id, item.found || item.warn, audienceKey);
+    const st = TIP_STATUS[tip.status];
+    if(st){
+      const ic = document.createElement("span");
+      ic.className = "tip-status " + st.cls;
+      ic.innerHTML = iconSVG(st.icon, { size: 15 });
+      expEl.appendChild(ic);
+    }
+    const parts = tip.text.split("**");
     if(parts.length >= 3){
-      const span1 = document.createElement("span");
-      span1.textContent = parts[0];
       const strongEl = document.createElement("strong");
       strongEl.textContent = parts[1];
       const span2 = document.createElement("span");
       span2.textContent = parts[2];
-      expEl.appendChild(span1);
       expEl.appendChild(strongEl);
       expEl.appendChild(span2);
     } else {
-      expEl.textContent = text;
+      const span = document.createElement("span");
+      span.textContent = tip.text;
+      expEl.appendChild(span);
     }
 
     container.appendChild(expEl);

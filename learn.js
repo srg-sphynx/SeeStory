@@ -2,6 +2,7 @@
 
 import { AUDIENCES } from './data.js';
 import { initMotion } from './motion.js';
+import { iconSVG } from './icons.js';
 
 const $ = (id) => document.getElementById(id);
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -104,25 +105,25 @@ function initReveal(){
 /* ── The four signals ── */
 const SIGNALS_INFO = [
   {
-    key: "clarity", icon: "🔍", label: "Clarity",
+    key: "clarity", icon: "eye", label: "Clarity",
     chem: "shape complementarity",
     blurb: "Can it be read at a glance? SeeSTORY watches sentence length and long-word density, penalising sentences that run past ~28 words and jargon that a non-expert audience would stumble on.",
     example: "“We reduced docking time by 40%.” lands. A 45-word sentence with five nested clauses does not."
   },
   {
-    key: "trust", icon: "🛡️", label: "Trust",
+    key: "trust", icon: "shield", label: "Trust",
     chem: "binding stability",
     blurb: "Does it read as honest or as hype? Superlatives, exclamation pile-ups, ALL-CAPS shouting and em-dash theatrics all subtract. Analytical audiences punish them hardest.",
     example: "“revolutionary, world-class, game-changing!!!” reads as marketing. A plain, specific claim reads as science."
   },
   {
-    key: "substance", icon: "📊", label: "Substance",
+    key: "substance", icon: "barchart", label: "Substance",
     chem: "scoring with HYDE",
     blurb: "Is there something concrete to point at? A real number, a result or comparison, and a verifiable source each add weight. Vague enthusiasm does not.",
     example: "“37 hits confirmed in dose-response” beats “promising early signals.”"
   },
   {
-    key: "fit", icon: "🎯", label: "Fit",
+    key: "fit", icon: "target", label: "Fit",
     chem: "the right binding pocket",
     blurb: "Does it carry what this specific audience wants? Gen Z weights video and a human voice; a PI weights numbers and sources. Fit re-weights everything by who is reading.",
     example: "A face-to-camera reel scores high for Gen Z and low for a pharma decision-maker chasing ROI."
@@ -141,7 +142,7 @@ function buildSignalAccordion(){
     head.className = "sig-head";
     head.setAttribute("aria-expanded", "false");
     head.innerHTML =
-      `<span class="sig-icon">${s.icon}</span>` +
+      `<span class="sig-icon">${iconSVG(s.icon, { size: 24 })}</span>` +
       `<span class="sig-titles"><span class="sig-name">${s.label}</span>` +
       `<span class="sig-chem">like ${s.chem}</span></span>` +
       `<span class="sig-chev" aria-hidden="true">&rsaquo;</span>`;
