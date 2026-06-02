@@ -292,10 +292,10 @@ function buildChart(){
   const host = $("sdgrChart");
   if(!host) return;
   const data = [
-    { label: "Software", value: 180, color: "var(--green)" },
-    { label: "Drug discovery", value: 27, color: "var(--blue)" }
+    { label: "Software", value: 199.5, color: "var(--green)" },
+    { label: "Drug discovery", value: 56.4, color: "var(--blue)" }
   ];
-  const max = 180;
+  const max = 199.5;
   data.forEach(d => {
     const row = document.createElement("div");
     row.className = "chart-row";

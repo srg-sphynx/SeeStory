@@ -260,12 +260,13 @@ html[data-theme="dark"] .topbar{
   background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14);
   margin:0 0 var(--s3);
 }
-.hero-title{
+/* Scoped under .hero so the Explore page's own .hero-title (learn.css) can't override it */
+.hero .hero-title{
   font-size: clamp(1.75rem, 1.1rem + 2.6vw, 2.9rem);
   font-weight:800; line-height:1.08; letter-spacing:-0.025em;
   color:#fff; margin:0; max-width:18ch;
 }
-.hero-title em{
+.hero .hero-title em{
   font-style:normal; color:var(--green);
   background: linear-gradient(120deg, var(--green) 0%, #4fe08a 100%);
   -webkit-background-clip:text; background-clip:text;
