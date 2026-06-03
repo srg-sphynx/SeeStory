@@ -5,6 +5,7 @@ import {
   PRESETS, GLOSSARY, FIT_FIX, PERSONAS
 } from './data.js';
 import { scoreDraft, getBand, getSignalBand, splitSentences } from './scoring.js';
+import { recommendAudience } from './recommend.js';
 import { iconSVG } from './icons.js';
 
 /* ── Shared app state ── */
@@ -820,6 +821,90 @@ function paintScoreRing(r){
   }
 }
 
+/* ── Natural-fit recommendation (dictionary-driven, additive) ── */
+const RECO_CONF_LABEL = { low: "tentative read", medium: "fairly confident", high: "strong signal" };
+
+function paintRecommendation(){
+  const card = $("recoCard");
+  if(!card) return;
+
+  const reco = recommendAudience({ caption: state.caption, checklist: state.checklist });
+  if(!reco){ card.hidden = true; return; }
+  card.hidden = false;
+
+  const currentKey = state.audienceKey || "peer";
+  const matches = reco.bestKey === currentKey;
+
+  const audEl    = $("recoAud");
+  const reasonEl = $("recoReason");
+  const confEl   = $("recoConf");
+  const meterEl  = $("recoMeter");
+  const switchBtn = $("recoSwitch");
+  const switchTxt = $("recoSwitchText");
+  const matchEl  = $("recoMatch");
+
+  if(audEl)    audEl.textContent = AUDIENCES[reco.bestKey] ? AUDIENCES[reco.bestKey].label : reco.bestKey;
+  if(reasonEl) reasonEl.textContent = "Because " + reco.reason;
+  if(confEl)   confEl.textContent = RECO_CONF_LABEL[reco.confidence] || "";
+
+  // Affinity meter: one bar per audience, the winner highlighted.
+  if(meterEl){
+    meterEl.innerHTML = "";
+    reco.ranked.forEach(r => {
+      const row = document.createElement("div");
+      row.className = "reco-bar-row" + (r.key === reco.bestKey ? " win" : "");
+      const lbl = document.createElement("span");
+      lbl.className = "reco-bar-label";
+      lbl.textContent = r.label;
+      const track = document.createElement("span");
+      track.className = "reco-bar-track";
+      const fill = document.createElement("span");
+      fill.className = "reco-bar-fill";
+      fill.style.width = Math.round(r.score) + "%";
+      track.appendChild(fill);
+      const val = document.createElement("span");
+      val.className = "reco-bar-val";
+      val.textContent = Math.round(r.score);
+      row.appendChild(lbl); row.appendChild(track); row.appendChild(val);
+      meterEl.appendChild(row);
+    });
+  }
+
+  // Either confirm the match or offer a one-tap switch.
+  if(switchBtn && matchEl){
+    if(matches){
+      switchBtn.hidden = true;
+      matchEl.hidden = false;
+    } else {
+      matchEl.hidden = true;
+      switchBtn.hidden = false;
+      switchBtn.dataset.key = reco.bestKey;
+      if(switchTxt) switchTxt.textContent = `Switch to ${AUDIENCES[reco.bestKey].label}`;
+    }
+  }
+}
+
+export function initRecoSwitch(){
+  const btn = $("recoSwitch");
+  if(!btn) return;
+  btn.addEventListener("click", () => {
+    const key = btn.dataset.key;
+    if(!key || !AUDIENCES[key]) return;
+    state.audienceKey = key;
+    refreshAudienceButtons();
+    render();
+    const card = document.querySelector(`#audience .aud-card[data-key="${key}"]`);
+    if(card){
+      if(!reducedMotion.matches){
+        card.classList.remove("aud-flash");
+        void card.offsetWidth;
+        card.classList.add("aud-flash");
+      }
+      card.scrollIntoView({ behavior: reducedMotion.matches ? "auto" : "smooth", block: "center" });
+    }
+  });
+}
+
 /* ── Main render ── */
 export function render(){
   const audKey = state.audienceKey || "peer";
@@ -850,6 +935,8 @@ export function render(){
     paintScoreBar(null);
     paintScoreRing(null);
     paintDetected(null);
+    const recoCard = $("recoCard");
+    if(recoCard) recoCard.hidden = true;
     return;
   }
 
@@ -953,6 +1040,7 @@ export function render(){
   paintScoreRing(r);
   paintScoreBar(r);
   paintDetected(r);
+  paintRecommendation();
 
   // compare mode panel
   const compareArea = $("compareArea");

@@ -4,7 +4,7 @@ import {
   readHash, loadDraft,
   buildAudience, buildChecklist, buildPresets,
   initGuide, initGlossary, initPersonaGuide, initCopyButton,
-  wireCaption, initResultPanels,
+  wireCaption, initResultPanels, initRecoSwitch,
   initTheme, initHeaderScroll, initReveal, initScorebarJump,
   render, state,
   initMobileWizard, initSplash, initFinishOverlay
@@ -34,6 +34,7 @@ function init(){
   initPersonaGuide();
   initCopyButton();
   initResultPanels();
+  initRecoSwitch();
   initHeaderScroll();
   initScorebarJump();
 

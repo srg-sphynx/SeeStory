@@ -212,6 +212,30 @@
           <div class="af-best" id="afBest" hidden></div>
         </div>
 
+        <!-- Dictionary-driven natural-fit recommendation -->
+        <div class="reco-card" id="recoCard" hidden>
+          <div class="reco-head">
+            <span class="reco-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0-6 6c0 2 1 3 2 4 .7.7 1 1.3 1 2h6c0-.7.3-1.3 1-2 1-1 2-2 2-4a6 6 0 0 0-6-6Z"/><path d="M9 21h6M10 17h4"/></svg>
+            </span>
+            <span class="reco-label">Reads most naturally for</span>
+            <span class="reco-conf" id="recoConf"></span>
+          </div>
+          <div class="reco-body">
+            <span class="reco-aud" id="recoAud">—</span>
+            <p class="reco-reason" id="recoReason"></p>
+          </div>
+          <div class="reco-meter" id="recoMeter" aria-hidden="true"></div>
+          <button class="reco-switch" id="recoSwitch" type="button" hidden>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+            <span id="recoSwitchText">Switch to this audience</span>
+          </button>
+          <p class="reco-match" id="recoMatch" hidden>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Your chosen audience matches the writing.
+          </p>
+        </div>
+
         <div class="top-fix-area">
           <span class="top-fix-label">Top fix</span>
           <span id="topFix" class="top-fix-text"></span>

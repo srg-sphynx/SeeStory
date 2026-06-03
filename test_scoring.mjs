@@ -1,4 +1,5 @@
 import { scoreDraft } from './scoring.js';
+import { recommendAudience } from './recommend.js';
 
 let pass = 0, fail = 0;
 function check(label, got, expected) {
@@ -60,6 +61,71 @@ console.log("\n=== Edge: No audience key (defaults to peer) ===");
 const r7 = scoreDraft({ audienceKey: null, caption: "We screened 500 molecules and found 12 hits.", checklist: {} });
 check("UsedDefault", r7.usedDefault, true);
 check("Empty", r7.empty, false);
+
+console.log("\n=== Recommender: dictionary-driven best-audience fit ===");
+// Numbers + verifiable source + technical register → research group leader (PI).
+const rec1 = recommendAudience({
+  caption: "In a prospective benchmark, our docking workflow recovered 92% of known actives in the top 1 percent, a 3-fold enrichment over the baseline. Methods and dataset are linked below.",
+  checklist: { source: true, resultData: true }
+});
+check("Benchmark → PI", rec1.bestKey, "pi");
+
+// Video + visual + community + simple, playful language → Gen Alpha.
+const rec2 = recommendAudience({
+  caption: "We turned molecular docking into a 30-second game. Can you dock the molecule faster than our scientist? Drop your best time below.",
+  checklist: { video: true, visual: true, communityHook: true }
+});
+check("Reel → Gen Alpha", rec2.bestKey, "genalpha");
+
+// Too little text to judge → null.
+check("Too short → null", recommendAudience({ caption: "Hi all", checklist: {} }), null);
+
+// Ranking is complete and sorted.
+check("Ranks all 5 audiences", rec1.ranked.length, 5);
+check("Ranked descending", rec1.ranked[0].score >= rec1.ranked[4].score, true);
+
+function checkIn(label, got, allowed){
+  if(allowed.includes(got)){ console.log(`  PASS  ${label}: ${got}`); pass++; }
+  else { console.log(`  FAIL  ${label}: expected one of [${allowed.join(", ")}], got ${got}`); fail++; }
+}
+
+console.log("\n=== Real-world BioSolveIT-style samples: detection + recommender ===");
+
+// Marketing copy with an em-dash + a real superlative ("effortlessly").
+const sMkt = "SeeSAR is your intuitive, visual drug design platform—covering every step of your discovery process, from virtual screening to fragment-based design, so every chemist can effortlessly advance their research.";
+const dMkt = scoreDraft({ audienceKey: "peer", caption: sMkt, checklist: {} });
+check("Marketing: em-dash detected", dMkt.facts.hasEmDash, true);
+check("Marketing: 'effortlessly' flagged as hype", dMkt.facts.hypeFound.includes("effortlessly"), true);
+
+// Thought-leadership: "the next generation of scientists" must NOT read as hype,
+// and an incidental year ("25") must not push the recommender to pharma/pi.
+const sThought = "The next 25 years of computational chemistry will not be won in the lab alone—it will be won in the feed, the deck, and the reel—wherever the next generation of scientists actually spends its attention.";
+const dThought = scoreDraft({ audienceKey: "peer", caption: sThought, checklist: {} });
+check("Thought piece: 'next generation' not hype", dThought.facts.hypeFound.length, 0);
+check("Thought piece: em-dash detected", dThought.facts.hasEmDash, true);
+checkIn("Thought piece → young/general audience", recommendAudience({ caption: sThought, checklist: {} }).bestKey, ["genz", "peer"]);
+
+// Pharma ROI pitch: quantified value + a clear call to action → pharma.
+const sRoi = "Teams cut hit-finding costs by 38% and shortened lead time from 14 months to 9. See the case study, then book a 30-minute call to map it to your portfolio.";
+check("ROI pitch → pharma", recommendAudience({ caption: sRoi, checklist: {} }).bestKey, "pharma");
+
+// Deep technical science (no numbers) → research group leader / peer, never a young audience.
+const sHyde = "HYDE binding assessment approximates and visualizes affinities based on two major physical driving forces: desolvation and protein-ligand interactions, giving medicinal chemists a transparent, per-atom readout.";
+checkIn("Deep science → expert audience", recommendAudience({ caption: sHyde, checklist: {} }).bestKey, ["pi", "peer"]);
+
+// All-caps launch: shouting + exclamation pile-up detected.
+const sCaps = "HUGE NEWS!!! Our BRAND NEW docking engine is FINALLY HERE and the results are absolutely INCREDIBLE for EVERY medicinal chemistry team out there!!!";
+const dCaps = scoreDraft({ audienceKey: "pi", caption: sCaps, checklist: {} });
+check("All-caps: shouting detected", dCaps.facts.shouting, true);
+check("All-caps: 6 exclamations", dCaps.facts.exclamations, 6);
+
+// Hedge-heavy abstract: tentative language detected, repels decision-makers.
+const sHedge = "We believe this approach might possibly improve enrichment somewhat, and it could potentially reduce screening time, though results may vary and we suspect performance is arguably project-dependent.";
+check("Hedgy: 5+ hedge phrases", scoreDraft({ audienceKey: "peer", caption: sHedge, checklist: {} }).facts.hedgeHits >= 5, true);
+
+// Social post (video + community in the prose, no checklist ticks) → young audience.
+const sSocial = "We filmed a real scientist docking a molecule in under a minute. No textbook, just the screen. Could you beat her time? Drop a comment and we'll react to the best one.";
+checkIn("Social post → young audience", recommendAudience({ caption: sSocial, checklist: {} }).bestKey, ["genz", "genalpha"]);
 
 console.log(`\n=== RESULTS: ${pass} passed, ${fail} failed ===`);
 process.exit(fail > 0 ? 1 : 0);
