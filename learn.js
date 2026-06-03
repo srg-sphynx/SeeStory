@@ -1,6 +1,6 @@
 /* ── learn.js ── Explore page: theme, counters, accordion, tabs, reveal ── */
 
-import { AUDIENCES } from './data.js';
+import { AUDIENCES, PERSONAS, MEDIA_LABEL } from './data.js';
 import { initMotion } from './motion.js';
 import { iconSVG } from './icons.js';
 
@@ -169,7 +169,7 @@ function buildSignalAccordion(){
   });
 }
 
-/* ── Audience cards (reuse the engine's real weights) ── */
+/* ── Audience signal weights (reuse the engine's real numbers) ── */
 const SIGNAL_ORDER = [
   { k: "clarity", label: "Clarity" },
   { k: "trust", label: "Trust" },
@@ -177,30 +177,174 @@ const SIGNAL_ORDER = [
   { k: "fit", label: "Fit" }
 ];
 
-function buildAudienceCards(){
-  const host = $("audienceCards");
-  if(!host) return;
-  Object.values(AUDIENCES).forEach(aud => {
-    const card = document.createElement("article");
-    card.className = "aud-explain reveal";
+/* ── Interactive persona deck: swipeable cards, animated weight
+      "fingerprint", count-up of the dominant signal, and a collapsible
+      media-diet built from the engine's real per-audience weights. ── */
+function buildPersonaDeck(){
+  const deck = $("personaDeck");
+  const track = $("deckTrack");
+  const nav = $("deckNav");
+  const dots = $("deckDots");
+  const viewport = $("deckViewport");
+  const prevBtn = $("deckPrev");
+  const nextBtn = $("deckNext");
+  if(!deck || !track || !nav || !dots || !viewport) return;
 
-    const top = `<h4>${aud.label}</h4><p class="aud-explain-blurb">${aud.blurb}</p>`;
+  const total = PERSONAS.length;
+  const cards = [];
+  let active = 0;
 
-    const max = Math.max(...SIGNAL_ORDER.map(s => aud.weights[s.k]));
+  PERSONAS.forEach((p, i) => {
+    const aud = AUDIENCES[p.key] || { weights: {}, wants: {} };
+    const weights = aud.weights || {};
+    const max = Math.max(...SIGNAL_ORDER.map(s => weights[s.k] || 0)) || 1;
+    const topSignal = SIGNAL_ORDER.reduce((a, b) => (weights[b.k] || 0) > (weights[a.k] || 0) ? b : a);
+    const topPct = Math.round((weights[topSignal.k] || 0) * 100);
+
     const bars = SIGNAL_ORDER.map(s => {
-      const w = aud.weights[s.k];
+      const w = weights[s.k] || 0;
       const pct = Math.round(w * 100);
-      const lead = w === max ? " lead" : "";
+      const lead = s.k === topSignal.k ? " lead" : "";
+      const target = Math.round((w / max) * 100);
       return `<div class="wbar-row${lead}">
         <span class="wbar-label">${s.label}</span>
-        <span class="wbar-track"><span class="wbar-fill" style="width:${Math.round((w / max) * 100)}%"></span></span>
+        <span class="wbar-track"><span class="wbar-fill" data-w="${target}" style="width:0"></span></span>
         <span class="wbar-val">${pct}%</span>
       </div>`;
     }).join("");
 
-    card.innerHTML = top + `<div class="wbar-set">${bars}</div>`;
-    host.appendChild(card);
+    // Media diet — sorted, highest preference first.
+    const media = Object.entries(aud.wants || {}).sort((a, b) => b[1] - a[1]);
+    const mediaMax = media.length ? media[0][1] : 1;
+    const mediaRows = media.map(([k, v]) => {
+      const pct = Math.round(v * 100);
+      return `<div class="mbar-row">
+        <span class="mbar-label">${MEDIA_LABEL[k] || k}</span>
+        <span class="mbar-track"><span class="mbar-fill" data-w="${Math.round((v / mediaMax) * 100)}" style="width:0"></span></span>
+        <span class="mbar-val">${pct}%</span>
+      </div>`;
+    }).join("");
+
+    const wants = p.wants.map(w => `<li>${w}</li>`).join("");
+    const repels = p.repels.map(r => `<li>${r}</li>`).join("");
+
+    const card = document.createElement("article");
+    card.className = "pcard";
+    card.setAttribute("role", "tabpanel");
+    card.setAttribute("aria-label", p.name);
+    card.innerHTML =
+      `<div class="pcard-top">
+        <span class="pcard-avatar">${iconSVG(p.icon, { size: 28 })}</span>
+        <div class="pcard-id">
+          <h4>${p.name}</h4>
+          <span class="pcard-age">Ages ${p.age}</span>
+        </div>
+        <span class="pcard-count">${String(i + 1).padStart(2, "0")}<span class="pc-sep">/</span>${String(total).padStart(2, "0")}</span>
+      </div>
+      <p class="pcard-tagline">${iconSVG("sparkles", { size: 14 })} ${p.tagline}</p>
+      <p class="pcard-bio">${p.bio}</p>
+
+      <div class="pcard-fingerprint">
+        <div class="fp-head">
+          <span class="fp-label">Signal fingerprint</span>
+          <span class="fp-top">Leads on <strong>${topSignal.label}</strong> · <span class="fp-top-num" data-count="${topPct}" data-suffix="%">0%</span></span>
+        </div>
+        <div class="wbar-set">${bars}</div>
+      </div>
+
+      <button class="media-toggle" aria-expanded="false">
+        ${iconSVG("video", { size: 16 })}
+        <span>What this reader actually consumes</span>
+        <span class="mt-chev" aria-hidden="true">&rsaquo;</span>
+      </button>
+      <div class="media-wrap"><div class="media-inner">
+        <div class="mbar-set">${mediaRows}</div>
+        <p class="media-note">Higher bars mean a stronger pull. SeeSTORY rewards drafts that carry what sits near the top.</p>
+      </div></div>
+
+      <div class="pcard-cols">
+        <div class="pcol pcol-want">
+          <span class="pcol-head green">${iconSVG("checkCircle", { size: 15 })} What they respond to</span>
+          <ul>${wants}</ul>
+        </div>
+        <div class="pcol pcol-repel">
+          <span class="pcol-head red">${iconSVG("alert", { size: 15 })} What turns them off</span>
+          <ul>${repels}</ul>
+        </div>
+      </div>`;
+
+    // Per-card media-diet dropdown
+    const mToggle = card.querySelector(".media-toggle");
+    mToggle.addEventListener("click", () => {
+      const open = mToggle.getAttribute("aria-expanded") === "true";
+      mToggle.setAttribute("aria-expanded", String(!open));
+      card.classList.toggle("media-open", !open);
+      if(!open) animateMedia(card);
+    });
+
+    track.appendChild(card);
+    cards.push(card);
+
+    // Top nav chip
+    const chip = document.createElement("button");
+    chip.className = "deck-chip";
+    chip.setAttribute("role", "tab");
+    chip.innerHTML = `<span class="chip-ic">${iconSVG(p.icon, { size: 17 })}</span><span class="chip-name">${p.name}</span>`;
+    chip.addEventListener("click", () => go(i));
+    nav.appendChild(chip);
+
+    // Bottom dot
+    const dot = document.createElement("button");
+    dot.className = "deck-dot";
+    dot.setAttribute("role", "tab");
+    dot.setAttribute("aria-label", p.name);
+    dot.addEventListener("click", () => go(i));
+    dots.appendChild(dot);
   });
+
+  function animateBars(card){
+    card.querySelectorAll(".wbar-fill").forEach(f => { f.style.width = (f.dataset.w || 0) + "%"; });
+    const numEl = card.querySelector(".fp-top-num");
+    if(numEl) animateCount(numEl);
+  }
+  function animateMedia(card){
+    card.querySelectorAll(".mbar-fill").forEach(f => { f.style.width = (f.dataset.w || 0) + "%"; });
+  }
+
+  function go(i){
+    active = (i + total) % total;
+    track.style.transform = `translateX(-${active * 100}%)`;
+    [...nav.children].forEach((c, idx) => c.setAttribute("aria-selected", String(idx === active)));
+    [...dots.children].forEach((d, idx) => { d.classList.toggle("on", idx === active); d.setAttribute("aria-selected", String(idx === active)); });
+    cards.forEach((c, idx) => c.classList.toggle("active", idx === active));
+    animateBars(cards[active]);
+  }
+
+  if(prevBtn) prevBtn.addEventListener("click", () => go(active - 1));
+  if(nextBtn) nextBtn.addEventListener("click", () => go(active + 1));
+
+  // Keyboard arrows when the deck has focus / is hovered
+  deck.tabIndex = 0;
+  deck.addEventListener("keydown", (e) => {
+    if(e.key === "ArrowLeft"){ go(active - 1); e.preventDefault(); }
+    else if(e.key === "ArrowRight"){ go(active + 1); e.preventDefault(); }
+  });
+
+  // Touch swipe
+  let startX = 0, startY = 0, swiping = false;
+  viewport.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX; startY = e.touches[0].clientY; swiping = true;
+  }, { passive: true });
+  viewport.addEventListener("touchend", (e) => {
+    if(!swiping) return; swiping = false;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if(Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)){
+      go(dx < 0 ? active + 1 : active - 1);
+    }
+  }, { passive: true });
+
+  go(0);
 }
 
 /* ── Competitive landscape ── */
@@ -322,7 +466,7 @@ function init(){
   initTheme();
   initHeaderScroll();
   buildSignalAccordion();
-  buildAudienceCards();
+  buildPersonaDeck();
   buildCompanies();
   buildChart();
   initCounters();

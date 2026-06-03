@@ -293,43 +293,66 @@ export const PRESETS = [
   }
 ];
 
+// Friendly labels for the media-preference weights stored in AUDIENCES[*].wants.
+// Used by the Explore page persona deck to render each reader's "media diet".
+export const MEDIA_LABEL = {
+  video:         "Short-form video",
+  visual:        "Images & graphics",
+  humanVoice:    "A real human voice",
+  communityHook: "Community & interaction",
+  plainSummary:  "Plain-language summary",
+  number:        "Hard numbers",
+  source:        "Cited sources",
+  cta:           "A clear next step"
+};
+
 export const PERSONAS = [
   {
+    key: "genz",
     icon: "atom",
     name: "Gen Z Chemist",
     age: "22–30",
+    tagline: "Learns from creators, not journals",
     bio: "Entering the workforce or completing grad school. They discovered drug design through YouTube tutorials and Reddit threads, not textbooks. They already know SeeSAR exists - they want to see it in action, in 60 seconds, from a real person.",
     wants: ["60-second SeeSAR screen recordings on LinkedIn/TikTok", "Real scientists showing real workflows on camera", "Community threads - 'What would you screen first?'", "Plain-English takeaways they can reshare in group chats"],
     repels: ["Corporate press-release tone", "20-page PDFs when a 30-second video would do", "Logo-branded content with no human voice"]
   },
   {
+    key: "genalpha",
     icon: "gamepad",
     name: "Gen Alpha Student",
     age: "14–20",
+    tagline: "Your user in 10 years",
     bio: "Currently in high school or early undergrad. They will be BioSolveIT's users in 10 years. They learn through interactive demos, YouTube explainers, and gamified challenges - not journal papers. The YoungSolvers program is their on-ramp.",
     wants: ["Video-first content, ideally under 60 seconds", "Interactive demos - 'try docking this molecule yourself'", "YoungSolvers stories and success spotlights", "Casual, friendly tone - 'come join us, not we are pleased to announce'"],
     repels: ["Formal academic announcements", "Text-only posts with no visuals", "Content that assumes 10 years of domain expertise"]
   },
   {
+    key: "pi",
     icon: "microscope",
     name: "Research Group Leader (PI)",
     age: "35–60",
+    tagline: "Reads the benchmark, not the banner",
     bio: "Time-poor and highly analytical. They evaluate tools by reading the benchmarks, not the marketing page. They want to know: does infiniSee actually find actives? Show me the hit rate. Link me the paper.",
     wants: ["Hard numbers: '2.4M compounds screened in 48 hours, 37 confirmed hits'", "DOI links and verifiable benchmark data", "One-line summaries they can forward to their group", "A direct path to try the software: download link, demo, or trial"],
     repels: ["Hype words (revolutionary, game-changing, unprecedented)", "Vague claims without supporting data", "Excessive exclamation marks or ALL CAPS"]
   },
   {
+    key: "pharma",
     icon: "briefcase",
     name: "Pharma Decision-Maker",
     age: "35–55",
+    tagline: "Wants the business case, not the buzz",
     bio: "Focused on ROI, pipeline velocity, and risk reduction. They compare BioSolveIT's Chemical Space Docking to competitors on throughput, cost, and validation. They want a business case, not a feature list.",
     wants: ["Concrete metrics - time saved, hit rate, cost per screen", "Customer case studies with permission to reference", "A direct CTA - book a demo, read the case study, get a quote", "Clean, professional presentation that respects their time"],
     repels: ["Hedging language (maybe, perhaps, we think)", "Flashy visuals that don't connect to outcomes", "Posts that bury the result under three paragraphs of context"]
   },
   {
+    key: "peer",
     icon: "flask",
     name: "Peer Scientist",
     age: "25–50",
+    tagline: "Will switch workflows - if it's reproducible",
     bio: "Your everyday colleague in computational chemistry. They already understand docking, scoring, and chemical spaces. They want to know what's new, what's reproducible, and whether it's worth switching their workflow.",
     wants: ["Reproducible benchmarks with methodology details", "Source links to papers and datasets they can verify", "SeeSAR/infiniSee comparison screenshots and workflow tips", "A clear next step or discussion prompt"],
     repels: ["Marketing speak in a science context", "Unsupported superlatives", "Posts that are all announcement, no substance"]
