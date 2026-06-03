@@ -238,10 +238,15 @@ html[data-theme="dark"] .topbar{
 }
 /* Bold: a soft dual-tone glow mesh */
 .hero::before{
-  content:""; position:absolute; inset:0; pointer-events:none;
+  content:""; position:absolute; inset:-15%; pointer-events:none;
   background:
     radial-gradient(60% 80% at 88% -10%, rgba(23,138,56,0.30), transparent 60%),
     radial-gradient(50% 70% at 8% 120%, rgba(111,176,238,0.22), transparent 60%);
+  animation: heroDrift 18s ease-in-out infinite;
+}
+@keyframes heroDrift{
+  0%,100%{ transform:translate3d(0,0,0) scale(1); }
+  50%    { transform:translate3d(2.5%, 2%, 0) scale(1.08); }
 }
 /* Minimal: faint molecular dot texture, masked away to keep it clean */
 .hero::after{
@@ -439,6 +444,35 @@ textarea:focus{ outline:none; border-color:var(--blue); box-shadow: 0 0 0 4px va
   transition: color .15s ease, background .15s ease;
 }
 .check-edu-btn:hover { color: var(--green); background: var(--blue-soft); }
+
+/* ── Enticement glow — a slow light that travels around the button ── */
+/* Shared by the checklist edu buttons (tool) and the media-diet toggle (Explore). */
+.check-edu-btn.glow {
+  position: relative; color: var(--green);
+  animation: eduGlowPulse 2.6s ease-in-out infinite;
+}
+.check-edu-btn.glow::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  border-radius: inherit;
+  background: linear-gradient(110deg,
+    transparent 20%,
+    rgba(23,138,56,0.18) 45%,
+    rgba(79,224,138,0.30) 50%,
+    rgba(23,138,56,0.18) 55%,
+    transparent 80%);
+  background-size: 220% 100%;
+  animation: eduGlowSweep 2.6s linear infinite;
+}
+.check-edu-btn.glow > * { position: relative; z-index: 1; }
+@keyframes eduGlowPulse {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(23,138,56,0.18), 0 0 0 0 rgba(23,138,56,0.0); }
+  50%      { box-shadow: inset 0 0 0 1px rgba(23,138,56,0.42), 0 0 14px 1px rgba(23,138,56,0.22); }
+}
+@keyframes eduGlowSweep {
+  from { background-position: 140% 0; }
+  to   { background-position: -140% 0; }
+}
+
 .check-edu-content { display: none; padding: 0 var(--s4) var(--s4); }
 .check-edu-content.open { display: block; }
 .edu-block { margin-top: var(--s3); }
@@ -459,6 +493,16 @@ textarea:focus{ outline:none; border-color:var(--blue); box-shadow: 0 0 0 4px va
   box-shadow: inset 0 2px 6px rgba(0,0,0,0.06), var(--shadow-sm);
   display:flex; align-items:center; justify-content:center;
 }
+/* Living breath — a soft halo gently expands and fades behind the ring */
+.score-ring::before{
+  content:""; position:absolute; inset:-8px; z-index:-1; border-radius:50%;
+  background:radial-gradient(circle, rgba(23,138,56,0.18), transparent 70%);
+  animation: ringBreath 4s ease-in-out infinite;
+}
+@keyframes ringBreath{
+  0%,100%{ opacity:.35; transform:scale(.94); }
+  50%    { opacity:.8;  transform:scale(1.06); }
+}
 .ring-svg{ position:absolute; top:0;left:0; width:100%; height:100%; }
 .ring-track{ stroke:var(--ring-track); transition:stroke .3s ease; }
 #scoreRing{ transition: stroke-dashoffset .6s var(--ease), stroke .3s ease; }
@@ -474,7 +518,23 @@ textarea:focus{ outline:none; border-color:var(--blue); box-shadow: 0 0 0 4px va
   border-radius:var(--radius); padding:var(--s3) var(--s4); margin:0 0 var(--s4);
   box-shadow:var(--shadow-sm); position:relative; overflow:hidden;
 }
-.top-fix-area::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--blue); }
+.top-fix-area::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--blue); z-index:1; }
+/* Living sheen — a slow band of light gliding across the top-fix card */
+.top-fix-area::after{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.55) 50%, transparent 65%);
+  background-size:280% 100%;
+  animation: topFixSheen 6.5s ease-in-out infinite;
+}
+html[data-theme="dark"] .top-fix-area::after{
+  background:linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.14) 50%, transparent 65%);
+  background-size:280% 100%;
+}
+.top-fix-label, .top-fix-text{ position:relative; z-index:1; }
+@keyframes topFixSheen{
+  0%   { background-position:140% 0; }
+  60%,100%{ background-position:-140% 0; }
+}
 .top-fix-label{
   font-size:.75rem;font-weight:700;color:var(--blue);
   text-transform:uppercase;letter-spacing:.04em; display:block;margin:0 0 var(--s1);
@@ -692,6 +752,48 @@ textarea:focus{ outline:none; border-color:var(--blue); box-shadow: 0 0 0 4px va
 .persona-sub.red{color:var(--red);}
 .persona-ul{margin:0;padding-left:var(--s5);font-size:.82rem;color:var(--ink);line-height:1.6;}
 .persona-ul li{margin-bottom:2px;}
+
+/* ── Persona research cards double as a second audience picker ── */
+.persona-selectable{ position:relative; }
+.persona-item.selected{
+  border-color:var(--green);
+  background:linear-gradient(to bottom, var(--card), var(--green-soft));
+  box-shadow: 0 0 0 3px var(--green-soft), var(--shadow-md);
+}
+.persona-selected-pill{
+  margin-left:auto; display:none; align-items:center; gap:4px;
+  font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em;
+  color:#fff; background:var(--green);
+  padding:3px 9px; border-radius:999px; white-space:nowrap;
+}
+.persona-selected-pill svg{ width:13px; height:13px; }
+.persona-item.selected .persona-selected-pill{ display:inline-flex; }
+.persona-pick{
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  width:100%; margin-top:var(--s3);
+  font:inherit; font-weight:800; font-size:.82rem; cursor:pointer;
+  padding:var(--s2) var(--s4); border-radius:var(--radius);
+  color:var(--blue); background:var(--blue-soft);
+  border:1.5px solid transparent;
+  transition: all .2s var(--ease);
+}
+.persona-pick:hover{
+  color:#fff; background:var(--blue);
+  transform:translateY(-1px); box-shadow:var(--shadow-md);
+}
+.persona-pick.is-selected{
+  color:#fff; background:var(--green); cursor:default;
+}
+.persona-pick.is-selected:hover{ transform:none; box-shadow:none; }
+.persona-pick:focus-visible{ outline:none; box-shadow:0 0 0 3px var(--blue-soft); }
+
+/* Brief flash on the main audience card when picked from the research panel */
+.aud-card.aud-flash{ animation: audFlash .7s var(--ease); }
+@keyframes audFlash{
+  0%   { box-shadow: 0 0 0 0 rgba(23,138,56,0.0); }
+  35%  { box-shadow: 0 0 0 4px rgba(23,138,56,0.45); }
+  100% { box-shadow: 0 0 0 0 rgba(23,138,56,0.0); }
+}
 
 /* ── Compare mode ── */
 .compare-grid{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:var(--s3);}
@@ -1005,7 +1107,33 @@ html[data-theme="dark"] .cookie-btn-accept{
   to  { opacity:0; transform:scale(0.94); }
 }
 
+/* Ambient aurora — two soft orbs drifting behind the splash content */
+.splash-overlay:not(.finish-overlay)::before,
+.splash-overlay:not(.finish-overlay)::after{
+  content:""; position:absolute; pointer-events:none; z-index:0;
+  border-radius:50%; filter:blur(60px); opacity:.55;
+}
+.splash-overlay:not(.finish-overlay)::before{
+  width:46vmax; height:46vmax; top:-14vmax; right:-12vmax;
+  background:radial-gradient(circle, rgba(58,170,53,0.55), transparent 70%);
+  animation: splashOrbA 14s ease-in-out infinite;
+}
+.splash-overlay:not(.finish-overlay)::after{
+  width:42vmax; height:42vmax; bottom:-16vmax; left:-14vmax;
+  background:radial-gradient(circle, rgba(111,176,238,0.45), transparent 70%);
+  animation: splashOrbB 18s ease-in-out infinite;
+}
+@keyframes splashOrbA{
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%    { transform:translate(-4vmax,5vmax) scale(1.12); }
+}
+@keyframes splashOrbB{
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%    { transform:translate(5vmax,-4vmax) scale(1.1); }
+}
+
 .splash-card{
+  position:relative; z-index:1;
   display:flex; flex-direction:column; align-items:center;
   text-align:center; max-width:420px; width:100%;
   animation: splashCardUp .7s var(--ease) .15s both;
@@ -1016,8 +1144,23 @@ html[data-theme="dark"] .cookie-btn-accept{
 }
 
 .splash-mark{
-  width:88px; height:88px; margin-bottom:var(--s4);
-  animation: splashSpin 2.2s var(--ease) .3s both;
+  position:relative; width:88px; height:88px; margin-bottom:var(--s4);
+  animation: splashSpin 1s var(--ease) .3s both, splashFloat 5s ease-in-out 1.4s infinite;
+}
+/* Soft pulsing halo behind the mark */
+.splash-mark::before{
+  content:""; position:absolute; inset:-30%; z-index:-1; border-radius:50%;
+  background:radial-gradient(circle, rgba(79,224,138,0.45), transparent 70%);
+  filter:blur(14px);
+  animation: splashHalo 3.4s ease-in-out infinite;
+}
+@keyframes splashFloat{
+  0%,100%{ transform:translateY(0); }
+  50%    { transform:translateY(-7px); }
+}
+@keyframes splashHalo{
+  0%,100%{ opacity:.5; transform:scale(.9); }
+  50%    { opacity:.9; transform:scale(1.12); }
 }
 .splash-mark svg{ width:100%; height:100%; }
 .splash-mark .bm-blade-a{ fill:#ffffff; }
@@ -1116,6 +1259,28 @@ html[data-theme="dark"] .cookie-btn-accept{
 /* Dark theme splash — slightly different background blend */
 html[data-theme="dark"] .splash-overlay{
   background: linear-gradient(160deg, rgba(12,50,89,0.92) 0%, rgba(7,28,56,0.95) 50%, rgba(4,14,28,0.97) 100%);
+}
+
+/* ── Mobile splash: glass card, brighter aurora, bigger CTA ── */
+@media (max-width:600px){
+  .splash-overlay:not(.finish-overlay){ padding: var(--s5) var(--s4); }
+  .splash-overlay:not(.finish-overlay)::before{ opacity:.7; }
+  .splash-overlay:not(.finish-overlay)::after{ opacity:.6; }
+
+  .splash-overlay:not(.finish-overlay) .splash-card{
+    max-width:380px;
+    padding: var(--s6) var(--s5) var(--s5);
+    border-radius:26px;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.14);
+    -webkit-backdrop-filter:blur(12px) saturate(1.4);
+            backdrop-filter:blur(12px) saturate(1.4);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+  .splash-overlay:not(.finish-overlay) .splash-mark{ width:78px; height:78px; }
+  .splash-overlay:not(.finish-overlay) .splash-sub{ margin-bottom: var(--s4); }
+  .splash-overlay:not(.finish-overlay) .splash-pills{ margin-bottom: var(--s4); }
+  .splash-overlay:not(.finish-overlay) .splash-cta{ width:100%; padding:15px 28px; }
 }
 
 /* Reduced motion */

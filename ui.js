@@ -115,9 +115,13 @@ export function initPersonaGuide(){
   
   list.innerHTML = "";
   PERSONAS.forEach(p => {
+    // The persona key maps onto an AUDIENCES entry, so this card doubles as a
+    // second place to pick the audience.
+    const selectable = !!AUDIENCES[p.key];
     const el = document.createElement("div");
-    el.className = "persona-item";
-    
+    el.className = "persona-item" + (selectable ? " persona-selectable" : "");
+    if(selectable) el.dataset.key = p.key;
+
     const header = document.createElement("div");
     header.className = "persona-header";
     const icon = document.createElement("span");
@@ -128,13 +132,19 @@ export function initPersonaGuide(){
     nameAge.textContent = p.name + (p.age ? " (" + p.age + ")" : "");
     header.appendChild(icon);
     header.appendChild(nameAge);
+    if(selectable){
+      const pill = document.createElement("span");
+      pill.className = "persona-selected-pill";
+      pill.innerHTML = iconSVG("check", { size: 13 }) + " Selected";
+      header.appendChild(pill);
+    }
     el.appendChild(header);
-    
+
     const bio = document.createElement("p");
     bio.className = "persona-bio";
     bio.textContent = p.bio;
     el.appendChild(bio);
-    
+
     if(p.wants && p.wants.length){
       const wantsHead = document.createElement("div");
       wantsHead.className = "persona-sub green";
@@ -149,7 +159,7 @@ export function initPersonaGuide(){
       });
       el.appendChild(wantsList);
     }
-    
+
     if(p.repels && p.repels.length){
       const repelsHead = document.createElement("div");
       repelsHead.className = "persona-sub red";
@@ -164,9 +174,19 @@ export function initPersonaGuide(){
       });
       el.appendChild(repelsList);
     }
-    
+
+    if(selectable){
+      const pick = document.createElement("button");
+      pick.type = "button";
+      pick.className = "persona-pick";
+      pick.dataset.key = p.key;
+      pick.addEventListener("click", () => selectPersonaAudience(p.key));
+      el.appendChild(pick);
+    }
+
     list.appendChild(el);
   });
+  refreshPersonaSelection();
 
   btn.addEventListener("click", () => {
     const expanded = btn.getAttribute("aria-expanded") === "true";
@@ -217,6 +237,36 @@ function refreshAudienceButtons(){
     b.setAttribute("aria-pressed", String(selected));
     b.classList.toggle("active", selected);
   });
+  refreshPersonaSelection();
+}
+
+/** Sync the "Selected" state across the persona research cards + pick buttons. */
+function refreshPersonaSelection(){
+  document.querySelectorAll("#personaList .persona-selectable").forEach(item => {
+    const selected = item.dataset.key === state.audienceKey;
+    item.classList.toggle("selected", selected);
+    const pick = item.querySelector(".persona-pick");
+    if(pick){
+      pick.textContent = selected ? "Selected as your audience" : "Pick this audience";
+      pick.classList.toggle("is-selected", selected);
+      pick.setAttribute("aria-pressed", String(selected));
+    }
+  });
+}
+
+/** Pick an audience from the persona research panel (second selection point). */
+function selectPersonaAudience(key){
+  if(!AUDIENCES[key]) return;
+  state.audienceKey = key;
+  refreshAudienceButtons();
+  render();
+  // Mirror the picked audience up in the main grid so the choice is unmistakable.
+  const card = document.querySelector(`#audience .aud-card[data-key="${key}"]`);
+  if(card && !reducedMotion.matches){
+    card.classList.remove("aud-flash");
+    void card.offsetWidth;
+    card.classList.add("aud-flash");
+  }
 }
 
 /* ── Build checklist ── */
@@ -236,10 +286,6 @@ export function buildChecklist(){
     cb.type = "checkbox";
     cb.className = "toggle-input";
     cb.checked = !!state.checklist[item.id];
-    cb.onchange = () => {
-      state.checklist[item.id] = cb.checked;
-      render();
-    };
 
     const toggleSwitch = document.createElement("span");
     toggleSwitch.className = "toggle-switch";
@@ -298,16 +344,31 @@ export function buildChecklist(){
     eduContent.appendChild(whatBlock);
     eduContent.appendChild(whyBlock);
     
+    // Glow entices the user to expand once they've toggled this format on,
+    // but never while the panel is already open.
+    const updateGlow = () => {
+      const expanded = eduBtn.getAttribute("aria-expanded") === "true";
+      eduBtn.classList.toggle("glow", cb.checked && !expanded);
+    };
+
+    cb.onchange = () => {
+      state.checklist[item.id] = cb.checked;
+      updateGlow();
+      render();
+    };
+
     eduBtn.addEventListener("click", () => {
       const expanded = eduBtn.getAttribute("aria-expanded") === "true";
       eduBtn.setAttribute("aria-expanded", String(!expanded));
       eduBtn.textContent = !expanded ? "Hide details ▴" : "What could BioSolveIT do with this? ▾";
       eduContent.classList.toggle("open", !expanded);
+      updateGlow();
     });
 
     wrapper.appendChild(eduBtn);
     wrapper.appendChild(eduContent);
     el.appendChild(wrapper);
+    updateGlow();
   });
 }
 
@@ -362,6 +423,14 @@ function refreshChecklistBoxes(){
   const ids = CHECKLIST.map(c => c.id);
   items.forEach((cb, i) => {
     if(ids[i]) cb.checked = !!state.checklist[ids[i]];
+  });
+  // Re-sync the "expand me" glow on each edu button after a bulk change.
+  document.querySelectorAll("#checklist .check-card-wrap").forEach(wrap => {
+    const cb = wrap.querySelector("input[type=checkbox]");
+    const eduBtn = wrap.querySelector(".check-edu-btn");
+    if(!cb || !eduBtn) return;
+    const expanded = eduBtn.getAttribute("aria-expanded") === "true";
+    eduBtn.classList.toggle("glow", cb.checked && !expanded);
   });
 }
 
