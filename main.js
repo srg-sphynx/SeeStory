@@ -7,7 +7,7 @@ import {
   wireCaption, initResultPanels,
   initTheme, initHeaderScroll, initReveal, initScorebarJump,
   render, state,
-  initMobileWizard, initSplash
+  initMobileWizard, initSplash, initFinishOverlay
 } from './ui.js';
 import { initMotion } from './motion.js';
 
@@ -47,6 +47,9 @@ function init(){
 
   // 8. Mobile wizard (step-by-step mode for ≤600px)
   initMobileWizard();
+
+  // 9. Completion overlay shown after the wizard's "Done"
+  initFinishOverlay();
 }
 
 document.addEventListener("DOMContentLoaded", init);

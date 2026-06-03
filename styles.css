@@ -1127,6 +1127,65 @@ html[data-theme="dark"] .splash-overlay{
   .splash-overlay.dismiss{ opacity:0; transition:opacity .2s; }
 }
 
+/* ── Completion / explore-the-science overlay ── */
+/* Use a plain opacity transition for the fade-out — swapping keyframe
+   animation-names on an already-shown overlay does not reliably restart. */
+.finish-overlay{ transition: opacity .4s var(--ease); }
+.finish-overlay.dismiss{
+  animation: none;
+  opacity: 0;
+  pointer-events: none;
+}
+.finish-check{
+  display:flex; align-items:center; justify-content:center;
+  width:72px; height:72px; margin:0 auto var(--s4); border-radius:50%;
+  color:#08220f;
+  background: linear-gradient(135deg, #3aaa35 0%, #4fe08a 100%);
+  box-shadow: 0 6px 24px rgba(58,170,53,0.45);
+  animation: finishPop .6s var(--ease) .1s both;
+}
+@keyframes finishPop{
+  0%{ opacity:0; transform:scale(0.4); }
+  60%{ transform:scale(1.12); }
+  100%{ opacity:1; transform:scale(1); }
+}
+.finish-overlay .splash-title{ margin-bottom:var(--s2); }
+.finish-list{
+  list-style:none; margin:0 0 var(--s5); padding:0;
+  display:flex; flex-direction:column; gap:var(--s2);
+  text-align:left; width:100%; max-width:340px;
+}
+.finish-list li{
+  display:flex; align-items:center; gap:10px;
+  font-size:.86rem; font-weight:700; color:rgba(255,255,255,0.9);
+}
+.finish-list .fl-ico{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:32px; height:32px; flex-shrink:0; border-radius:9px;
+  color:#4fe08a;
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14);
+}
+.finish-actions{
+  display:flex; flex-direction:column; align-items:center; gap:var(--s3);
+  width:100%; max-width:340px;
+}
+.finish-explore{ width:100%; text-decoration:none; }
+.finish-secondary{
+  background:none; border:none; cursor:pointer;
+  font:inherit; font-size:.88rem; font-weight:700;
+  color:rgba(255,255,255,0.6);
+  padding:6px 12px; border-radius:999px;
+  transition: color .2s ease, background-color .2s ease;
+}
+.finish-secondary:hover{ color:#fff; background:rgba(255,255,255,0.08); }
+.finish-secondary:focus-visible{
+  outline:none; color:#fff;
+  box-shadow:0 0 0 3px rgba(255,255,255,0.35);
+}
+@media (prefers-reduced-motion:reduce){
+  .finish-check{ animation:none; }
+}
+
 /* ═══════════════════════════════════════════
    MOBILE WIZARD (step-by-step mode)
    ═══════════════════════════════════════════ */

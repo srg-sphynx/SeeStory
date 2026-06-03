@@ -1235,9 +1235,8 @@ export function initMobileWizard(){
   if(prev) prev.addEventListener("click", () => goToStep(wizardStep - 1, "back"));
   if(next) next.addEventListener("click", () => {
     if(wizardStep === WIZARD_TOTAL_STEPS - 1){
-      // "Done" — deactivate wizard, scroll to top
-      setWizardMode(false);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      // "Done" — invite the user to explore the science behind the score
+      showFinishOverlay();
       return;
     }
     goToStep(wizardStep + 1, "forward");
@@ -1286,6 +1285,57 @@ function wireWizardSwipe(){
     if(dx < 0) goToStep(wizardStep + 1, "forward"); // swipe left → next
     else       goToStep(wizardStep - 1, "back");     // swipe right → back
   }, { passive: true });
+}
+
+/* ── Completion overlay (invites exploring the science) ── */
+
+/** Reveal the completion overlay shown after the wizard's "Done". */
+function showFinishOverlay(){
+  const overlay = $("finishOverlay");
+  if(!overlay) return;
+  overlay.classList.remove("dismiss");
+  overlay.hidden = false;
+  document.body.style.overflow = "hidden";
+  const explore = $("finishExplore");
+  requestAnimationFrame(() => { if(explore) explore.focus(); });
+}
+
+export function initFinishOverlay(){
+  const overlay = $("finishOverlay");
+  if(!overlay) return;
+  const stay = $("finishStay");
+
+  let closeTimer;
+  const close = () => {
+    if(overlay.hidden) return;
+    document.body.style.overflow = "";
+    if(reducedMotion.matches){
+      overlay.hidden = true;
+      return;
+    }
+    overlay.classList.add("dismiss");
+    // Hide after the fade-out. We use a timer rather than `animationend`
+    // because swapping animation-names on an already-shown element does not
+    // reliably re-fire the event in every browser.
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(() => {
+      overlay.hidden = true;
+      overlay.classList.remove("dismiss");
+    }, 460);
+  };
+
+  // "Review my score" stays on the results step
+  if(stay) stay.addEventListener("click", close);
+
+  // Backdrop click dismisses
+  overlay.addEventListener("click", (e) => { if(e.target === overlay) close(); });
+
+  // Escape dismisses
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape" && !overlay.hidden) close();
+  });
+
+  // The "Explore the science" link is a plain anchor — it navigates on its own.
 }
 
 /* ── Splash screen ── */
