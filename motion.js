@@ -20,20 +20,10 @@ export function initMotion({ revealScroll = false } = {}){
   const ST = window.ScrollTrigger;
   if(ST) gsap.registerPlugin(ST);
 
-  // 1. Logo spark intro
-  const mark = document.querySelector(".topbar .brand-mark");
-  if(mark){
-    gsap.from(mark, {
-      scale: 0, rotation: -120, opacity: 0,
-      duration: 0.8, ease: "back.out(1.7)", clearProps: "transform,opacity"
-    });
-  }
-
-  // 2. Header + hero entrance (always-visible-on-load elements only)
+  // 1. Hero entrance (hero band only — the sticky top bar and its toggles are
+  //    persistent chrome, so we deliberately leave them static to avoid the
+  //    re-animate "flash" every time the user switches pages.)
   const heroBits = [
-    ".topbar .brand-word",
-    ".topbar .page-switch",
-    ".topbar .header-controls",
     ".hero-eyebrow",
     ".hero .hero-title",
     ".hero .context-desc"
