@@ -791,6 +791,30 @@ export function render(){
   if(scoreHeadline) scoreHeadline.textContent = r.band.head;
   if(scoreSubhead)  scoreSubhead.textContent = `Biggest lever right now: ${SIGNAL_LABEL[r.focus]}.`;
 
+  // audience fit overview
+  const afAud = $("afAud");
+  const afBlurb = $("afBlurb");
+  const afBest = $("afBest");
+  if(afAud && afBlurb && afBest){
+    const aud = AUDIENCES[audKey];
+    afAud.textContent = aud ? aud.label : audKey;
+    afBlurb.textContent = aud ? aud.blurb : "";
+    const { bestKey, bestScore } = computeCompare();
+    if(bestKey && bestKey !== audKey && bestScore > r.score){
+      afBest.hidden = false;
+      afBest.className = "af-best af-best-alt";
+      afBest.innerHTML = iconSVG("target", { size: 14 })
+        + ` Lands best with <strong>${AUDIENCES[bestKey].label}</strong> (${bestScore})`;
+    } else if(bestKey === audKey){
+      afBest.hidden = false;
+      afBest.className = "af-best";
+      afBest.innerHTML = iconSVG("check", { size: 14 })
+        + ` Best-matched audience for this draft`;
+    } else {
+      afBest.hidden = true;
+    }
+  }
+
   // top fix
   if(topFixEl) topFixEl.textContent = r.topFix;
 
@@ -1093,6 +1117,9 @@ function setWizardMode(active){
   if(nav) nav.hidden = !active;
   if(active){
     buildWizardDots();
+    // Keep the long "What we detected" panel collapsed so the results step
+    // stays scannable — score, audience fit, and top fix lead; detail is one tap away.
+    setCollapsed($("detectedArea"), true);
     goToStep(wizardStep, "none");
   } else {
     // Restore all sections to visible
@@ -1166,6 +1193,9 @@ function goToStep(step, direction){
   const sections = document.querySelectorAll(".wizard-section");
   sections.forEach(el => {
     el.classList.remove("wizard-active-step", "wizard-slide-back");
+    // Clear any inline animation override (set below for the "none" direction)
+    // so the slide animation plays again on later visits.
+    el.style.animation = "";
   });
 
   // Find the section(s) for this step
@@ -1223,6 +1253,39 @@ export function initMobileWizard(){
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(checkViewport, 200);
   });
+
+  // Swipe left/right to move between steps (touch devices)
+  wireWizardSwipe();
+}
+
+/** Horizontal swipe navigation for the wizard, scoped to the main content. */
+function wireWizardSwipe(){
+  const surface = document.querySelector(".wrap");
+  if(!surface) return;
+
+  let startX = 0, startY = 0, tracking = false;
+  const THRESHOLD = 55; // px of horizontal travel to count as a swipe
+
+  surface.addEventListener("touchstart", (e) => {
+    if(!wizardActive || e.touches.length !== 1){ tracking = false; return; }
+    // Don't hijack gestures on text fields or the horizontally-scrolling
+    // preset strip — those own the horizontal axis.
+    if(e.target.closest("textarea, input, select, .preset-grid")){ tracking = false; return; }
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    tracking = true;
+  }, { passive: true });
+
+  surface.addEventListener("touchend", (e) => {
+    if(!tracking || !wizardActive) return;
+    tracking = false;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    // Require a mostly-horizontal swipe past the threshold.
+    if(Math.abs(dx) < THRESHOLD || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    if(dx < 0) goToStep(wizardStep + 1, "forward"); // swipe left → next
+    else       goToStep(wizardStep - 1, "back");     // swipe right → back
+  }, { passive: true });
 }
 
 /* ── Splash screen ── */
@@ -1245,9 +1308,18 @@ export function initSplash(){
   // Block body scroll while splash is visible
   document.body.style.overflow = "hidden";
 
+  // Move focus into the dialog so keyboard/screen-reader users land on the CTA.
+  const prevFocus = document.activeElement;
+  requestAnimationFrame(() => cta.focus());
+
+  let dismissed = false;
   const dismiss = () => {
+    if(dismissed) return;
+    dismissed = true;
     overlay.classList.add("dismiss");
     document.body.style.overflow = "";
+    // Return focus to wherever it was before the splash took over.
+    if(prevFocus && typeof prevFocus.focus === "function") prevFocus.focus();
     try { sessionStorage.setItem(SPLASH_KEY, "yes"); } catch(e){}
 
     const onEnd = () => {

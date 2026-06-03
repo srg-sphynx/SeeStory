@@ -481,6 +481,28 @@ textarea:focus{ outline:none; border-color:var(--blue); box-shadow: 0 0 0 4px va
 }
 .top-fix-text{font-size:.88rem;color:var(--ink);line-height:1.5;font-weight:600;}
 
+/* ── Audience fit overview ── */
+.audience-fit{
+  background:var(--card-2); border:1px solid var(--line);
+  border-radius:var(--radius); padding:var(--s3) var(--s4); margin:0 0 var(--s4);
+}
+.af-row{ display:flex; align-items:baseline; gap:var(--s2); flex-wrap:wrap; }
+.af-tag{
+  font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--muted);
+}
+.af-aud{ font-size:.98rem; font-weight:800; color:var(--ink); letter-spacing:-0.01em; }
+.af-blurb{ font-size:.8rem; color:var(--muted); line-height:1.45; margin:6px 0 0; font-weight:600; }
+.af-best{
+  display:inline-flex; align-items:center; gap:6px; margin-top:var(--s3);
+  font-size:.76rem; font-weight:700; color:var(--green);
+  background:var(--green-soft); padding:5px 11px; border-radius:999px;
+}
+.af-best.af-best-alt{ color:var(--blue); background:var(--blue-soft); }
+.af-best svg{ flex-shrink:0; }
+.af-best strong{ font-weight:800; }
+.af-best[hidden]{ display:none; }
+
 /* ── Breakdown ── */
 .breakdown-head{font-size:1.02rem;font-weight:800;color:var(--blue);margin:0 0 var(--s3);letter-spacing:-0.01em;}
 .signal-row{display:flex;align-items:center;gap:var(--s2);margin:0 0 2px;}
@@ -1009,6 +1031,11 @@ html[data-theme="dark"] .cookie-btn-accept{
   to  { opacity:1; transform:rotate(0deg) scale(1); }
 }
 
+.splash-welcome{
+  font-size:.82rem; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; color:rgba(255,255,255,0.55);
+  margin:0 0 var(--s2);
+}
 .splash-title{
   font-size: clamp(2rem, 6vw, 3rem);
   font-weight:800; letter-spacing:-0.03em; line-height:1;
@@ -1043,12 +1070,13 @@ html[data-theme="dark"] .cookie-btn-accept{
   margin-bottom:var(--s5);
 }
 .splash-pill{
-  display:inline-flex; align-items:center; gap:5px;
+  display:inline-flex; align-items:center; gap:6px;
   font-size:.76rem; font-weight:700; color:rgba(255,255,255,0.82);
   background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14);
   padding:5px 13px; border-radius:999px;
   -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
 }
+.splash-pill svg{ flex-shrink:0; opacity:.85; }
 
 .splash-cta{
   display:inline-flex; align-items:center; justify-content:center;
@@ -1068,6 +1096,11 @@ html[data-theme="dark"] .cookie-btn-accept{
 }
 .splash-cta:active{
   transform:scale(0.97);
+}
+.splash-cta:focus{ outline:none; }
+.splash-cta:focus-visible{
+  outline:none;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.55), 0 6px 24px rgba(58,170,53,0.5);
 }
 @keyframes splashCtaPulse{
   0%,100%{ box-shadow: 0 4px 20px rgba(58,170,53,0.45), 0 0 0 0 rgba(58,170,53,0.3); }
@@ -1161,9 +1194,36 @@ html[data-theme="dark"] .splash-overlay{
     opacity:1; transform:none;
   }
 
+  /* Hide the marketing hero in wizard mode — the splash already sets the
+     scene, and a full-height hero on top of every step is just noise. */
+  body.wizard-active .site-header{ display:none; }
+
   /* Make cards in wizard fill nicely */
   body.wizard-active .wizard-section .card{
     margin-bottom:0;
+  }
+
+  /* ── Results step: make the score the hero, keep stacked cards spaced ── */
+  body.wizard-active .col-result.wizard-active-step .card{
+    margin-bottom: var(--s4);
+  }
+  body.wizard-active .score-ring-area{
+    flex-direction:column; text-align:center; gap:var(--s3);
+    margin-bottom:var(--s4);
+  }
+  body.wizard-active .score-meta{ text-align:center; }
+  body.wizard-active .score-ring{ width:128px; height:128px; }
+  body.wizard-active .ring-num{ font-size:2.4rem; }
+
+  /* Prominent, full-width copy button on the results step */
+  body.wizard-active .copy-area{ margin: var(--s4) 0 0; }
+  body.wizard-active .copy-btn{
+    width:100%;
+    background: linear-gradient(135deg, var(--green) 0%, #4fe08a 100%);
+    color:#08220f; padding:14px; font-size:.95rem;
+  }
+  body.wizard-active .copy-btn.copied{
+    background: linear-gradient(135deg, var(--green) 0%, #4fe08a 100%);
   }
 
   /* Ensure the wrap doesn't add too much bottom padding in wizard mode */
