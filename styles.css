@@ -194,6 +194,8 @@ html[data-theme="dark"] .topbar{
 .page-opt svg{ flex-shrink:0; }
 .page-opt[aria-current="page"]{ background:#fff; color:var(--brand-blue); box-shadow:0 1px 5px rgba(0,0,0,0.2); }
 .po-short{ display:none; }
+/* Three-way switch: tighten padding so all three options fit the bar */
+.page-switch-3 .page-opt{ padding:7px 13px; }
 
 /* ── Header controls ── */
 .header-controls{ display:flex; align-items:center; gap:var(--s2); flex-shrink:0; }
@@ -1617,4 +1619,105 @@ html[data-theme="dark"] .splash-overlay{
       animation:none;
     }
   }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   EASY-MODE DESIGN LANGUAGE, APPLIED TOOL-WIDE
+   The same vocabulary used on start.html (Easy mode):
+   a hover lift, a wiping blue-to-green accent bar, a soft
+   radial bloom, and a living green glow on the chosen state.
+   Appended last so it harmonises the existing components.
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --glow-green: 0 0 22px -4px rgba(23,138,56,0.50);
+  --glow-green-soft: 0 0 16px 1px rgba(23,138,56,0.28);
+}
+html[data-theme="dark"]{
+  --glow-green: 0 0 24px -2px rgba(63,209,120,0.45);
+  --glow-green-soft: 0 0 18px 1px rgba(63,209,120,0.30);
+}
+
+/* Reusable accent bar + bloom, shared by the interactive cards */
+.preset-btn, .aud-card, .persona-item, .detected-item-container, .compare-cell{
+  position:relative; isolation:isolate; overflow:hidden;
+}
+.preset-btn::after, .aud-card::after, .persona-item::after,
+.detected-item-container::after, .compare-cell::after{
+  content:""; position:absolute; top:0; left:0; right:0; height:3px; z-index:2;
+  background:linear-gradient(90deg, var(--blue), var(--green));
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .35s var(--ease);
+}
+.preset-btn:hover::after, .aud-card:hover::after, .persona-item:hover::after,
+.detected-item-container:hover::after, .compare-cell:hover::after{ transform:scaleX(1); }
+
+/* Soft radial bloom behind the card on hover */
+.preset-btn::before, .aud-card::before{
+  content:""; position:absolute; inset:-45% 55% 55% -45%; z-index:-1; border-radius:50%;
+  background:radial-gradient(circle, var(--green-soft), transparent 70%);
+  opacity:0; transition:opacity .3s ease;
+}
+.preset-btn:hover::before, .aud-card:hover::before{ opacity:1; }
+
+/* ── Preset example cards: green hover + glow ── */
+.preset-btn:hover{ border-color:var(--green); box-shadow:var(--shadow-md), var(--glow-green); }
+.preset-btn:hover .p-title{ color:var(--green); }
+.preset-btn .p-title{ transition:color .2s ease; }
+
+/* ── Audience cards: living green glow when chosen ── */
+.aud-card.active,
+.aud-card[aria-pressed="true"]{
+  border-color:var(--green); border-width:2px;
+  background:var(--green-soft);
+  box-shadow:0 0 0 3px var(--green-soft), var(--glow-green);
+}
+.aud-card.active::after,
+.aud-card[aria-pressed="true"]::after{ transform:scaleX(1); }
+.aud-card.active .aud-label,
+.aud-card[aria-pressed="true"] .aud-label{ color:var(--green); }
+.aud-card.active .aud-blurb,
+.aud-card[aria-pressed="true"] .aud-blurb{ color:var(--ink); opacity:.85; }
+
+/* ── Checklist cards: glow alive when the toggle is on ── */
+.check-card-wrap{ transition:border-color .25s var(--ease), box-shadow .25s var(--ease), transform .15s var(--ease); }
+.check-card-wrap:hover{ border-color:var(--blue); transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.check-card-wrap:has(.toggle-input:checked){
+  border-color:var(--green);
+  box-shadow:0 0 0 1px var(--green-soft), var(--glow-green-soft);
+}
+.toggle-input:checked + .toggle-switch{ box-shadow:0 0 10px -1px rgba(23,138,56,0.55); }
+html[data-theme="dark"] .toggle-input:checked + .toggle-switch{ box-shadow:0 0 12px -1px rgba(63,209,120,0.55); }
+
+/* ── Persona research cards: lift + green glow ── */
+.persona-item{ transition:border-color .25s var(--ease), box-shadow .25s var(--ease), transform .2s var(--ease); }
+.persona-item:hover{ border-color:var(--green); transform:translateY(-4px); box-shadow:var(--shadow-md), var(--glow-green-soft); }
+.persona-toggle:hover{ border-color:var(--green); box-shadow:var(--shadow-md), var(--glow-green-soft); }
+
+/* ── Detected items: green hover glow ── */
+.detected-item-container:hover{ border-color:var(--green); box-shadow:var(--shadow-md), var(--glow-green-soft); transform:translateY(-2px); }
+
+/* ── Compare cells: green hover glow; chosen best keeps a stronger glow ── */
+.compare-cell:hover{ border-color:var(--green); transform:translateY(-3px); box-shadow:var(--shadow-md), var(--glow-green-soft); }
+.compare-cell.best{ box-shadow:0 0 0 3px var(--green-soft), var(--glow-green); }
+
+/* ── Collapsible headers: warm the title toward green on hover ── */
+.collap-head{ transition:color .2s ease; }
+.collap-head:hover .collap-h2{ color:var(--green); }
+.collap-head:hover .chev{ color:var(--green); }
+
+/* ── Action + copy buttons: green glow lift ── */
+.action-btn:hover{ box-shadow:var(--shadow-md), var(--glow-green-soft); }
+.reco-switch:hover{ box-shadow:var(--shadow-md), var(--glow-green-soft); }
+
+/* ── Cards: a whisper of green on hover ties the surfaces together ── */
+.card.blue:hover, .card.green:hover{ box-shadow:var(--shadow-md), var(--glow-green-soft); }
+
+/* ── Respect reduced motion: keep the colour cues, drop the movement ── */
+@media (prefers-reduced-motion:reduce){
+  .preset-btn::after, .aud-card::after, .persona-item::after,
+  .detected-item-container::after, .compare-cell::after,
+  .preset-btn::before, .aud-card::before{ transition:none; }
+  .preset-btn:hover, .aud-card:hover, .persona-item:hover,
+  .persona-toggle:hover, .detected-item-container:hover,
+  .compare-cell:hover, .check-card-wrap:hover{ transform:none; }
 }

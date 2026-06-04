@@ -12,10 +12,11 @@ It is also a showcase of the future of software development itself: this entire 
 
 While it borrows the language of computational chemistry - *binding*, *resonance*, *pharmacophore features* - the engine underneath is a transparent, rule-based heuristic that dynamically suggests future content strategies like SeeSAR tutorials, infiniSee screencasts, and YoungSolvers community integration.
 
-### Two ways to use it
+### Three ways to use it
 
 A header **page switch** lets visitors choose how to engage:
 
+- **Easy mode** (`start.html`) - the no-jargon on-ramp for anyone outside Sales, Marketing, or Services. It explains in plain words what the BioWeek poster is about, what the tool does, and why it exists (even though the facts are online and AI can already write your posts). The centrepiece is a **gamified mini-scorer**: pick a reader, flip a handful of glowing switches (drop the hype, add a real number, link the proof, show a real person, make it a video, say it plainly) and watch a big animated dial, four signal meters, and a live "level" badge react instantly. It drives the **real** scoring engine, so every point is honest, and a "then / next" slider frames the 25-years-and-counting story.
 - **Try the tool** (`index.html`) - the interactive resonance scorer.
 - **Explore the science** (`learn.html`) - a read-only, one-page brief for people who would rather *learn* than *use*. It covers why the next generation reads differently, what the four signals measure, how the five audiences differ (rendered live from the real engine weights), and how the computational-chemistry field communicates - profiling **Schrödinger, Molsoft, OpenEye/Cadence, Chemical Computing Group, Cresset, and BioSolveIT** with sourced facts, animated stat counters, an interactive company explorer, and a market-size breakdown. All figures are cited; market sizes are flagged as third-party estimates and "communication signal" notes as interpretive.
 
@@ -150,12 +151,15 @@ Every click-to-load example is verified against the live engine:
 SeeStory/
 ├── index.html       # The tool - single-page app shell
 ├── learn.html       # The Explore page - read-only science + industry brief
+├── start.html       # Easy mode - plain-words tour + gamified mini-scorer
 ├── styles.css       # Shared design system + theme tokens (light/dark/auto)
 ├── learn.css        # Explore-page-only styles (rides on the shared tokens)
+├── start.css        # Easy-mode-only styles (glowing dial, switches, era slider)
 ├── main.js          # Tool entry point - wires DOM to engine
 ├── scoring.js       # Pure 4-signal scoring engine + priority ladder
 ├── ui.js            # Tool DOM rendering, theming, state, animations
 ├── learn.js         # Explore-page interactivity (counters, accordion, tabs)
+├── start.js         # Easy-mode interactivity (drives the real engine via switches)
 ├── data.js          # Audiences, lexicons, copy deck, personas (shared)
 ├── Font/            # BioSans .ttf font files
 └── .github/workflows/

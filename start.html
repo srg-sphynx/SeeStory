@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="New here? Easy mode is the no-jargon, 60-second story of SeeSTORY: what the BioWeek poster is about, why it exists, and a little glowing game that shows how a science post wins or loses attention. A BioWeek 2026 companion celebrating 25 years of BioSolveIT.">
+<meta name="theme-color" content="#104173" id="themeColorMeta">
+<title>SeeSTORY - Easy mode: the plain-words tour</title>
+<!-- No-FOUC theme bootstrap: resolve theme before first paint -->
+<script>
+(function(){
+  try{
+    var pref = localStorage.getItem('seestory_theme') || 'auto';
+    var dark = pref === 'dark' ||
+      (pref === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var root = document.documentElement;
+    root.dataset.theme = dark ? 'dark' : 'light';
+    root.dataset.themePref = pref;
+  }catch(e){}
+})();
+</script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="learn.css">
+<link rel="stylesheet" href="start.css">
+<link rel="icon" href="data:,">
+</head>
+<body class="easy-body">
+
+<!-- Sticky glass command bar -->
+<div class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="SeeSTORY home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="bm-blade-a" d="M6.4 31.6Q10.2 11.8 31.2 8.4Q27.4 28.2 6.4 31.6Z"/>
+            <path class="bm-blade-b" d="M8.6 8.2Q28.4 12 31.8 33Q12 29.2 8.6 8.2Z"/>
+            <circle class="bm-core" cx="19.8" cy="20" r="3.4"/>
+          </svg>
+        </span>
+        <span class="brand-word">SeeSTORY</span>
+      </a>
+
+      <nav class="page-switch page-switch-3" aria-label="View">
+        <a class="page-opt" href="start.html" data-page="easy" aria-current="page">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          <span class="po-full">Easy mode</span><span class="po-short">Easy</span>
+        </a>
+        <a class="page-opt" href="index.html" data-page="tool">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
+          <span class="po-full">Try the tool</span><span class="po-short">Tool</span>
+        </a>
+        <a class="page-opt" href="learn.html" data-page="learn">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 7l10-4 10 4-10 4z"/><path d="M6 10v5c0 1 3 2.5 6 2.5s6-1.5 6-2.5v-5"/></svg>
+          <span class="po-full">Explore the science</span><span class="po-short">Explore</span>
+        </a>
+      </nav>
+
+      <div class="header-controls">
+        <div class="theme-toggle" role="group" aria-label="Color theme">
+          <button class="theme-opt" data-theme-set="light" aria-label="Light theme" title="Light">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+          </button>
+          <button class="theme-opt" data-theme-set="auto" aria-label="Auto theme" title="Match system">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </button>
+          <button class="theme-opt" data-theme-set="dark" aria-label="Dark theme" title="Dark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<header class="site-header" id="siteHeader">
+  <!-- Hero band -->
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="hero-eyebrow">Easy mode · no jargon, promise</span>
+      <h1 class="hero-title">Not in sales or marketing? <em>Start right here.</em></h1>
+      <p class="context-desc">This is the 60-second, plain-words tour of what that big BioWeek poster is actually about, what this little tool does, and why we bothered building it at all. No chemistry degree required. Then you get to <strong>play with a glowing score</strong> and watch it move.</p>
+    </div>
+  </div>
+</header>
+
+<main class="easy-wrap">
+
+  <!-- ═══ 1. WHAT IS THIS ═══ -->
+  <section class="easy-block reveal">
+    <span class="easy-kicker">The whole thing in one breath</span>
+    <h2 class="easy-h2">What the heck is this?</h2>
+    <p class="easy-lede">
+      For 25 years, <strong>BioSolveIT</strong> has built software that helps scientists design new medicines on a computer, long before anything touches a lab bench. Brilliant, invisible, important work.
+    </p>
+    <p class="easy-lede">
+      The problem for the <em>next</em> 25 years is not the science. It is getting anyone to <strong>notice</strong> it. A teenager who will be a scientist one day learns from a 30-second video, not a 40-page PDF. So this tool asks a simple question about any post, email, or caption:
+    </p>
+    <p class="easy-bigq">"Will this actually land with the person reading it?"</p>
+    <p class="easy-lede">It reads your words, gives them a <strong>score out of 100</strong>, and tells you the one thing to fix. That is it. That is the whole tool.</p>
+  </section>
+
+  <!-- ═══ 2. THE 25 + 25 STORY ═══ -->
+  <section class="easy-block reveal">
+    <span class="easy-kicker">The poster, decoded</span>
+    <h2 class="easy-h2">25 years behind us. 25 years ahead.</h2>
+    <p class="easy-lede">The BioWeek poster is a birthday card and a crystal ball at the same time. Drag the slider to travel between then and next.</p>
+
+    <div class="era-slider-card" id="eraCard">
+      <div class="era-stage" id="eraStage">
+        <div class="era-face era-past" id="eraPast">
+          <span class="era-year">2001</span>
+          <span class="era-tag">Where we started</span>
+          <p class="era-line">Science lived in journals, conference halls, and the trusty PDF. You proved your worth in citations. The reader was a fellow expert who already spoke the language.</p>
+        </div>
+        <div class="era-face era-future" id="eraFuture" aria-hidden="true">
+          <span class="era-year">2026 and beyond</span>
+          <span class="era-tag">Where it is going</span>
+          <p class="era-line">Your future colleague is 15 right now, scrolling video, learning from real faces and plain words. The science is just as deep. The way it has to travel is brand new.</p>
+        </div>
+      </div>
+      <input class="era-range" id="eraRange" type="range" min="0" max="100" value="20" aria-label="Slide between the past and the future of science communication">
+      <div class="era-scale">
+        <span>Then</span>
+        <span class="era-mid">25 years of BioSolveIT</span>
+        <span>Next</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 3. WHY EVEN BUILD IT ═══ -->
+  <section class="easy-block reveal">
+    <span class="easy-kicker">The honest bit</span>
+    <h2 class="easy-h2">"But I can just Google this. Or ask an AI."</h2>
+    <p class="easy-lede">
+      Totally true. Every fact in here is online somewhere, and any chatbot will happily rewrite your post. So why does this exist?
+    </p>
+    <div class="why-flip-grid">
+      <article class="why-flip reveal">
+        <span class="wf-num">1</span>
+        <h3>It makes the invisible visible</h3>
+        <p>"Good communication" is a vague feeling. This turns it into a number you can watch go up. Advice you can see beats advice you have to trust.</p>
+      </article>
+      <article class="why-flip reveal">
+        <span class="wf-num">2</span>
+        <h3>It teaches by playing</h3>
+        <p>Flip one switch, the score jumps, a glow fires. You learn <em>why</em> a real face or a real number matters because you just watched it happen.</p>
+      </article>
+      <article class="why-flip reveal">
+        <span class="wf-num">3</span>
+        <h3>It is the point, not just the tool</h3>
+        <p>This whole site was built in hours with AI-assisted coding. It is a tiny live proof of how the next 25 years get made: fast, playful, and human.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 4. THE GAME ═══ -->
+  <section class="easy-block easy-game-block reveal">
+    <span class="easy-kicker easy-kicker-glow">Your turn to play</span>
+    <h2 class="easy-h2">Build a post. Watch the score breathe.</h2>
+    <p class="easy-lede">Here is the same idea the real tool runs on, stripped down to a game. Pick who is reading, then flip switches on and off. The dial reacts instantly. Try to hit <strong>80</strong>.</p>
+
+    <!-- Who is reading -->
+    <div class="game-aud" id="gameAud" role="group" aria-label="Who is reading"></div>
+
+    <div class="game-grid">
+      <!-- Left: the score theatre -->
+      <div class="game-stage">
+        <div class="dial-wrap">
+          <div class="dial" id="dial">
+            <svg viewBox="0 0 120 120" class="dial-svg" aria-hidden="true">
+              <circle class="dial-track" cx="60" cy="60" r="52" fill="none" stroke-width="11"/>
+              <circle id="dialRing" cx="60" cy="60" r="52" fill="none" stroke-width="11" stroke-linecap="round" stroke-dasharray="326.73" stroke-dashoffset="326.73" transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="dial-center">
+              <span class="dial-num" id="dialNum">0</span>
+              <span class="dial-of">/ 100</span>
+            </div>
+            <span class="dial-delta" id="dialDelta" aria-hidden="true"></span>
+          </div>
+          <div class="level-badge" id="levelBadge" role="status" aria-live="polite">
+            <span class="level-dot" aria-hidden="true"></span>
+            <span class="level-text" id="levelText">Scrolled past</span>
+          </div>
+        </div>
+
+        <!-- four signal meters -->
+        <div class="sig-meters" id="sigMeters"></div>
+
+        <!-- live coaching line, straight from the real engine's brain -->
+        <div class="game-fix" id="gameFix">
+          <span class="game-fix-label">Try this next</span>
+          <span class="game-fix-text" id="gameFixText">Flip a switch to begin.</span>
+        </div>
+      </div>
+
+      <!-- Right: the switches -->
+      <div class="game-controls">
+        <p class="game-controls-head">Flip these on and off</p>
+        <div class="boost-list" id="boostList"></div>
+
+        <!-- live preview of the post they are building -->
+        <div class="post-preview" id="postPreview" aria-live="polite">
+          <span class="pp-label">Your post right now</span>
+          <p class="pp-text" id="ppText"></p>
+          <div class="pp-tags" id="ppTags"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 5. THE FOUR SIGNALS, SIMPLY ═══ -->
+  <section class="easy-block reveal">
+    <span class="easy-kicker">What the score is really watching</span>
+    <h2 class="easy-h2">Four things, explained like you are five</h2>
+    <p class="easy-lede">Every point comes from one of these four. Hover or tap a card.</p>
+    <div class="simple-signals" id="simpleSignals"></div>
+  </section>
+
+  <!-- ═══ 6. WHERE TO GO NEXT ═══ -->
+  <section class="easy-cta reveal">
+    <h3>Got the gist? Pick your next door.</h3>
+    <p>You now know more than most people who walk past the poster. Go deeper whenever you like.</p>
+    <div class="easy-cta-row">
+      <a class="cta-btn cta-primary" href="index.html">
+        <span>Use the real tool</span>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="cta-btn cta-ghost" href="learn.html">
+        <span>Explore the science</span>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <p class="easy-cta-foot">25 years of BioSolveIT. The next 25 start with being understood.</p>
+  </section>
+
+</main>
+
+<!-- Compact footer -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <a class="footer-brand" href="index.html" aria-label="SeeSTORY home">
+      <span class="brand-mark footer-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="bm-blade-a" d="M6.4 31.6Q10.2 11.8 31.2 8.4Q27.4 28.2 6.4 31.6Z"/>
+          <path class="bm-blade-b" d="M8.6 8.2Q28.4 12 31.8 33Q12 29.2 8.6 8.2Z"/>
+          <circle class="bm-core" cx="19.8" cy="20" r="3.4"/>
+        </svg>
+      </span>
+      <span class="footer-word">SeeSTORY</span>
+    </a>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="start.html">Easy mode</a>
+      <a href="index.html">Try the tool</a>
+      <a href="learn.html">Explore the science</a>
+    </nav>
+    <span class="footer-credit">BioWeek 2026 · 25 years of BioSolveIT</span>
+  </div>
+  <p class="footer-note">An interactive demo built entirely with AI-assisted vibe coding, itself a glimpse of how the next 25 years get built.</p>
+</footer>
+
+<!-- GSAP (open-source animation). Optional: motion.js degrades gracefully if blocked. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script type="module" src="start.js"></script>
+
+<!-- Cookie consent banner -->
+<div class="cookie-banner" id="cookieBanner" hidden>
+  <div class="cookie-card">
+    <span class="cookie-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg></span>
+    <p class="cookie-text">
+      <strong>This site uses local storage</strong> to remember your theme preference and save your draft between visits. No data leaves your browser.
+    </p>
+    <div class="cookie-actions">
+      <button class="cookie-btn cookie-btn-accept" id="cookieAccept">Accept</button>
+      <button class="cookie-btn cookie-btn-decline" id="cookieDecline">Decline</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var CONSENT_KEY = "seestory_consent";
+  var consent;
+  try { consent = localStorage.getItem(CONSENT_KEY); } catch(e){}
+  if(consent) return; // already answered
+
+  var banner = document.getElementById("cookieBanner");
+  if(!banner) return;
+  banner.hidden = false;
+
+  document.getElementById("cookieAccept").addEventListener("click", function(){
+    try { localStorage.setItem(CONSENT_KEY, "yes"); } catch(e){}
+    banner.style.animation = "none";
+    banner.style.transition = "opacity .3s ease, transform .3s ease";
+    banner.style.opacity = "0";
+    banner.style.transform = "translateY(30px)";
+    setTimeout(function(){ banner.hidden = true; }, 350);
+  });
+
+  document.getElementById("cookieDecline").addEventListener("click", function(){
+    try { localStorage.setItem(CONSENT_KEY, "no"); } catch(e){}
+    var _orig = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = function(key){
+      if(key === CONSENT_KEY) return _orig.apply(localStorage, arguments);
+    };
+    banner.style.animation = "none";
+    banner.style.transition = "opacity .3s ease, transform .3s ease";
+    banner.style.opacity = "0";
+    banner.style.transform = "translateY(30px)";
+    setTimeout(function(){ banner.hidden = true; }, 350);
+  });
+})();
+</script>
+</body>
+</html>
