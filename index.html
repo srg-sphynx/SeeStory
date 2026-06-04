@@ -44,6 +44,10 @@
       <span class="splash-pill"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>Actionable breakdown</span>
     </div>
     <button class="splash-cta" id="splashCta">Get Started</button>
+    <a class="splash-easy" href="start.html" id="splashEasy">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      <span>New to all this? <strong>Start in Easy mode</strong></span>
+    </a>
     <span class="splash-badge">Resonance Engine · BioWeek 2026</span>
   </div>
 </div>
@@ -199,6 +203,7 @@
               <circle id="scoreRing" cx="60" cy="60" r="52" fill="none" stroke="var(--green)" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.73" stroke-dashoffset="326.73" transform="rotate(-90 60 60)"/>
             </svg>
             <span class="ring-num" id="scoreRingNum">--</span>
+            <span class="ring-delta" id="ringDelta" aria-hidden="true"></span>
           </div>
           <div class="score-meta">
             <div id="scoreHeadline" class="score-headline"></div>
@@ -361,7 +366,7 @@
 
 <!-- Sticky score bar (mobile only) -->
 <div class="scorebar" id="scorebar" role="status" aria-live="polite">
-  <span class="num" id="scoreNum">--</span>
+  <span class="num-wrap"><span class="num" id="scoreNum">--</span><span class="bar-delta" id="barDelta" aria-hidden="true"></span></span>
   <div class="scorebar-mid">
     <div class="bar"><div class="fill" id="scoreFill"></div></div>
     <span id="scoreLabel" class="label-text"></span>

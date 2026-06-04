@@ -344,11 +344,35 @@
   .simple-signals{ grid-template-columns:1fr; }
 }
 @media (max-width:600px){
-  .easy-game-block{ padding:var(--s5) var(--s4); }
+  .easy-wrap{ padding:var(--s5) var(--s3) var(--s6); }
+  .easy-block{ margin-bottom:var(--s6); }
+  .easy-game-block{ padding:var(--s4) var(--s3); }
   .dial{ width:172px; height:172px; }
   .dial-num{ font-size:2.9rem; }
-  .meter{ grid-template-columns:74px 1fr 30px; }
+  .meter{ grid-template-columns:70px 1fr 28px; gap:var(--s2); }
+  .meter-name{ font-size:.74rem; }
+  .era-slider-card{ padding:var(--s4); }
+  .era-stage{ min-height:206px; }
   .era-year{ font-size:2rem; }
+  .era-line{ font-size:.92rem; }
+  .era-scale{ font-size:.68rem; }
+  .easy-bigq{ padding:var(--s3) var(--s4); }
+  .game-aud{ gap:var(--s2); margin:var(--s3) 0 var(--s4); }
+  .ga-opt{ flex:1 1 100%; }
+  .why-flip{ padding:var(--s4); }
+  /* Bigger tap targets for the switches on touch screens */
+  .boost{ padding:var(--s3) var(--s3); }
+  .easy-cta{ padding:var(--s6) var(--s4); }
+  .easy-cta-row{ flex-direction:column; }
+  .easy-cta-row .cta-btn{ justify-content:center; }
+}
+
+/* ── Very small phones ── */
+@media (max-width:380px){
+  .dial{ width:152px; height:152px; }
+  .dial-num{ font-size:2.5rem; }
+  .easy-h2{ font-size:1.4rem; }
+  .level-badge{ font-size:.8rem; padding:6px 13px; }
 }
 
 /* ── Reduced motion: kill the looping glows, keep everything legible ── */

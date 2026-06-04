@@ -55,6 +55,25 @@ function animateNumber(el, from, to, color){
   requestAnimationFrame(step);
 }
 
+/** Floating +N / -N that drifts up and fades, mirroring the Easy-mode dial. */
+function fireScoreDelta(el, diff){
+  if(!el || reducedMotion.matches || !diff) return;
+  el.textContent = (diff > 0 ? "+" : "") + diff;
+  el.classList.remove("up", "down", "fire");
+  void el.offsetWidth;                 // restart the animation
+  el.classList.add(diff > 0 ? "up" : "down");
+  el.classList.add("fire");
+  setTimeout(() => el.classList.remove("fire"), 850);
+}
+
+/** Brief scale pop on a score element when it changes. */
+function popScore(el){
+  if(!el || reducedMotion.matches) return;
+  el.classList.remove("score-pop");
+  void el.offsetWidth;
+  el.classList.add("score-pop");
+}
+
 /* ── How-it-works modal ── */
 export function initGuide(){
   const btn = $("guideToggle");
@@ -815,6 +834,8 @@ function paintScoreRing(r){
   
   if(_prevScore !== null && _prevScore !== r.score){
     animateNumber(ringNum, _prevScore, r.score, r.band.color);
+    fireScoreDelta($("ringDelta"), r.score - _prevScore);
+    popScore(ringNum);
   } else {
     ringNum.textContent = r.score;
     ringNum.style.color = r.band.color;
@@ -1076,11 +1097,8 @@ function paintScoreBar(r){
 
   if(_prevScore !== null && _prevScore !== r.score){
     animateNumber(numEl, _prevScore, r.score, color);
-    if(!reducedMotion.matches){
-      numEl.classList.remove("score-pop");
-      void numEl.offsetWidth;
-      numEl.classList.add("score-pop");
-    }
+    fireScoreDelta($("barDelta"), r.score - _prevScore);
+    popScore(numEl);
   } else {
     numEl.textContent = r.score;
     numEl.style.color = color;

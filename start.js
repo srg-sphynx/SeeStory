@@ -126,37 +126,42 @@ const RING_C = 326.73;     // 2 * PI * 52, matches the SVG dasharray
 const state = { reader: "genz", boosts: {}, score: 0 };
 BOOSTS.forEach(b => { state.boosts[b.id] = b.on; });
 
-/** Assemble a real draft + media checklist from the friendly switches,
- *  then run it through the genuine engine. */
-function computeScore(){
+// The sentences each switch contributes to the post. Single source of truth so
+// the scored draft and the "your post right now" preview can never drift apart.
+const BASE_LINE = "Meet our new way to design molecules on a computer.";
+const HYPE_LINE = "This revolutionary, game-changing, world-class breakthrough will supercharge your pipeline!";
+const NUMBER_LINE = "We screened 2.4 million molecules in 48 hours and confirmed 37 real hits.";
+const PLAIN_LINE = "In plain words: the computer found the promising medicines so the lab did not have to test millions by hand.";
+
+/** The exact text the engine reads (and the preview shows). */
+function currentCaption(){
   const b = state.boosts;
-  let caption = "Meet our new way to design molecules on a computer.";
-  if(!b.hype){
-    caption += " This revolutionary, game-changing, world-class breakthrough will supercharge your pipeline!";
-  }
-  if(b.number){
-    caption += " We screened 2.4 million molecules in 48 hours and confirmed 37 real hits.";
-  }
-  if(b.plain){
-    caption += " In plain words: the computer found the promising medicines so the lab did not have to test millions by hand.";
-  }
-  const checklist = {
+  const parts = [BASE_LINE];
+  if(!b.hype) parts.push(HYPE_LINE);   // hype words present until "Drop the hype" is on
+  if(b.number) parts.push(NUMBER_LINE);
+  if(b.plain) parts.push(PLAIN_LINE);
+  return parts.join(" ");
+}
+
+/** Media plans the switches tick. */
+function currentChecklist(){
+  const b = state.boosts;
+  return {
     source: !!b.source,
     humanVoice: !!b.person,
     video: !!b.video,
     plainSummary: !!b.plain,
     resultData: !!b.number
   };
-  return scoreDraft({ audienceKey: state.reader, caption, checklist });
 }
 
-function currentCaption(){
-  const b = state.boosts;
-  let parts = ["Meet our new way to design molecules on a computer."];
-  if(!b.hype) parts.push("This revolutionary, game-changing, world-class breakthrough will supercharge your pipeline!");
-  if(b.number) parts.push("We screened 2.4 million molecules in 48 hours and confirmed 37 real hits.");
-  if(b.plain) parts.push("In plain words: the computer found the promising medicines so the lab did not have to test millions by hand.");
-  return parts.join(" ");
+/** Run the friendly switches through the genuine scoring engine. */
+function computeScore(){
+  return scoreDraft({
+    audienceKey: state.reader,
+    caption: currentCaption(),
+    checklist: currentChecklist()
+  });
 }
 
 function bandColor(score){
