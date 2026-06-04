@@ -620,6 +620,15 @@ html[data-theme="dark"] .top-fix-area::after{
 .reco-switch:active{ transform:translateY(0) scale(.98); }
 .reco-switch[hidden]{ display:none; }
 .reco-switch svg{ flex-shrink:0; }
+/* Secondary "runner-up" variant: shown alongside the match line so the card
+   always offers a next move, without competing with the primary action. */
+.reco-switch--alt{
+  margin-top:var(--s2);
+  color:var(--blue); background:transparent;
+  border:1.5px solid var(--line); box-shadow:none;
+  font-size:.78rem; font-weight:700;
+}
+.reco-switch--alt:hover{ filter:none; background:var(--sunk); border-color:var(--blue); }
 .reco-match{
   display:flex; align-items:center; gap:7px; margin:var(--s3) 0 0;
   font-size:.8rem; font-weight:700; color:var(--green);

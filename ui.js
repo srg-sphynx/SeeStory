@@ -891,14 +891,27 @@ function paintRecommendation(){
     });
   }
 
-  // Either confirm the match or offer a one-tap switch.
+  // Either confirm the match or offer a one-tap switch. When the writing
+  // already matches the chosen audience, the card stays useful by offering the
+  // runner-up as a one-tap alternative — so changing your mind always has
+  // somewhere to go, instead of dead-ending on a single answer.
   if(switchBtn && matchEl){
+    const alt = reco.runnerUp;
     if(matches){
-      switchBtn.hidden = true;
       matchEl.hidden = false;
+      if(alt && alt.score >= 45 && AUDIENCES[alt.key]){
+        switchBtn.hidden = false;
+        switchBtn.classList.add("reco-switch--alt");
+        switchBtn.dataset.key = alt.key;
+        if(switchTxt) switchTxt.textContent = `Also strong: ${alt.label} — tune for them`;
+      } else {
+        switchBtn.hidden = true;
+        switchBtn.classList.remove("reco-switch--alt");
+      }
     } else {
       matchEl.hidden = true;
       switchBtn.hidden = false;
+      switchBtn.classList.remove("reco-switch--alt");
       switchBtn.dataset.key = reco.bestKey;
       if(switchTxt) switchTxt.textContent = `Switch to ${AUDIENCES[reco.bestKey].label}`;
     }

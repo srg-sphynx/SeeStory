@@ -127,5 +127,27 @@ check("Hedgy: 5+ hedge phrases", scoreDraft({ audienceKey: "peer", caption: sHed
 const sSocial = "We filmed a real scientist docking a molecule in under a minute. No textbook, just the screen. Could you beat her time? Drop a comment and we'll react to the best one.";
 checkIn("Social post → young audience", recommendAudience({ caption: sSocial, checklist: {} }).bestKey, ["genz", "genalpha"]);
 
+console.log("\n=== Recommender v3: robustness + adaptivity ===");
+
+// Wall-to-wall hype with no proof must NEVER read as a (hype-averse) PI, and
+// "pipeline" / "platform" are marketing jargon, not genuine technical depth.
+const sHype = "Our revolutionary, world-class, game-changing platform will supercharge and transform your entire pipeline effortlessly!";
+const recHype = recommendAudience({ caption: sHype, checklist: {} });
+check("Pure hype is not PI", recHype.bestKey !== "pi", true);
+check("Pure hype reads low-confidence", recHype.confidence, "low");
+
+// Plain, neutral text with zero media / interactivity is general writing — it
+// should fall to the balanced peer default, never confidently to Gen Alpha.
+const sNeutral = "We have a tool that helps with some of the work people do every day in the lab and office.";
+check("Neutral text → peer default", recommendAudience({ caption: sNeutral, checklist: {} }).bestKey, "peer");
+
+// The winner always carries a runner-up so the card can offer a next move.
+const recRunner = recommendAudience({ caption: sRoi, checklist: {} });
+check("Recommendation exposes a runner-up", !!recRunner.runnerUp && recRunner.runnerUp.key !== recRunner.bestKey, true);
+
+// A decisive, well-evidenced expert draft earns real confidence + clear margin.
+check("Strong benchmark → high confidence", rec1.confidence, "high");
+check("Strong benchmark → clear margin", rec1.margin >= 12, true);
+
 console.log(`\n=== RESULTS: ${pass} passed, ${fail} failed ===`);
 process.exit(fail > 0 ? 1 : 0);
