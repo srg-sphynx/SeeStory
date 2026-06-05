@@ -97,23 +97,43 @@ function initEraSlider(){
    The gamified mini-scorer
    ─────────────────────────────────────────── */
 
-// Three friendly readers mapped to the real audience keys.
+// Three friendly readers mapped to the real audience keys. They deliberately
+// span the spectrum the real engine models: a media-first young reader, a
+// proof-first expert, and an ROI-first decision-maker. Switching between them
+// is the whole lesson — the same post lands very differently for each.
 const READERS = [
   { key: "genz",   icon: "atom",      label: "A future scientist", sub: "Gen Z, learns from video" },
   { key: "pi",     icon: "microscope",label: "A busy lab leader",  sub: "wants proof, hates hype" },
   { key: "pharma", icon: "briefcase", label: "A pharma exec",      sub: "wants results and ROI" }
 ];
 
-// Friendly switches. Each one rewrites the post and/or ticks a media plan.
-// `on` is the starting state. "Drop the hype" starts OFF so the post begins messy.
+// Friendly switches. Each one rewrites the post and/or ticks a media plan, and
+// together they cover everything ALL three readers can ask for — so every
+// reader has a clean path into the green (no want is left unreachable).
+// `on` is the starting state. They all start OFF so the post begins messy and
+// every flip is a visible win. Two switches are deliberately bundled so six
+// toggles can satisfy a reader who wants five different things at once:
+//   • "visual"  ticks a short clip AND an image
+//   • "human"   shows a real face AND invites people to reply
+//   • "plain"   adds a plain-language line AND a clear next step
 const BOOSTS = [
-  { id: "hype",   icon: "shield",    label: "Drop the hype words",      hint: "No more revolutionary, game-changing, world-class.", on: false },
-  { id: "number", icon: "barchart",  label: "Show a real result",       hint: "A concrete number people can trust.",               on: false },
-  { id: "source", icon: "database",  label: "Link the proof",           hint: "Point to a paper or page to verify.",               on: false },
-  { id: "person", icon: "users",     label: "Put a real person on it",  hint: "A face and a voice, not a logo.",                   on: false },
-  { id: "video",  icon: "video",     label: "Make it a short video",    hint: "A 30-second clip beats a wall of text.",            on: false },
-  { id: "plain",  icon: "sparkles",  label: "Say it in plain language", hint: "One line anyone could understand.",                 on: false }
+  { id: "hype",   icon: "shield",   label: "Drop the hype words",      hint: "No more revolutionary, game-changing, world-class.", on: false },
+  { id: "number", icon: "barchart", label: "Show a real result",       hint: "A concrete number people can trust.",               on: false },
+  { id: "source", icon: "database", label: "Link the proof",           hint: "Point to a paper or page to verify.",               on: false },
+  { id: "visual", icon: "video",    label: "Show it, don't just say it",hint: "A short clip and an image beat a wall of text.",    on: false },
+  { id: "human",  icon: "users",    label: "Make it human and social", hint: "A real face, and invite people to reply.",          on: false },
+  { id: "plain",  icon: "sparkles", label: "Say it plainly, point somewhere", hint: "One line anyone gets, plus a clear next step.", on: false }
 ];
+
+// How much each switch moves the dial for the *currently selected* reader.
+// Recomputed from the real engine whenever the reader changes (see
+// refreshRelevance) so the labels can never drift from the actual scoring.
+const REL_TIERS = [
+  { min: 10, cls: "rel-high", text: "Big win for them" },
+  { min: 4,  cls: "rel-med",  text: "Helps here" },
+  { min: 0,  cls: "rel-low",  text: "They barely notice" }
+];
+function relTier(delta){ return REL_TIERS.find(t => delta >= t.min) || REL_TIERS[REL_TIERS.length - 1]; }
 
 const LEVELS = [
   { min: 80, text: "Trusted and shared", cls: "lv-great" },
@@ -123,45 +143,64 @@ const LEVELS = [
 ];
 
 const RING_C = 326.73;     // 2 * PI * 52, matches the SVG dasharray
-const state = { reader: "genz", boosts: {}, score: 0 };
+const state = { reader: "genz", boosts: {}, score: 0, relevance: {} };
 BOOSTS.forEach(b => { state.boosts[b.id] = b.on; });
 
 // The sentences each switch contributes to the post. Single source of truth so
 // the scored draft and the "your post right now" preview can never drift apart.
-const BASE_LINE = "Meet our new way to design molecules on a computer.";
-const HYPE_LINE = "This revolutionary, game-changing, world-class breakthrough will supercharge your pipeline!";
-const NUMBER_LINE = "We screened 2.4 million molecules in 48 hours and confirmed 37 real hits.";
-const PLAIN_LINE = "In plain words: the computer found the promising medicines so the lab did not have to test millions by hand.";
+// The number line carries real result cues ("cut … down to") so it lands as
+// genuine substance, not just a stray digit; the plain line carries a real
+// call to action ("See … try it") so decision-makers get their next step.
+const BASE_LINE   = "We built a new way to find promising medicines on a computer.";
+const HYPE_LINE   = "It is a revolutionary, game-changing, world-class breakthrough that will supercharge your whole pipeline!";
+const NUMBER_LINE = "In one run it searched 2.4 billion molecules in 48 hours and cut months of lab work down to days.";
+const PLAIN_LINE  = "In plain words: the computer does the early guessing, so the lab only tests the molecules most likely to work. See the benchmark and try it yourself.";
 
-/** The exact text the engine reads (and the preview shows). */
-function currentCaption(){
-  const b = state.boosts;
+/** The exact text the engine reads (and the preview shows), for a given switch set. */
+function captionFor(b){
   const parts = [BASE_LINE];
   if(!b.hype) parts.push(HYPE_LINE);   // hype words present until "Drop the hype" is on
   if(b.number) parts.push(NUMBER_LINE);
-  if(b.plain) parts.push(PLAIN_LINE);
+  if(b.plain) parts.push(PLAIN_LINE);  // includes the call to action
   return parts.join(" ");
 }
+function currentCaption(){ return captionFor(state.boosts); }
 
-/** Media plans the switches tick. */
-function currentChecklist(){
-  const b = state.boosts;
+/** Media plans a given switch set ticks. Bundled switches set two ingredients
+ *  each, so the six toggles between them can cover every reader's full wish list. */
+function checklistFor(b){
   return {
-    source: !!b.source,
-    humanVoice: !!b.person,
-    video: !!b.video,
-    plainSummary: !!b.plain,
-    resultData: !!b.number
+    source:        !!b.source,
+    resultData:    !!b.number,
+    video:         !!b.visual,   // "show it" = a short clip …
+    visual:        !!b.visual,   // … and an image
+    humanVoice:    !!b.human,    // "make it human" = a real face …
+    communityHook: !!b.human,    // … and an invitation to reply
+    plainSummary:  !!b.plain
   };
 }
 
-/** Run the friendly switches through the genuine scoring engine. */
-function computeScore(){
-  return scoreDraft({
-    audienceKey: state.reader,
-    caption: currentCaption(),
-    checklist: currentChecklist()
+/** Run a switch set through the genuine scoring engine for the current reader. */
+function scoreFor(b){
+  return scoreDraft({ audienceKey: state.reader, caption: captionFor(b), checklist: checklistFor(b) });
+}
+
+/** Run the live switches through the genuine scoring engine. */
+function computeScore(){ return scoreFor(state.boosts); }
+
+/** For the current reader, how much each switch alone lifts the score from the
+ *  all-off baseline. Honest (straight from the engine) and stable while a reader
+ *  is selected, so the per-switch "Big win / Helps / Barely" labels mean what
+ *  they say — and a reader who shrugs at video reads as a lesson, not a bug. */
+function refreshRelevance(){
+  const off = {}; BOOSTS.forEach(b => { off[b.id] = false; });
+  const base = scoreFor(off).score;
+  const rel = {};
+  BOOSTS.forEach(b => {
+    const solo = { ...off, [b.id]: true };
+    rel[b.id] = scoreFor(solo).score - base;
   });
+  state.relevance = rel;
 }
 
 function bandColor(score){
@@ -196,6 +235,9 @@ function buildReaders(){
         o.classList.toggle("active", on);
         o.setAttribute("aria-pressed", String(on));
       });
+      // A new reader cares about different things — re-read the switch labels.
+      refreshRelevance();
+      updateBoostRelevance();
       render(true);
     });
     host.appendChild(btn);
@@ -217,7 +259,8 @@ function buildBoosts(){
     row.innerHTML =
       `<span class="boost-ico">${iconSVG(bt.icon, { size: 20 })}</span>` +
       `<span class="boost-body"><span class="boost-label">${bt.label}</span>` +
-      `<span class="boost-hint">${bt.hint}</span></span>` +
+      `<span class="boost-hint">${bt.hint}</span>` +
+      `<span class="boost-rel" data-rel-for="${bt.id}"></span></span>` +
       `<span class="boost-switch" aria-hidden="true"><span class="boost-knob"></span></span>`;
     row.addEventListener("click", () => {
       state.boosts[bt.id] = !state.boosts[bt.id];
@@ -229,6 +272,18 @@ function buildBoosts(){
       render(true);
     });
     host.appendChild(row);
+  });
+  updateBoostRelevance();
+}
+
+/* ── Paint the per-reader "how much this reader cares" tag on each switch ── */
+function updateBoostRelevance(){
+  BOOSTS.forEach(bt => {
+    const pill = document.querySelector(`.boost-rel[data-rel-for="${bt.id}"]`);
+    if(!pill) return;
+    const tier = relTier(state.relevance[bt.id] || 0);
+    pill.className = "boost-rel " + tier.cls;
+    pill.textContent = tier.text;
   });
 }
 
@@ -365,11 +420,11 @@ function renderPreview(){
   if(!tags) return;
   const b = state.boosts;
   const chips = [];
-  if(b.video)  chips.push("video");
-  if(b.person) chips.push("real person");
-  if(b.source) chips.push("source linked");
-  if(b.plain)  chips.push("plain language");
   if(b.number) chips.push("hard number");
+  if(b.source) chips.push("source linked");
+  if(b.visual){ chips.push("short video"); chips.push("image"); }
+  if(b.human){ chips.push("real person"); chips.push("invites replies"); }
+  if(b.plain){ chips.push("plain language"); chips.push("clear next step"); }
   tags.innerHTML = chips.length
     ? chips.map(c => `<span class="pp-chip">${c}</span>`).join("")
     : `<span class="pp-chip pp-empty">just text, no extras</span>`;
@@ -380,6 +435,7 @@ function init(){
   initTheme();
   initHeaderScroll();
   initEraSlider();
+  refreshRelevance();      // seed the per-switch labels for the starting reader
   buildReaders();
   buildBoosts();
   buildMeters();

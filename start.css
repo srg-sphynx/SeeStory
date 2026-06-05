@@ -247,6 +247,7 @@
 
 /* ── right: switches ── */
 .game-controls-head{ font-size:.78rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin:0 0 var(--s3); }
+.gch-note{ font-weight:600; text-transform:none; letter-spacing:0; opacity:.85; }
 .boost-list{ display:flex; flex-direction:column; gap:var(--s2); }
 .boost{
   display:flex; align-items:center; gap:var(--s3); width:100%; text-align:left;
@@ -265,6 +266,21 @@
 .boost-body{ flex:1; min-width:0; display:flex; flex-direction:column; }
 .boost-label{ font-weight:700; font-size:.88rem; letter-spacing:-0.01em; }
 .boost-hint{ font-size:.74rem; color:var(--muted); line-height:1.35; }
+
+/* Per-reader relevance tag: "how much does THIS reader care about this switch".
+   Recomputed from the real engine each time the reader changes, so the contrast
+   between readers is the lesson (a lab leader shrugs at video; a teen lives for it). */
+.boost-rel{
+  align-self:flex-start; margin-top:5px;
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:.66rem; font-weight:800; letter-spacing:.02em;
+  padding:2px 8px; border-radius:999px; border:1px solid transparent;
+  transition:color .2s ease, background .2s ease, border-color .2s ease;
+}
+.boost-rel::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+.boost-rel.rel-high{ color:var(--green); background:var(--green-soft); border-color:rgba(23,138,56,0.22); }
+.boost-rel.rel-med{ color:var(--blue); background:var(--blue-soft, rgba(16,65,115,0.08)); border-color:rgba(16,65,115,0.18); }
+.boost-rel.rel-low{ color:var(--muted); background:var(--sunk); border-color:var(--line); }
 .boost-switch{
   flex-shrink:0; width:44px; height:26px; border-radius:999px;
   background:var(--ring-track); position:relative; transition:background .25s ease;
