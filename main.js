@@ -7,7 +7,7 @@ import {
   wireCaption, initResultPanels, initRecoSwitch,
   initTheme, initHeaderScroll, initReveal, initScorebarJump,
   render, state,
-  initMobileWizard, initSplash, initFinishOverlay
+  initMobileWizard, initSplash, initFinishOverlay, initTour
 } from './ui.js';
 import { initMotion } from './motion.js';
 
@@ -51,6 +51,10 @@ function init(){
 
   // 9. Completion overlay shown after the wizard's "Done"
   initFinishOverlay();
+
+  // 10. First-run guided tour (nudges to Easy mode, walks the tool).
+  //     Auto-starts once the splash is dismissed; replayable from "How it works".
+  initTour();
 }
 
 document.addEventListener("DOMContentLoaded", init);

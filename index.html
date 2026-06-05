@@ -415,6 +415,30 @@
         </div>
       </li>
     </ol>
+    <div class="modal-foot">
+      <button class="tour-replay-btn" id="tourReplay" type="button">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        Take the guided tour
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ First-run guided tour (coach-mark spotlight) ═══ -->
+<div class="tour" id="tour" hidden>
+  <div class="tour-spot" id="tourSpot" aria-hidden="true"></div>
+  <div class="tour-pop" id="tourPop" role="dialog" aria-modal="true" aria-labelledby="tourTitle" aria-describedby="tourBody">
+    <div class="tour-arrow" id="tourArrow" aria-hidden="true"></div>
+    <div class="tour-pop-head">
+      <span class="tour-eyebrow" id="tourEyebrow"></span>
+      <button class="tour-skip" id="tourSkip" type="button">Skip tour</button>
+    </div>
+    <h2 class="tour-title" id="tourTitle"></h2>
+    <p class="tour-body" id="tourBody"></p>
+    <div class="tour-foot">
+      <div class="tour-dots" id="tourDots" aria-hidden="true"></div>
+      <div class="tour-actions" id="tourActions"></div>
+    </div>
   </div>
 </div>
 

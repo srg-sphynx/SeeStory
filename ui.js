@@ -1559,6 +1559,8 @@ export function initSplash(){
     // Return focus to wherever it was before the splash took over.
     if(prevFocus && typeof prevFocus.focus === "function") prevFocus.focus();
     try { sessionStorage.setItem(SPLASH_KEY, "yes"); } catch(e){}
+    // Hand off to the first-run guided tour (if it hasn't been seen yet).
+    document.dispatchEvent(new CustomEvent("seestory:splash-dismissed"));
 
     const onEnd = () => {
       overlay.hidden = true;
@@ -1586,4 +1588,365 @@ export function initSplash(){
     }
   };
   document.addEventListener("keydown", onKey);
+}
+
+/* ── First-run guided tour (coach-mark spotlight) ──────────────
+   A dimmed backdrop with a glowing "spotlight" hole over each
+   target element, plus a floating dark-glass callout card. Step 0
+   nudges users toward Easy mode (and reminds them how to return);
+   the rest walk the four tool steps. Replayable from the
+   "How it works" modal. Reduced-motion + mobile-wizard aware. */
+const TOUR_KEY = "seestory_tour_seen";
+let tourSeen = false;
+try { tourSeen = localStorage.getItem(TOUR_KEY) === "yes"; } catch(e){}
+
+let tourSteps = [];
+let tourIdx = 0;
+let tourTarget = null;
+let tourActive = false;
+let tourJustOpened = false;
+let tourRaf = 0;
+
+// Inline icons (kept local so the tour has no external dependency)
+const TOUR_IC = {
+  spark:   '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z"/></svg>',
+  compass: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>',
+  arrow:   '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  back:    '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  check:   '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>'
+};
+
+function buildTourSteps(){
+  return [
+    {
+      target: '.topbar .page-opt[data-page="easy"]',
+      noScroll: true,
+      spotPad: 6,
+      eyebrow: "Welcome — first time?",
+      title: "Prefer it in plain words?",
+      body: "You've landed on the <strong>full tool</strong>. Not in sales or marketing? <strong>Easy mode</strong> tells the same story without the jargon — and has a quick game to play. Switch any time; this tab brings you right back.",
+      kind: "entry"
+    },
+    {
+      target: '[data-wizard-step="1"]', wizard: 1,
+      eyebrow: "Step 1 of 4",
+      title: "Pick who it's for",
+      body: "Every future reader values different things. Choose an audience and the whole score re-tunes to <strong>their</strong> physics."
+    },
+    {
+      target: '[data-wizard-step="2"]', wizard: 2,
+      eyebrow: "Step 2 of 4",
+      title: "Paste your draft",
+      body: "Drop in a post, caption, or email. The engine reads it live for <strong>Clarity</strong> and <strong>Trust</strong> as you type."
+    },
+    {
+      target: '[data-wizard-step="3"]', wizard: 3,
+      eyebrow: "Step 3 of 4",
+      title: "Add your rich media",
+      body: "Tick the formats you'll include — video, a real face, a real number. Future readers reward <strong>showing</strong>, not just telling."
+    },
+    {
+      target: ['#resultArea', '#emptyNote', '[data-wizard-step="4"]'], wizard: 4,
+      eyebrow: "Step 4 of 4",
+      title: "Read your resonance",
+      body: "A score out of 100, the four signals, and the <strong>one fix</strong> that moves it most. Tip: the <strong>Easy</strong> tab up top is always there if you'd like the gentle version.",
+      last: true
+    }
+  ];
+}
+
+function resolveTourTarget(step){
+  const sels = Array.isArray(step.target) ? step.target : [step.target];
+  for(const s of sels){
+    const el = document.querySelector(s);
+    if(el){
+      const r = el.getBoundingClientRect();
+      if(r.width > 1 && r.height > 1) return el;
+    }
+  }
+  return null;
+}
+
+function renderTourCard(step, i){
+  const total = tourSteps.length;
+  const eyebrow = $("tourEyebrow");
+  if(eyebrow) eyebrow.innerHTML = TOUR_IC.spark + "<span>" + step.eyebrow + "</span>";
+  const title = $("tourTitle");
+  if(title) title.innerHTML = step.title;
+  const body = $("tourBody");
+  if(body) body.innerHTML = step.body;
+
+  // Progress dots
+  const dots = $("tourDots");
+  if(dots){
+    dots.innerHTML = "";
+    for(let d = 0; d < total; d++){
+      const dot = document.createElement("span");
+      dot.className = "tour-dot" + (d === i ? " active" : "");
+      dots.appendChild(dot);
+    }
+  }
+
+  // Action buttons
+  const acts = $("tourActions");
+  if(!acts) return;
+  acts.innerHTML = "";
+  let primaryEl = null;
+
+  const mkBtn = (cls, html, onClick) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "tour-btn " + cls;
+    b.innerHTML = html;
+    b.addEventListener("click", onClick);
+    return b;
+  };
+
+  if(i > 0){
+    acts.appendChild(mkBtn("tour-btn-ghost", TOUR_IC.back + "Back", () => goToTourStep(i - 1)));
+  }
+
+  if(step.kind === "entry"){
+    acts.appendChild(mkBtn("tour-btn-ghost", "Show me around", () => goToTourStep(i + 1)));
+    const easy = document.createElement("a");
+    easy.className = "tour-btn tour-btn-primary";
+    easy.href = "start.html";
+    easy.innerHTML = TOUR_IC.compass + "Easy mode";
+    acts.appendChild(easy);
+    primaryEl = easy;
+  } else if(step.last){
+    primaryEl = mkBtn("tour-btn-primary", TOUR_IC.check + "Got it", endTour);
+    acts.appendChild(primaryEl);
+  } else {
+    primaryEl = mkBtn("tour-btn-primary", "Next" + TOUR_IC.arrow, () => goToTourStep(i + 1));
+    acts.appendChild(primaryEl);
+  }
+
+  // Land keyboard focus on the most likely next action
+  if(primaryEl){
+    requestAnimationFrame(() => { try { primaryEl.focus(); } catch(e){} });
+  }
+}
+
+/** Position the spotlight + callout card around the current target. */
+function layoutTour(){
+  if(!tourActive) return;
+  const step = tourSteps[tourIdx];
+  const pop = $("tourPop");
+  const spot = $("tourSpot");
+  const arrow = $("tourArrow");
+  if(!pop || !spot || !arrow) return;
+
+  if(!tourTarget){
+    pop.classList.add("centered");
+    arrow.style.display = "none";
+    return;
+  }
+  pop.classList.remove("centered");
+  pop.style.transform = "";
+
+  const r = tourTarget.getBoundingClientRect();
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const pad = (step && step.spotPad != null) ? step.spotPad : 8;
+
+  const sx = Math.max(6, r.left - pad);
+  const sy = Math.max(6, r.top - pad);
+  const sr = Math.min(vw - 6, r.right + pad);
+  const sb = Math.min(vh - 6, r.bottom + pad);
+  spot.style.left = sx + "px";
+  spot.style.top = sy + "px";
+  spot.style.width = Math.max(0, sr - sx) + "px";
+  spot.style.height = Math.max(0, sb - sy) + "px";
+
+  const cw = pop.offsetWidth, ch = pop.offsetHeight;
+  const gap = 14;
+  const cx = (r.left + r.right) / 2;
+
+  let place, top;
+  if(vh - sb >= ch + gap + 8){ place = "below"; top = sb + gap; }
+  else if(sy >= ch + gap + 8){ place = "above"; top = sy - gap - ch; }
+  else { place = "pin"; top = Math.max(8, vh - ch - 10); }
+
+  let left = cx - cw / 2;
+  left = Math.max(10, Math.min(left, vw - cw - 10));
+  pop.style.left = left + "px";
+  pop.style.top = top + "px";
+
+  if(place === "pin"){
+    arrow.style.display = "none";
+  } else {
+    arrow.style.display = "";
+    arrow.className = "tour-arrow " + (place === "below" ? "up" : "down");
+    let ax = cx - left;
+    ax = Math.max(20, Math.min(ax, cw - 20));
+    arrow.style.left = ax + "px";
+  }
+}
+
+function scrollTourTarget(el){
+  if(!el) return;
+  try {
+    el.scrollIntoView({ block: "center", inline: "nearest", behavior: reducedMotion.matches ? "auto" : "smooth" });
+  } catch(e){
+    el.scrollIntoView();
+  }
+}
+
+function goToTourStep(i){
+  if(!tourActive) return;
+  if(i < 0) i = 0;
+  if(i >= tourSteps.length){ endTour(); return; }
+  tourIdx = i;
+  const step = tourSteps[i];
+
+  // In the mobile wizard, reveal the section this step points at first.
+  if(wizardActive && step.wizard != null){
+    try { goToStep(step.wizard, "none"); } catch(e){}
+  }
+
+  const pop = $("tourPop");
+  if(pop) pop.classList.remove("show");
+
+  const run = () => {
+    if(!tourActive) return;
+    const target = resolveTourTarget(step);
+    tourTarget = target;
+    const tour = $("tour");
+    if(tour) tour.classList.toggle("no-spot", !target);
+    if(!step.noScroll && target) scrollTourTarget(target);
+    renderTourCard(step, i);
+    requestAnimationFrame(() => {
+      reflowTour();
+      if(pop) pop.classList.add("show");
+      // Re-resolve + re-measure as layout settles (scroll easing, splash
+      // fade-out, font metrics) so the spotlight never gets stranded.
+      setTimeout(reflowTour, 90);
+      setTimeout(reflowTour, 320);
+    });
+  };
+
+  // First step renders immediately; later steps get a quick crossfade.
+  setTimeout(run, tourJustOpened ? 0 : 150);
+  tourJustOpened = false;
+}
+
+/** Re-resolve the current step's target (it may not have been laid out yet
+ *  on the first pass) and re-position. Self-heals a stranded spotlight. */
+function reflowTour(){
+  if(!tourActive) return;
+  const step = tourSteps[tourIdx];
+  if(!step) return;
+  const target = resolveTourTarget(step);
+  const tour = $("tour");
+  if(target){
+    tourTarget = target;
+    if(tour) tour.classList.remove("no-spot");
+  } else if(tour){
+    tour.classList.add("no-spot");
+  }
+  layoutTour();
+}
+
+function onTourReflow(){
+  if(tourRaf) return;
+  tourRaf = requestAnimationFrame(() => { tourRaf = 0; reflowTour(); });
+}
+
+function onTourKey(e){
+  if(!tourActive) return;
+  if(e.key === "Escape"){ e.preventDefault(); endTour(); return; }
+  if(e.key === "ArrowRight"){ e.preventDefault(); goToTourStep(tourIdx + 1); return; }
+  if(e.key === "ArrowLeft"){ e.preventDefault(); goToTourStep(tourIdx - 1); return; }
+  if(e.key === "Tab"){
+    const pop = $("tourPop");
+    if(!pop) return;
+    const f = pop.querySelectorAll("button:not([disabled]), a[href]");
+    if(!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  }
+}
+
+function startTour(force){
+  const tour = $("tour");
+  if(!tour || tourActive) return;
+  if(tourSeen && !force) return;
+
+  // Persist immediately so a mid-tour reload won't replay it unprompted.
+  try { localStorage.setItem(TOUR_KEY, "yes"); } catch(e){}
+  tourSeen = true;
+
+  tourSteps = buildTourSteps();
+  tourIdx = 0;
+  tourActive = true;
+  tourJustOpened = true;
+
+  tour.hidden = false;
+  document.body.classList.add("tour-open");
+  requestAnimationFrame(() => tour.classList.add("in"));
+
+  window.addEventListener("resize", onTourReflow, { passive: true });
+  window.addEventListener("scroll", onTourReflow, { passive: true });
+  document.addEventListener("keydown", onTourKey, true);
+
+  goToTourStep(0);
+}
+
+function endTour(){
+  if(!tourActive) return;
+  tourActive = false;
+  const tour = $("tour");
+
+  window.removeEventListener("resize", onTourReflow);
+  window.removeEventListener("scroll", onTourReflow);
+  document.removeEventListener("keydown", onTourKey, true);
+  document.body.classList.remove("tour-open");
+
+  // Leave the mobile wizard on a sensible starting step.
+  if(wizardActive){ try { goToStep(0, "none"); } catch(e){} }
+
+  if(!tour) return;
+  tour.classList.remove("in");
+  const finish = () => {
+    tour.hidden = true;
+    tour.classList.remove("no-spot");
+    const pop = $("tourPop");
+    if(pop) pop.classList.remove("show", "centered");
+  };
+  if(reducedMotion.matches) finish();
+  else setTimeout(finish, 350);
+}
+
+export function initTour(){
+  const tour = $("tour");
+  if(!tour) return;
+
+  // Clicking the dimmed backdrop is a no-op (avoids accidental dismissal);
+  // Skip and Esc are the explicit exits.
+  tour.addEventListener("click", (e) => { if(e.target === tour) e.stopPropagation(); });
+  const skip = $("tourSkip");
+  if(skip) skip.addEventListener("click", endTour);
+
+  // Replay from the "How it works" modal.
+  const replay = $("tourReplay");
+  if(replay){
+    replay.addEventListener("click", () => {
+      const close = $("guideModalClose");
+      if(close) close.click();
+      setTimeout(() => startTour(true), reducedMotion.matches ? 0 : 300);
+    });
+  }
+
+  if(tourSeen) return; // first-run auto-start only; replay stays available
+
+  const overlay = $("splashOverlay");
+  const splashVisible = overlay && !overlay.hidden;
+  if(splashVisible){
+    document.addEventListener("seestory:splash-dismissed", () => {
+      setTimeout(() => startTour(false), reducedMotion.matches ? 0 : 500);
+    }, { once: true });
+  } else {
+    setTimeout(() => startTour(false), reducedMotion.matches ? 100 : 650);
+  }
 }
