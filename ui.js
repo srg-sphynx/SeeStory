@@ -34,6 +34,7 @@ const reducedMotion = typeof window !== "undefined"
 
 /* ── Score animation ── */
 let _prevScore = null;
+let _activePresetIdx = null;
 
 function animateNumber(el, from, to, color){
   if(reducedMotion.matches || from === to){
@@ -397,10 +398,12 @@ export function buildPresets(){
   const host = $("presetGrid");
   if(!host) return;
   host.innerHTML = "";
-  PRESETS.forEach(p => {
+  PRESETS.forEach((p, i) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "preset-btn";
+    btn.dataset.presetIdx = i;
+    btn.setAttribute("aria-pressed", "false");
 
     const title = document.createElement("div");
     title.className = "p-title";
@@ -417,12 +420,22 @@ export function buildPresets(){
     btn.appendChild(title);
     btn.appendChild(desc);
     btn.appendChild(preview);
-    btn.addEventListener("click", () => loadPreset(p));
+    btn.addEventListener("click", () => loadPreset(p, i));
     host.appendChild(btn);
+  });
+  refreshPresetButtons();
+}
+
+function refreshPresetButtons(){
+  document.querySelectorAll("#presetGrid .preset-btn").forEach(btn => {
+    const selected = Number(btn.dataset.presetIdx) === _activePresetIdx;
+    btn.classList.toggle("active", selected);
+    btn.setAttribute("aria-pressed", String(selected));
   });
 }
 
-function loadPreset(p){
+function loadPreset(p, idx){
+  _activePresetIdx = idx ?? null;
   state.audienceKey = AUDIENCES[p.audience] ? p.audience : null;
   state.caption = p.caption || "";
   state.checklist = { ...(p.checklist || {}) };
@@ -432,6 +445,7 @@ function loadPreset(p){
 
   refreshAudienceButtons();
   refreshChecklistBoxes();
+  refreshPresetButtons();
   render();
 
   // On mobile wizard, auto-advance to Audience step

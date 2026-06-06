@@ -896,6 +896,16 @@ html[data-theme="dark"] .top-fix-area::after{
   transition:all .25s var(--ease); box-shadow:var(--shadow-sm);
 }
 .preset-btn:hover{ border-color:var(--blue); transform:translateY(-4px); box-shadow:var(--shadow-md); }
+.preset-btn.active,
+.preset-btn[aria-pressed="true"]{
+  border-color:var(--blue); border-width:2px;
+  background:var(--blue-soft);
+  box-shadow:0 0 0 4px var(--blue-soft);
+}
+.preset-btn.active .p-desc,
+.preset-btn[aria-pressed="true"] .p-desc{ color:var(--blue); opacity:.85; }
+.preset-btn.active .p-preview,
+.preset-btn[aria-pressed="true"] .p-preview{ color:var(--blue); opacity:.9; }
 .preset-btn .p-title{font-weight:800;color:var(--blue);margin:0 0 4px;font-size:.9rem;}
 .preset-btn .p-desc{font-size:.7rem;color:var(--muted);margin:0 0 var(--s2);font-weight:700;}
 .preset-btn .p-preview{
