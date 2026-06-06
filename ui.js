@@ -424,6 +424,34 @@ export function buildPresets(){
     host.appendChild(btn);
   });
   refreshPresetButtons();
+
+  // The slim "Example loaded" bar re-opens the gallery to switch examples.
+  const bar = $("presetCollapsedBar");
+  if(bar && !bar._wired){
+    bar._wired = true;
+    bar.addEventListener("click", expandPresets);
+  }
+}
+
+/** Collapse the example gallery into its slim summary bar (desktop). */
+function collapsePresets(){
+  const sec = $("presetSection");
+  if(!sec) return;
+  const titleEl = $("presetActiveTitle");
+  const p = (_activePresetIdx != null) ? PRESETS[_activePresetIdx] : null;
+  if(titleEl) titleEl.textContent = p ? p.title : "Custom draft";
+  sec.dataset.collapsed = "true";
+  const bar = $("presetCollapsedBar");
+  if(bar) bar.setAttribute("aria-expanded", "false");
+}
+
+/** Re-open the example gallery. */
+function expandPresets(){
+  const sec = $("presetSection");
+  if(!sec) return;
+  sec.dataset.collapsed = "false";
+  const bar = $("presetCollapsedBar");
+  if(bar) bar.setAttribute("aria-expanded", "true");
 }
 
 function refreshPresetButtons(){
@@ -448,8 +476,10 @@ function loadPreset(p, idx){
   refreshPresetButtons();
   render();
 
-  // On mobile wizard, auto-advance to Audience step
-  wizardAdvanceFromPreset();
+  // On mobile the wizard hides this step entirely; on desktop, collapse the
+  // gallery into its slim bar so the work area gets the room.
+  if(wizardActive) wizardAdvanceFromPreset();
+  else collapsePresets();
 }
 
 function refreshChecklistBoxes(){
@@ -745,7 +775,14 @@ function updateDetectedSummary(r){
   sumEl.appendChild(issueChip);
 }
 
-/* ── Detection panel ── */
+/* ── Detection panel ──────────────────────────────────────────
+   Eight raw signals, but stacking eight rows + paragraphs reads as
+   a wall. Instead we sort them into two human buckets — what's
+   "Working for you" and what's "Worth a look" — render each as a
+   compact tappable chip, and surface the full why-it-matters tip
+   for one chip at a time in a shared detail strip below. */
+let _detActiveId = null;
+
 function paintDetected(r){
   const area = $("detectedArea");
   const list = $("detectedList");
@@ -763,9 +800,9 @@ function paintDetected(r){
   const audienceKey = state.audienceKey || "peer";
 
   const items = [
-    { id: "number", icon: "hash", label: "Numbers in text", found: f.hasNumber, val: f.hasNumber ? "Detected" : "None found" },
+    { id: "number", icon: "hash", label: "Numbers", found: f.hasNumber, val: f.hasNumber ? "Detected" : "None found" },
     { id: "cta", icon: "click", label: "Call to action", found: f.hasCTA, val: f.hasCTA ? "Detected" : "None found" },
-    { id: "result", icon: "barchart", label: "Result or comparison", found: f.hasResultCue, val: f.hasResultCue ? "Detected" : "None found" },
+    { id: "result", icon: "barchart", label: "Result / comparison", found: f.hasResultCue, val: f.hasResultCue ? "Detected" : "None found" },
     { id: "hype", icon: "megaphone", label: "Hype words", found: false, warn: f.hypeFound.length > 0, val: f.hypeFound.length > 0 ? f.hypeFound.join(", ") : "Clean" },
     { id: "hedge", icon: "help", label: "Hedge phrases", found: false, warn: f.hedgeHits > 0, val: f.hedgeHits > 0 ? (f.hedgeHits + " found") : "Clean" },
     { id: "exclamation", icon: "alert", label: "Exclamation marks", found: false, warn: f.exclamations >= 2, val: f.exclamations >= 2 ? (f.exclamations + " found") : "Clean" },
@@ -773,57 +810,128 @@ function paintDetected(r){
     { id: "shout", icon: "type", label: "ALL CAPS shouting", found: false, warn: f.shouting, val: f.shouting ? "Detected" : "None" },
   ];
 
-  items.forEach(item => {
-    const container = document.createElement("div");
-    container.className = "detected-item-container";
+  // Enrich each with its contextual verdict (good / suggest / warn).
+  const enriched = items.map(item => {
+    const active = item.found || item.warn;
+    const tip = getContextualTip(item.id, active, audienceKey);
+    return { ...item, tip, status: tip.status };
+  });
 
-    const row = document.createElement("div");
-    row.className = "detected-row " + (item.warn ? "warn" : (item.found ? "found" : "missing"));
+  const strengths = enriched.filter(it => it.status === "good");
+  const improve   = enriched.filter(it => it.status !== "good");
 
-    const iconEl = document.createElement("span");
-    iconEl.className = "detected-icon";
-    iconEl.innerHTML = iconSVG(item.icon, { size: 18 });
+  // Shared detail strip — only one signal's "why" is shown at a time.
+  const detail = document.createElement("div");
+  detail.className = "det-detail";
 
-    const labelEl = document.createElement("span");
-    labelEl.className = "detected-label";
-    labelEl.textContent = item.label;
+  const renderDetail = (it) => {
+    detail.innerHTML = "";
+    const st = TIP_STATUS[it.status];
+    const ic = document.createElement("span");
+    ic.className = "det-detail-ic " + (st ? st.cls : "");
+    if(st) ic.innerHTML = iconSVG(st.icon, { size: 18 });
+    detail.appendChild(ic);
 
-    const valEl = document.createElement("span");
-    valEl.className = "detected-val";
-    valEl.textContent = item.val;
+    const body = document.createElement("div");
+    body.className = "det-detail-body";
 
-    row.appendChild(iconEl);
-    row.appendChild(labelEl);
-    row.appendChild(valEl);
-    container.appendChild(row);
-
-    const expEl = document.createElement("div");
-    expEl.className = "detected-explanation";
-    const tip = getContextualTip(item.id, item.found || item.warn, audienceKey);
-    const st = TIP_STATUS[tip.status];
-    if(st){
-      const ic = document.createElement("span");
-      ic.className = "tip-status " + st.cls;
-      ic.innerHTML = iconSVG(st.icon, { size: 15 });
-      expEl.appendChild(ic);
+    const titleRow = document.createElement("div");
+    titleRow.className = "det-detail-title";
+    const name = document.createElement("span");
+    name.textContent = it.label;
+    titleRow.appendChild(name);
+    if(it.val){
+      const val = document.createElement("span");
+      val.className = "det-detail-val";
+      val.textContent = it.val;
+      titleRow.appendChild(val);
     }
-    const parts = tip.text.split("**");
+    body.appendChild(titleRow);
+
+    const text = document.createElement("p");
+    text.className = "det-detail-text";
+    const parts = it.tip.text.split("**");
     if(parts.length >= 3){
       const strongEl = document.createElement("strong");
       strongEl.textContent = parts[1];
-      const span2 = document.createElement("span");
-      span2.textContent = parts[2];
-      expEl.appendChild(strongEl);
-      expEl.appendChild(span2);
+      text.appendChild(strongEl);
+      text.appendChild(document.createTextNode(parts[2]));
     } else {
-      const span = document.createElement("span");
-      span.textContent = tip.text;
-      expEl.appendChild(span);
+      text.textContent = it.tip.text;
     }
+    body.appendChild(text);
+    detail.appendChild(body);
+  };
 
-    container.appendChild(expEl);
-    list.appendChild(container);
-  });
+  const selectChip = (it, chipEl) => {
+    _detActiveId = it.id;
+    list.querySelectorAll(".det-chip").forEach(c => c.classList.remove("active"));
+    chipEl.classList.add("active");
+    renderDetail(it);
+  };
+
+  const toneClass = (status) => status === "good" ? "good" : (status === "warn" ? "warn" : "suggest");
+
+  const makeChip = (it) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "det-chip " + toneClass(it.status);
+    const ic = document.createElement("span");
+    ic.className = "dc-ico";
+    ic.innerHTML = iconSVG(it.icon, { size: 15 });
+    const lab = document.createElement("span");
+    lab.className = "dc-label";
+    lab.textContent = it.label;
+    chip.appendChild(ic);
+    chip.appendChild(lab);
+    chip.addEventListener("click", () => selectChip(it, chip));
+    return chip;
+  };
+
+  const makeGroup = (tone, iconName, heading, members) => {
+    if(!members.length) return null;
+    const group = document.createElement("div");
+    group.className = "det-group";
+    group.dataset.tone = tone;
+
+    const head = document.createElement("div");
+    head.className = "det-group-head";
+    const hIco = document.createElement("span");
+    hIco.className = "dg-ico";
+    hIco.innerHTML = iconSVG(iconName, { size: 15 });
+    head.appendChild(hIco);
+    head.appendChild(document.createTextNode(heading));
+    const count = document.createElement("span");
+    count.className = "dg-count";
+    count.textContent = members.length;
+    head.appendChild(count);
+    group.appendChild(head);
+
+    const chips = document.createElement("div");
+    chips.className = "det-chips";
+    members.forEach(it => chips.appendChild(makeChip(it)));
+    group.appendChild(chips);
+    return group;
+  };
+
+  const groups = document.createElement("div");
+  groups.className = "det-groups";
+  const gImprove = makeGroup("improve", "target", "Worth a look", improve);
+  const gStrength = makeGroup("good", "checkCircle", "Working for you", strengths);
+  // Lead with the actionable bucket; strengths reassure underneath.
+  if(gImprove) groups.appendChild(gImprove);
+  if(gStrength) groups.appendChild(gStrength);
+  list.appendChild(groups);
+  list.appendChild(detail);
+
+  // Pre-open the most useful signal: first thing worth fixing, else a strength.
+  const ordered = [...improve, ...strengths];
+  const initial = ordered.find(it => it.id === _detActiveId) || ordered[0];
+  if(initial){
+    const idx = ordered.indexOf(initial);
+    const chipEls = list.querySelectorAll(".det-chip");
+    if(chipEls[idx]) selectChip(initial, chipEls[idx]);
+  }
 }
 
 /* ── Score ring (desktop) ── */
@@ -1642,28 +1750,34 @@ function buildTourSteps(){
       kind: "entry"
     },
     {
+      target: '[data-wizard-step="0"]', wizard: 0, expandPresets: true,
+      eyebrow: "Step 1 of 5",
+      title: "Start with an example",
+      body: "New here? Load a ready-made draft and watch the engine work. Pick one and this panel <strong>tidies itself away</strong> — reopen it any time to switch."
+    },
+    {
       target: '[data-wizard-step="1"]', wizard: 1,
-      eyebrow: "Step 1 of 4",
+      eyebrow: "Step 2 of 5",
       title: "Pick who it's for",
       body: "Every future reader values different things. Choose an audience and the whole score re-tunes to <strong>their</strong> physics."
     },
     {
       target: '[data-wizard-step="2"]', wizard: 2,
-      eyebrow: "Step 2 of 4",
+      eyebrow: "Step 3 of 5",
       title: "Paste your draft",
       body: "Drop in a post, caption, or email. The engine reads it live for <strong>Clarity</strong> and <strong>Trust</strong> as you type."
     },
     {
       target: '[data-wizard-step="3"]', wizard: 3,
-      eyebrow: "Step 3 of 4",
+      eyebrow: "Step 4 of 5",
       title: "Add your rich media",
       body: "Tick the formats you'll include — video, a real face, a real number. Future readers reward <strong>showing</strong>, not just telling."
     },
     {
       target: ['#resultArea', '#emptyNote', '[data-wizard-step="4"]'], wizard: 4,
-      eyebrow: "Step 4 of 4",
+      eyebrow: "Step 5 of 5",
       title: "Read your resonance",
-      body: "A score out of 100, the four signals, and the <strong>one fix</strong> that moves it most. Tip: the <strong>Easy</strong> tab up top is always there if you'd like the gentle version.",
+      body: "A score out of 100, the four signals, and the <strong>one fix</strong> that moves it most. Open <strong>What we detected</strong> to see exactly what the engine spotted in your words.",
       last: true
     }
   ];
@@ -1812,6 +1926,10 @@ function goToTourStep(i){
   if(i >= tourSteps.length){ endTour(); return; }
   tourIdx = i;
   const step = tourSteps[i];
+
+  // Some steps need their target un-collapsed before we can spotlight it
+  // (the example gallery hides itself once a preset is chosen).
+  if(step.expandPresets){ try { expandPresets(); } catch(e){} }
 
   // In the mobile wizard, reveal the section this step points at first.
   if(wizardActive && step.wizard != null){

@@ -137,11 +137,28 @@
 
 <main class="wrap">
 
-  <!-- Preset gallery -->
-  <section class="card reveal wizard-section" data-wizard-step="0" aria-labelledby="h-presets">
-    <h2 id="h-presets">Try an example</h2>
-    <p class="step-desc wizard-hint">Pick a pre-built example to see how the scoring engine works — or skip ahead to write your own.</p>
-    <div id="presetGrid" class="preset-grid"></div>
+  <!-- Preset gallery (collapses to a slim bar once an example is loaded) -->
+  <section class="card reveal wizard-section preset-section" id="presetSection" data-wizard-step="0" data-collapsed="false" aria-labelledby="h-presets">
+    <!-- Collapsed summary bar — shown after an example is chosen -->
+    <button class="preset-collapsed-bar" id="presetCollapsedBar" type="button" aria-controls="presetExpanded" aria-expanded="false">
+      <span class="pcb-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z"/></svg>
+      </span>
+      <span class="pcb-text">
+        <span class="pcb-label">Example loaded</span>
+        <span class="pcb-title" id="presetActiveTitle">—</span>
+      </span>
+      <span class="pcb-change">
+        Change example
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </span>
+    </button>
+
+    <div class="preset-expanded" id="presetExpanded">
+      <h2 id="h-presets">Try an example</h2>
+      <p class="step-desc wizard-hint">Pick a pre-built example to see how the scoring engine works — or skip ahead to write your own.</p>
+      <div id="presetGrid" class="preset-grid"></div>
+    </div>
   </section>
 
   <!-- Two-column desktop layout wrapper -->
