@@ -545,6 +545,42 @@ html[data-theme="dark"] .top-fix-area::after{
 }
 .top-fix-text{font-size:.88rem;color:var(--ink);line-height:1.5;font-weight:600;}
 
+/* ── Media nudge (prose mentions media the box doesn't yet claim) ── */
+.media-nudge{
+  display:flex; align-items:flex-start; gap:var(--s2);
+  font-size:.8rem; line-height:1.45; color:var(--muted);
+  background:var(--amber-soft, rgba(201,162,39,0.10));
+  border:1px solid var(--amber-soft, rgba(201,162,39,0.22));
+  border-radius:var(--radius); padding:var(--s2) var(--s3); margin:0 0 var(--s4);
+}
+.media-nudge svg{ flex:0 0 auto; margin-top:2px; color:var(--amber); }
+
+/* ── What-if levers: projected-gain chips ── */
+.whatif-area{ margin:0 0 var(--s4); }
+.whatif-head{
+  font-size:.95rem; font-weight:800; color:var(--ink);
+  letter-spacing:-0.01em; margin:0 0 var(--s1);
+}
+.whatif-sub{ font-size:.78rem; color:var(--muted); margin:0 0 var(--s2); line-height:1.4; }
+.whatif-list{ display:flex; flex-wrap:wrap; gap:var(--s2); }
+.whatif-chip{
+  display:inline-flex; align-items:center; gap:var(--s2);
+  border:1.5px solid var(--line); background:var(--card-2);
+  border-radius:999px; padding:var(--s1) var(--s3);
+  font:inherit; color:var(--ink); cursor:default; transition:all .16s ease;
+}
+.whatif-chip.tickable{ cursor:pointer; }
+.whatif-chip.tickable:hover{
+  border-color:var(--green); background:var(--green-soft);
+  transform:translateY(-1px); box-shadow:var(--shadow-sm);
+}
+.whatif-chip.tickable:active{ transform:translateY(0); }
+.whatif-gain{
+  font-size:.82rem; font-weight:800; color:var(--green);
+  font-variant-numeric:tabular-nums;
+}
+.whatif-label{ font-size:.8rem; font-weight:600; color:var(--ink); }
+
 /* ── Audience fit overview ── */
 .audience-fit{
   background:var(--card-2); border:1px solid var(--line);

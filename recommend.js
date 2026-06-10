@@ -20,6 +20,10 @@
 
 import { AUDIENCES, HYPE_WORDS, HEDGE_WORDS, RESULT_CUES, CTA_REGEX } from './data.js';
 import { readability, EXCITEMENT_WORDS } from './lexicon.js';
+import {
+  RX_VIDEO, RX_VISUAL, RX_HUMAN, RX_COMMUNITY, RX_PLAIN, RX_SOURCE, RX_URL,
+  matchesWord, hasMetric as detectMetric
+} from './detect.js';
 
 function getWords(text){ return (text.match(/\S+/g) || []); }
 
@@ -27,24 +31,10 @@ function splitSentences(text){
   return text.replace(/([.!?]+)\s+/g, "$1|SPLIT|").split("|SPLIT|").map(s=>s.trim()).filter(Boolean);
 }
 
-function matchesWord(text, phrase){
-  const esc = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return new RegExp("\\b" + esc + "\\b", "i").test(text);
-}
-
 function countMatches(text, rx){ return (text.match(rx) || []).length; }
 
-/* ── Text-based cue detectors ──────────────────────────────────────────────
-   The recommender must judge the *prose itself*, so media / community / proof
-   intent is read from the text — not only from the declared checklist. */
-const RX_VIDEO     = /\b(video|reel|reels|filmed|film|footage|clip|on[- ]camera|tiktok|youtube|short[- ]?form|watch (the|her|him|us|it|our))\b/i;
-const RX_VISUAL    = /\b(visual|figure|graphic|graphics|image|photo|diagram|infographic|screenshot|render|3d view|illustration)\b/i;
-const RX_HUMAN     = /\b(real (person|scientist|scientists|people|chemist)|face[- ]to[- ]camera|behind the scenes|meet (the|our)|our scientist|i tried|i built|i'm a|i am a|my team|her time|his time)\b/i;
-const RX_COMMUNITY = /\?|\b(comment|reply|tag|join us|drop (a|your)|let us know|what would you|your thoughts|tell us|vote|poll|share this)\b/i;
-const RX_PLAIN     = /\b(the simple version|in plain|plain[- ]language|plain english|in short|in plain terms|one[- ]minute|tl;?dr|here is the simple|simply put|the gist)\b/i;
-const RX_SOURCE    = /\b(doi|preprint|paper|papers|dataset|datasets|published|publication|reference|see the (paper|study|case study)|case study|linked below|methods (are|and))\b/i;
-const RX_FOLD      = /\b\d+(\.\d+)?\s?[- ]?fold\b/i;
-
+/* Text-based cue detectors now live in detect.js so the recommender and the
+   scorer read the *same* draft identically (no silent disagreement). */
 const RX_QUESTION    = /\?/g;
 const RX_EXCLAIM     = /!/g;
 // 2nd-person address ("you", "your", "you'll") — marketing / conversational.
@@ -75,7 +65,7 @@ export function extractFeatures({ caption, checklist }){
 
   // A "metric" is a quantified claim (percentage, X-fold, or a number paired
   // with a result cue) — distinct from an incidental number like "25 years".
-  const hasMetric = /%/.test(text) || RX_FOLD.test(text) || (hasNumber && hasResultCue);
+  const hasMetric = detectMetric(text);
 
   // Sentence rhythm + reader-friendliness signals.
   const avgSentLen   = words.length / sentCount;
@@ -112,7 +102,7 @@ export function extractFeatures({ caption, checklist }){
     hasHumanVoice:    !!ck.humanVoice    || RX_HUMAN.test(text),
     hasCommunityHook: !!ck.communityHook || RX_COMMUNITY.test(text),
     hasPlainSummary:  !!ck.plainSummary  || RX_PLAIN.test(text),
-    hasSource:        !!ck.source        || RX_SOURCE.test(text),
+    hasSource:        !!ck.source        || RX_SOURCE.test(text) || RX_URL.test(text),
     hasCTA:           CTA_REGEX.test(text)
   };
 }

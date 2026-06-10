@@ -214,6 +214,50 @@ export const BAND = [
   { min:0,  label:"Weak",      head:"Rework this before posting.", color:"#C0392B" }
 ];
 
+// Plain-language swaps for the most common hype words. Used by chooseFix to
+// offer a concrete rewrite instead of a generic "drop the buzzword" nudge.
+export const HYPE_ALT = {
+  "revolutionary":  "Say what it actually does differently.",
+  "game-changing":  "Name the specific outcome it changes.",
+  "game changer":   "Name the specific outcome it changes.",
+  "game-changer":   "Name the specific outcome it changes.",
+  "world-class":    "Show the benchmark instead of claiming the rank.",
+  "best-in-class":  "Show the benchmark instead of claiming the rank.",
+  "cutting-edge":   "State the concrete capability, not the cliché.",
+  "cutting edge":   "State the concrete capability, not the cliché.",
+  "state-of-the-art":"Cite the result that makes it state-of-the-art.",
+  "unprecedented":  "Give the number that makes it unprecedented.",
+  "supercharge":    "Say what gets faster, and by how much.",
+  "supercharged":   "Say what got faster, and by how much.",
+  "supercharging":  "Say what gets faster, and by how much.",
+  "turbocharge":    "Say what gets faster, and by how much.",
+  "unlock":         "Name the thing it lets the reader do.",
+  "skyrocket":      "Give the actual change in numbers.",
+  "seamless":       "Describe the workflow plainly.",
+  "frictionless":   "Describe the workflow plainly.",
+  "effortless":     "Show the step it removes.",
+  "effortlessly":   "Show the step it removes.",
+  "ai-powered":     "Say what the AI does here, specifically.",
+  "ai powered":     "Say what the AI does here, specifically.",
+  "ai-driven":      "Say what the AI does here, specifically.",
+  "powerful":       "Replace with the capability you mean.",
+  "innovative":     "Show the new thing instead of labelling it.",
+  "industry-leading":"Show the metric you lead on.",
+  "market-leading": "Show the metric you lead on.",
+  "end-to-end":     "List the steps it actually covers.",
+  "ultimate":       "Drop the superlative; state the result.",
+  "transformative": "Name what it transforms, concretely.",
+  "transform":      "Name what it changes, concretely.",
+  "breakthrough":   "Lead with the finding, not the label.",
+  "disruptive":     "Say what it replaces and why.",
+  "next-level":     "State the level in measurable terms.",
+  "next level":     "State the level in measurable terms.",
+  "silver bullet":  "No tool is a silver bullet — show the result.",
+  "magic bullet":   "Drop the metaphor; show the result.",
+  "holy grail":     "Drop the metaphor; show the result.",
+  "miracle":        "Drop the metaphor; show the result."
+};
+
 export const FIT_FIX = {
   video:         "No video. This audience watches more than it reads.",
   visual:        "Add a visual. A figure or photo earns the first glance.",
@@ -237,14 +281,14 @@ export const GLOSSARY = [
 export const PRESETS = [
   {
     title: "The Hype Trap",
-    desc: "Score: ~44, Focus: Substance",
+    desc: "Score: ~42, Focus: Substance",
     audience: "pi",
     caption: "Our revolutionary, game-changing platform delivers world-class results that will supercharge your pipeline!",
     checklist: {}
   },
   {
     title: "The Clean Post",
-    desc: "Score: ~65, Focus: Fit",
+    desc: "Score: ~71, Focus: Fit",
     audience: "genz",
     caption: "Watch one screen go from idea to a ranked hit list in 20 minutes. We filmed the whole thing. What would you screen first?",
     checklist: { video: true }
@@ -258,14 +302,14 @@ export const PRESETS = [
   },
   {
     title: "The SaaS Buzzword Bomb",
-    desc: "Score: ~47, Focus: Substance",
+    desc: "Score: ~46, Focus: Substance",
     audience: "pharma",
     caption: "Our AI-powered, industry-leading platform is the ultimate end-to-end solution to supercharge your discovery workflow. Request a demo today!",
     checklist: {}
   },
   {
     title: "The Benchmark Drop",
-    desc: "Score: ~91, Focus: Fit",
+    desc: "Score: ~93, Focus: Fit",
     audience: "pi",
     caption: "In a prospective benchmark, our docking workflow recovered 92% of known actives in the top 1 percent, a 3-fold enrichment over the baseline. Methods and dataset are linked below.",
     checklist: { source: true, resultData: true }
@@ -279,14 +323,14 @@ export const PRESETS = [
   },
   {
     title: "The Shouty Launch",
-    desc: "Score: ~52, Focus: Substance",
+    desc: "Score: ~50, Focus: Substance",
     audience: "pi",
     caption: "HUGE NEWS! Our NEW platform is FINALLY HERE and it is absolutely INCREDIBLE for your research!",
     checklist: {}
   },
   {
     title: "The Hedgy Maybe",
-    desc: "Score: ~49, Focus: Fit",
+    desc: "Score: ~47, Focus: Fit",
     audience: "pharma",
     caption: "We think this might possibly improve screening times, and it could potentially reduce costs somewhat, though results may vary across projects.",
     checklist: {}

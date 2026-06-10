@@ -38,7 +38,9 @@ A header **page switch** lets visitors choose how to engage:
 | **Score Ring** | SVG circular progress ring on desktop showing your score at a glance (replaces the mobile-only sticky bar) |
 | **How it works modal** | Help trigger pinned in the sticky header (always reachable) opens a centered dialog on desktop / bottom sheet on mobile, with Escape, backdrop-click, and focus-return |
 | **Collapsible results** | "What we detected" and "Compare audiences" are an accordion - opening one collapses the other - and each shows a **summary teaser when collapsed** (detected: signals present + issue count; compare: best-fit audience and score) |
-| **Detection Panel** | "What we detected" - shows exactly what the engine found across 8 categories (numbers, CTA, results, hype, hedging, exclamations, dashes, ALL-CAPS shouting), with audience-adaptive contextual explanations for each item |
+| **Detection Panel** | "What we detected" - shows exactly what the engine found across 11 categories (numbers, CTA, results, source/link, plain-language line, community hook, hype, hedging, exclamations, dashes, ALL-CAPS shouting), with audience-adaptive contextual explanations for each item |
+| **Biggest levers** | A ranked, projected-gain panel ("+15 Hard numbers", "+12 Cited sources") showing the changes that move *this* draft most; tickable levers apply in one click and the score moves by exactly the projected amount |
+| **Score transparency** | Every score ships its own math — weighted per-signal contributions and an itemised list of each Trust/Clarity deduction |
 | **Real-world detection dataset** | Hundreds of hype/hedge/result/CTA terms drawn from real B2B SaaS landing-page copy and drug-discovery software marketing, plus an acronym allow-list (DNA, QSAR, HPLC, CRM, ARR, ...) so legitimate jargon is never flagged as shouting |
 | **Educational Toggles** | Each checklist item has a "Learn more" panel explaining what the content type means and why it matters for future audiences |
 | **Word/Char Counter** | Live word count, character count (with LinkedIn 3,000-char limit indicator), and sentence count |
@@ -63,7 +65,7 @@ A header **page switch** lets visitors choose how to engage:
 |--------|-----------|-----------|------------------|
 | **Clarity** | 100 | Loses points | Sentence length, long-word share, readability |
 | **Trust** | 100 | Loses points | Hype words, hedging, exclamation marks, ALL CAPS |
-| **Substance** | 30 | Gains points | Numbers in text, result cues, named sources, data |
+| **Substance** | 25 | Gains points | Numbers in text, result cues, named sources, data — **reachable to a full 100** with complete evidence |
 | **Fit** | 0 | Gains points | How many of the audience's "wants" you have fulfilled |
 
 ### Blending
@@ -76,22 +78,37 @@ Final Score = round(W.clarity × Clarity + W.trust × Trust + W.substance × Sub
 
 For example, a **Gen Z chemist** weights Fit at 40% (they care most about format), while a **Research PI** weights Substance at 35% (they care most about proof).
 
-### The Detection Engine
+### The Detection Engine (unified — `detect.js`)
 
-Before scoring, the engine reads the draft and auto-detects eight signals shown in the **"What we detected"** panel:
+Before scoring, the engine reads the draft and auto-detects the signals shown in the **"What we detected"** panel. **The scorer and the audience recommender now share one detection module (`detect.js`)**, so the two halves of the tool never disagree about the same words — previously the recommender could "see" a source link or a plain-language line that the score ignored.
 
-| Category | How it's detected |
-|----------|-------------------|
-| **Numbers** | Any digit or `%` |
-| **Call to action** | A question mark or an action verb (try, watch, subscribe, request a demo, book a call, ...) |
-| **Result / comparison** | Outcome and benchmark cues (reduced, 3-fold, enrichment, compared to, hit rate, ...) |
-| **Hype words** | Marketing buzzwords from real B2B SaaS and drug-discovery copy (revolutionary, AI-powered, turnkey, end-to-end, silver bullet, ...) |
-| **Hedge phrases** | Tentative language (maybe, we think, could potentially, tends to, ...) |
-| **Exclamation marks** | Counted; flagged at 2+ |
-| **Em / en dashes** | `—` or `–` |
-| **ALL-CAPS shouting** | Two or more all-caps words, or one long (5+ letter) caps word - with an acronym allow-list (DNA, QSAR, HPLC, CRM, ARR, SEO, ...) so legitimate jargon is **not** flagged |
+The guiding line is **"If it's in your words, we score it. If it's an attached asset, tick it."**
+
+| Category | Source | How it's detected |
+|----------|--------|-------------------|
+| **Numbers** | text | Any digit or `%` |
+| **Call to action** | text | A question mark or an action verb (try, watch, subscribe, request a demo, book a call, ...) |
+| **Result / comparison** | text | Outcome and benchmark cues (reduced, 3-fold, enrichment, compared to, hit rate, ...) |
+| **Source / link** | text **or** checkbox | A DOI, preprint, dataset, repository/GitHub, case study, or a bare URL — auto-credited from the prose |
+| **Plain-language line** | text **or** checkbox | "in plain terms", "the short version", "tl;dr", "put simply", ... |
+| **Community hook** | text **or** checkbox | A question, or an invite (comment, tag, drop a, poll, what would you, ...) |
+| **Video / Visual / Human voice** | checkbox (authoritative) | A prose *mention* surfaces a **nudge** ("tick the box if you're attaching it") but isn't scored as proof of an attached asset |
+| **Hype words** | text | Marketing buzzwords from real B2B SaaS and drug-discovery copy (revolutionary, AI-powered, turnkey, end-to-end, silver bullet, ...) |
+| **Hedge phrases** | text | Tentative language (maybe, we think, could potentially, tends to, ...) |
+| **Exclamation marks** | text | Counted; flagged at 2+ |
+| **Em / en dashes** | text | `—` or `–` |
+| **ALL-CAPS shouting** | text | Two or more all-caps words, or one long (5+ letter) caps word - with an acronym allow-list (DNA, QSAR, HPLC, CRM, ARR, SEO, ...) so legitimate jargon is **not** flagged |
 
 All lexicon matching is **whole-word** (case-insensitive), so `scaffold` is not mistaken for the result cue `fold`, and `mighty` is not mistaken for the hedge `might`. The hype/hedge/result/CTA datasets are tuned for **B2B SaaS companies generally and drug-discovery software specifically**, making this usable as a real content-resonance checker beyond the demo.
+
+### Score transparency: contributions + "Biggest levers"
+
+`scoreDraft()` now returns two extras the UI surfaces:
+
+- **`contributions`** — the exact math behind the number: each signal's *weighted* point contribution, plus an itemised list of every Clarity/Trust deduction ("−12 em dash", "−24 two hype words: revolutionary, supercharge").
+- **`whatIf`** — a ranked list of the levers that move *this* draft most, each with a **projected score gain** ("+15 Hard numbers", "+12 Cited sources"). In the UI these render as chips; the tickable ones apply with one click and the score moves by exactly the projected amount.
+
+Hype fixes are now **concrete rewrites** rather than a generic "drop the buzzword" — e.g. *supercharge → "Say what gets faster, and by how much."*
 
 ### The Top Fix Priority Ladder
 
@@ -102,13 +119,13 @@ The engine doesn't overwhelm you with tips. It:
 
 ### Acceptance Tests
 
-The engine is validated against canonical examples (`node test_scoring.mjs`, 20 assertions):
+The engine is validated against canonical examples (`node test_scoring.mjs`, 53 assertions) and an exhaustive permutation audit (`node audit_scoring.mjs` — every audience × every checklist subset, checked for fit monotonicity, reachable ceilings, focus/fix coherence, and recommender↔scorer agreement):
 
 | Example | Audience | Score | Focus | C | T | S | F |
 |---------|----------|-------|-------|---|---|---|---|
-| The Hype Trap | PI | **44** | Substance | 100 | 52 | 30 | 0 |
-| The Clean Post | Gen Z | **65** | Fit | 100 | 100 | 55 | 30 |
-| The Data Post | Peer | **83** | Fit | 100 | 100 | 80 | 55 |
+| The Hype Trap | PI | **42** | Substance | 100 | 52 | 25 | 0 |
+| The Clean Post | Gen Z | **71** | Fit | 100 | 100 | 50 | 45 |
+| The Data Post | Peer | **83** | Fit | 100 | 100 | 88 | 55 |
 
 ### Preset Gallery (verified scores)
 
@@ -116,14 +133,14 @@ Every click-to-load example is verified against the live engine:
 
 | Example | Audience | Score | Demonstrates |
 |---------|----------|-------|--------------|
-| The Hype Trap | PI | 44 | Buzzwords tank Trust; no numbers |
-| The Clean Post | Gen Z | 65 | Video + CTA, but missing a visual |
+| The Hype Trap | PI | 42 | Buzzwords tank Trust; no numbers |
+| The Clean Post | Gen Z | 71 | Video + CTA + a question (community hook), but missing a visual |
 | The Data Post | Peer | 83 | Numbers + source + result data |
-| The SaaS Buzzword Bomb | Pharma | 47 | B2B SaaS hype with no substance |
-| The Benchmark Drop | PI | 91 | A concrete benchmark done right |
+| The SaaS Buzzword Bomb | Pharma | 46 | B2B SaaS hype with no substance |
+| The Benchmark Drop | PI | 93 | A concrete benchmark done right |
 | The Gen Alpha Reel | Gen Alpha | 90 | Video-first, visual, community hook |
-| The Shouty Launch | PI | 52 | ALL-CAPS shouting + exclamations |
-| The Hedgy Maybe | Pharma | 49 | Hedging language drains authority |
+| The Shouty Launch | PI | 50 | ALL-CAPS shouting + exclamations |
+| The Hedgy Maybe | Pharma | 47 | Hedging language drains authority |
 
 ## 🏗️ Tech Stack
 

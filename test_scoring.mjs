@@ -15,9 +15,9 @@ const r1 = scoreDraft({
 });
 check("Clarity", r1.signals.clarity, 100);
 check("Trust", r1.signals.trust, 52);
-check("Substance", r1.signals.substance, 30);
+check("Substance", r1.signals.substance, 25);
 check("Fit", r1.signals.fit, 0);
-check("Score", r1.score, 44);
+check("Score", r1.score, 42);
 check("Focus", r1.focus, "substance");
 check("Top fix", r1.topFix, "No figure yet. Research group leader responds to a concrete number.");
 
@@ -29,9 +29,9 @@ const r2 = scoreDraft({
 });
 check("Clarity", r2.signals.clarity, 100);
 check("Trust", r2.signals.trust, 100);
-check("Substance", r2.signals.substance, 55);
-check("Fit", r2.signals.fit, 30);
-check("Score", r2.score, 65);
+check("Substance", r2.signals.substance, 50);
+check("Fit", r2.signals.fit, 45);
+check("Score", r2.score, 71);
 check("Focus", r2.focus, "fit");
 check("Top fix", r2.topFix, "Add a visual. A figure or photo earns the first glance.");
 
@@ -148,6 +148,51 @@ check("Recommendation exposes a runner-up", !!recRunner.runnerUp && recRunner.ru
 // A decisive, well-evidenced expert draft earns real confidence + clear margin.
 check("Strong benchmark → high confidence", rec1.confidence, "high");
 check("Strong benchmark → clear margin", rec1.margin >= 12, true);
+
+console.log("\n=== Scoring v3: unified detection + reachable ceilings ===");
+
+// Source named in the prose ("linked repository") must count WITHOUT a checkbox.
+const v1 = scoreDraft({
+  audienceKey: "peer",
+  caption: "We recovered 89% of known actives in the top 1% of a billion-compound library, a 4-fold enrichment. Code and benchmarks are in the linked repository.",
+  checklist: {}
+});
+check("Prose source counts (present)", v1.facts.present.has("source"), true);
+check("Prose source: no 'add a source' fix", /source/i.test(v1.topFix), false);
+
+// A plain-language line in the prose must count without a checkbox.
+const v2 = scoreDraft({
+  audienceKey: "genz",
+  caption: "In plain terms: we searched 2.4 billion molecules in under an hour and found 37 candidates.",
+  checklist: {}
+});
+check("Prose plain-summary counts", v2.facts.present.has("plainSummary"), true);
+
+// A question counts as a community hook in the prose.
+const v3c = scoreDraft({ audienceKey: "genz", caption: "We filmed the whole screen. What would you screen first?", checklist: {} });
+check("Question = community hook", v3c.facts.present.has("communityHook"), true);
+
+// Substance is reachable to a full 100 with complete evidence.
+const v4 = scoreDraft({
+  audienceKey: "peer",
+  caption: "We reduced screening time by 40% across 12 projects, verified against the linked benchmark dataset.",
+  checklist: { resultData: true }
+});
+check("Substance reaches 100", v4.signals.substance, 100);
+
+// contributions + whatIf are exposed for the UI.
+check("Exposes weighted contributions", typeof v1.contributions.weighted.fit, "number");
+check("What-if is a sorted list of gains", Array.isArray(v1.whatIf), true);
+const hypeDraft = scoreDraft({ audienceKey: "pi", caption: "Our revolutionary platform will supercharge your pipeline effortlessly.", checklist: {} });
+check("What-if surfaces a real lever", hypeDraft.whatIf.length > 0, true);
+check("Contributions list trust deductions", hypeDraft.contributions.deductions.trust.length > 0, true);
+
+// Hype rewrite suggestion is concrete, not generic.
+check("Hype fix offers a concrete swap", /Say what gets faster|specific|benchmark|capability|result|number/i.test(hypeDraft.topFix) || hypeDraft.topFix.includes("hype"), true);
+
+// Media mentioned in prose but not ticked surfaces as a nudge (not a score change).
+const v5 = scoreDraft({ audienceKey: "genalpha", caption: "We filmed a 30-second reel of the docking run.", checklist: {} });
+check("Unticked media mention → nudge", v5.facts.mediaNudges.includes("video"), true);
 
 console.log(`\n=== RESULTS: ${pass} passed, ${fail} failed ===`);
 process.exit(fail > 0 ? 1 : 0);

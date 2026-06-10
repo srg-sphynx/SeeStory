@@ -2,7 +2,7 @@
 
 import {
   AUDIENCES, CHECKLIST, COPY, SIGNALS, SIGNAL_LABEL, SIGNAL_MSG,
-  PRESETS, GLOSSARY, FIT_FIX, PERSONAS
+  PRESETS, GLOSSARY, FIT_FIX, PERSONAS, MEDIA_LABEL
 } from './data.js';
 import { scoreDraft, getBand, getSignalBand, splitSentences } from './scoring.js';
 import { recommendAudience } from './recommend.js';
@@ -686,6 +686,21 @@ function getContextualTip(id, isFoundOrWarn, audienceKey) {
       casual: "Helps get the point across quickly in plain language.",
       positive: true
     },
+    source: {
+      academic: "A named paper, dataset, or link lets them verify before they trust, share, or buy — the fastest credibility win.",
+      casual: "A link to the real thing makes the post feel legit, not just talk.",
+      positive: true
+    },
+    plainSummary: {
+      academic: "One plain line widens the audience beyond specialists — it is what earns the first click from a broader reader.",
+      casual: "A plain-English takeaway is what they will actually screenshot and reshare in a group chat.",
+      positive: true
+    },
+    communityHook: {
+      academic: "A direct question or invite turns a broadcast into a conversation and surfaces real feedback.",
+      casual: "Asking people in (a question, a tag, 'drop a comment') is what turns viewers into a community.",
+      positive: true
+    },
     hype: {
       academic: "Superlatives ('revolutionary', 'world-class') trigger deep skepticism and damage scientific trust.",
       casual: "Corporate jargon and hard-sell hype feel fake and out of touch to media-savvy digital natives.",
@@ -783,6 +798,65 @@ function updateDetectedSummary(r){
    for one chip at a time in a shared detail strip below. */
 let _detActiveId = null;
 
+/* ── Media nudge: prose mentions a video/visual but the box isn't ticked ──── */
+function paintMediaNudge(r){
+  const el = $("mediaNudge");
+  if(!el) return;
+  const nudges = (r && r.facts && r.facts.mediaNudges) || [];
+  if(r.empty || !nudges.length){ el.hidden = true; return; }
+  const names = nudges.map(k => MEDIA_LABEL[k] ? MEDIA_LABEL[k].toLowerCase() : k);
+  const list = names.length === 1 ? names[0]
+    : names.slice(0, -1).join(", ") + " and " + names[names.length - 1];
+  el.hidden = false;
+  el.innerHTML = iconSVG("lightbulb", { size: 14 })
+    + ` Your text mentions ${list}. If you're attaching it, tick the box so it counts toward fit.`;
+}
+
+/* ── What-if levers: projected score gain for each missing element ─────────── */
+const CHECKLIST_IDS = new Set(CHECKLIST.map(c => c.id));
+
+function paintWhatIf(r){
+  const area = $("whatIfArea");
+  const list = $("whatIfList");
+  if(!area || !list) return;
+  const levers = (r && r.whatIf) || [];
+  if(r.empty || !levers.length){ area.hidden = true; return; }
+
+  area.hidden = false;
+  list.innerHTML = "";
+
+  // Show the top 4 levers; tickable ones come with a one-click action.
+  levers.slice(0, 4).forEach(lever => {
+    const tickable = CHECKLIST_IDS.has(lever.ingredient);
+    const chip = document.createElement(tickable ? "button" : "div");
+    chip.className = "whatif-chip" + (tickable ? " tickable" : "");
+    if(tickable) chip.type = "button";
+
+    const gain = document.createElement("span");
+    gain.className = "whatif-gain";
+    gain.textContent = "+" + lever.gain;
+
+    const label = document.createElement("span");
+    label.className = "whatif-label";
+    label.textContent = MEDIA_LABEL[lever.ingredient] || lever.label;
+
+    chip.appendChild(gain);
+    chip.appendChild(label);
+
+    if(tickable){
+      chip.title = "Add this — " + (FIT_FIX[lever.ingredient] || "");
+      chip.addEventListener("click", () => {
+        state.checklist[lever.ingredient] = true;
+        refreshChecklistBoxes();
+        render();
+      });
+    } else {
+      chip.title = FIT_FIX[lever.ingredient] || "";
+    }
+    list.appendChild(chip);
+  });
+}
+
 function paintDetected(r){
   const area = $("detectedArea");
   const list = $("detectedList");
@@ -803,6 +877,9 @@ function paintDetected(r){
     { id: "number", icon: "hash", label: "Numbers", found: f.hasNumber, val: f.hasNumber ? "Detected" : "None found" },
     { id: "cta", icon: "click", label: "Call to action", found: f.hasCTA, val: f.hasCTA ? "Detected" : "None found" },
     { id: "result", icon: "barchart", label: "Result / comparison", found: f.hasResultCue, val: f.hasResultCue ? "Detected" : "None found" },
+    { id: "source", icon: "database", label: "Source / link", found: f.present.has("source"), val: f.present.has("source") ? "Detected" : "None found" },
+    { id: "plainSummary", icon: "eye", label: "Plain-language line", found: f.present.has("plainSummary"), val: f.present.has("plainSummary") ? "Detected" : "None found" },
+    { id: "communityHook", icon: "users", label: "Community hook", found: f.present.has("communityHook"), val: f.present.has("communityHook") ? "Detected" : "None found" },
     { id: "hype", icon: "megaphone", label: "Hype words", found: false, warn: f.hypeFound.length > 0, val: f.hypeFound.length > 0 ? f.hypeFound.join(", ") : "Clean" },
     { id: "hedge", icon: "help", label: "Hedge phrases", found: false, warn: f.hedgeHits > 0, val: f.hedgeHits > 0 ? (f.hedgeHits + " found") : "Clean" },
     { id: "exclamation", icon: "alert", label: "Exclamation marks", found: false, warn: f.exclamations >= 2, val: f.exclamations >= 2 ? (f.exclamations + " found") : "Clean" },
@@ -1129,6 +1206,10 @@ export function render(){
 
   // top fix
   if(topFixEl) topFixEl.textContent = r.topFix;
+
+  // advanced: media nudge + projected-gain levers
+  paintMediaNudge(r);
+  paintWhatIf(r);
 
   // breakdown: 4 signal bars
   if(breakdownEl){
